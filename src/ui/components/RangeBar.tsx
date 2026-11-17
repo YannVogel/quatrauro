@@ -11,12 +11,17 @@ type RangeBarProps = {
   /** Bornes de l'échelle, communes à toutes les barres de la semaine. */
   readonly scaleMin: number;
   readonly scaleMax: number;
+  /**
+   * Ce que dit la barre aux lecteurs d'écran quand elle ne montre pas des températures.
+   * Sans cette prop, elle lit « de 9 à 16 degrés ».
+   */
+  readonly accessibilityLabel?: string;
 };
 
 const clamp = (ratio: number): number => Math.min(Math.max(ratio, 0), 1);
 
 /** Barre d'amplitude min–max, placée sur une échelle commune à la semaine. */
-export function RangeBar({ min, max, scaleMin, scaleMax }: RangeBarProps) {
+export function RangeBar({ min, max, scaleMin, scaleMax, accessibilityLabel }: RangeBarProps) {
   const theme = useTheme();
   const styles = useStyles();
   const span = scaleMax - scaleMin;
@@ -24,9 +29,10 @@ export function RangeBar({ min, max, scaleMin, scaleMax }: RangeBarProps) {
   const start = isDrawable ? clamp((min - scaleMin) / span) : 0;
   const end = isDrawable ? clamp((max - scaleMin) / span) : 0;
   const label =
-    min === null || max === null
+    accessibilityLabel ??
+    (min === null || max === null
       ? strings.common.unavailable
-      : strings.spoken.temperatureRange(formatNumber(min), formatNumber(max));
+      : strings.spoken.temperatureRange(formatNumber(min), formatNumber(max)));
   return (
     <View accessible accessibilityRole="image" accessibilityLabel={label} style={styles.track}>
       {isDrawable ? (
