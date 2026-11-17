@@ -10,7 +10,8 @@
     "lint": "expo lint && prettier --check .",
     "format": "prettier --write .",
     "test": "jest",
-    "backtest": "node pipeline/backtest/run.ts"
+    "backtest": "node pipeline/backtest/run.ts",
+    "brand:export": "node scripts/brand/export.ts"
   },
   "dependencies": {
     "@date-fns/utc": "^2.1.1",
@@ -45,6 +46,7 @@
     "jest": "~30.5.2",
     "jest-expo": "~58.0.15",
     "prettier": "^3.10.1",
+    "sharp": "^0.35.5",
     "tsx": "^4.23.15",
     "typescript": "~6.0.3"
   },
@@ -56,7 +58,9 @@
       "^lucide-react-native$": "<rootDir>/node_modules/lucide-react-native/dist/cjs/lucide-react-native.js"
     },
     "modulePathIgnorePatterns": [
-      "<rootDir>/pipeline/backtest/.cache/"
+      "<rootDir>/pipeline/backtest/.cache/",
+      "<rootDir>/android/",
+      "<rootDir>/ios/"
     ],
     "testPathIgnorePatterns": [
       "/node_modules/",
