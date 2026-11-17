@@ -56,6 +56,14 @@ npm run android
 
 La première compilation prend plusieurs minutes : elle génère le dossier `android/` (ignoré par git, voir « Continuous Native Generation » dans la documentation d'Expo) puis construit l'app. Les fois suivantes, `npm start` suffit tant que le code natif ne change pas.
 
+### Intégration continue
+
+Le workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) rejoue `npm run typecheck`, `npm run lint` et `npm test` sur chaque pull request et sur chaque push sur `main`, avec la version de Node de `.nvmrc`. Une PR ne se merge que si ce contrôle est vert.
+
+La branche `data`, où le pipeline archive et publie ses fichiers, ne déclenche pas la CI.
+
+Avant d'ouvrir une PR, lancer les trois commandes en local : ce sont exactement celles de la CI.
+
 ### Backtest
 
 Le premier passage télécharge environ 60 Mo de prévisions et d'observations dans `pipeline/backtest/.cache/` (ignoré par git). Aucune clé n'est nécessaire. Le rapport est dans [docs/features/backtest.md](docs/features/backtest.md).

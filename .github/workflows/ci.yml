@@ -1,0 +1,49 @@
+# Intégration continue : typecheck, lint et tests sur chaque PR et sur main.
+# La branche `data` (archive et fichiers publiés par le pipeline) ne déclenche rien :
+# seuls les pushs sur main et les PR qui ne visent pas `data` lancent ce workflow.
+name: CI
+
+on:
+  pull_request:
+    branches-ignore:
+      - data
+  push:
+    branches:
+      - main
+
+# Un nouveau push sur une PR annule la vérification précédente de cette PR.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Typecheck, lint et tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Installer Node (version de .nvmrc)
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Vérifier les types
+        run: npm run typecheck
+
+      - name: Lancer ESLint et Prettier
+        run: npm run lint
+
+      - name: Lancer les tests
+        run: npm test
