@@ -1,57 +1,17 @@
-// Configuration du backtest (spike M0-03).
-// Villes, modèles et variables viennent de l'ADR 0002 ; ils rejoindront `shared/` en M1-01.
+// Configuration propre au backtest. Les villes, les modèles et les paramètres en vigueur
+// viennent de `shared/` ; ne restent ici que le modèle candidat, la correspondance des
+// variables avec les deux sources et la période rejouée.
 
-export type City = {
-  readonly id: string;
-  readonly name: string;
-  readonly latitude: number;
-  readonly longitude: number;
-  /** Département du fichier horaire de Météo-France. */
-  readonly department: string;
-  /** Numéro Météo-France de la station de référence. */
-  readonly station: string;
-};
-
-export const CITIES: readonly City[] = [
-  {
-    id: 'toulon',
-    name: 'Toulon',
-    latitude: 43.1257,
-    longitude: 5.9304,
-    department: '83',
-    station: '83137001',
-  },
-  {
-    id: 'nice',
-    name: 'Nice',
-    latitude: 43.6973,
-    longitude: 7.2702,
-    department: '06',
-    station: '06088001',
-  },
-];
-
-export type Model = {
-  readonly id: string;
-  readonly name: string;
-  readonly openMeteoId: string;
-  /** Plus grand décalage `_previous_dayN` rempli dans l'API Previous Runs (mesuré en M0-02). */
-  readonly historyLeadDays: number;
-};
-
-export const MODELS: readonly Model[] = [
-  { id: 'arome', name: 'AROME', openMeteoId: 'meteofrance_arome_france', historyLeadDays: 1 },
-  { id: 'arpege', name: 'ARPEGE', openMeteoId: 'meteofrance_arpege_europe', historyLeadDays: 3 },
-  { id: 'ifs', name: 'IFS', openMeteoId: 'ecmwf_ifs', historyLeadDays: 7 },
-  { id: 'icon', name: 'ICON', openMeteoId: 'dwd_icon_seamless', historyLeadDays: 6 },
-  { id: 'gfs', name: 'GFS', openMeteoId: 'ncep_gfs_global', historyLeadDays: 7 },
-];
+import type { Model } from '../../shared/models.ts';
 
 /** Candidat écarté par l'ADR 0002 faute d'historique complet ; évalué à part par le backtest. */
 export const CANDIDATE_MODEL: Model = {
   id: 'ukmo',
   name: 'UKMO',
+  provider: 'UK Met Office',
   openMeteoId: 'ukmo_global_deterministic_10km',
+  horizonHours: 168,
+  updateEveryHours: 6,
   historyLeadDays: 6,
 };
 
@@ -126,8 +86,6 @@ export const VARIABLES: readonly Variable[] = [
   },
 ];
 
-export const MAX_LEAD_DAYS = 7;
-
 /**
  * Période téléchargée. IFS HRES n'est dans l'historique que depuis octobre 2025 (ADR 0002).
  * Les 46 premiers jours servent d'apprentissage et ne sont pas notés.
@@ -139,9 +97,3 @@ export const PERIOD = {
   /** Les paramètres sont choisis avant cette date, puis jugés après. */
   validationStart: '2026-05-16',
 } as const;
-
-/**
- * Délai entre une mesure et sa disponibilité dans les fichiers de Météo-France.
- * Mesuré à 27 h au plus en M0-02 ; arrondi au-dessus par prudence.
- */
-export const OBSERVATION_DELAY_HOURS = 30;

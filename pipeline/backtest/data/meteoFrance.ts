@@ -7,7 +7,8 @@ import path from 'node:path';
 import { createInterface } from 'node:readline';
 import { createGunzip } from 'node:zlib';
 
-import type { City, Variable, VariableId } from '../config.ts';
+import type { City } from '../../../shared/cities.ts';
+import type { Variable, VariableId } from '../config.ts';
 import { emptySeries, hourOfMeteoFranceTime } from './hours.ts';
 import type { HourAxis } from './hours.ts';
 
@@ -116,13 +117,13 @@ export async function loadObservations(
   variables: readonly Variable[],
   axis: HourAxis,
 ): Promise<Observations> {
-  const file = path.join(cacheDir, 'meteo-france', `H_${city.department}_latest.csv.gz`);
+  const file = path.join(cacheDir, 'meteo-france', `H_${city.station.department}_latest.csv.gz`);
   if (!(await exists(file))) {
     const dataset = await fetch(DATASET_URL);
     if (!dataset.ok) throw new Error(`Fiche data.gouv.fr inaccessible (${dataset.status})`);
-    await download(findLatestHourlyFileUrl(await dataset.json(), city.department), file);
+    await download(findLatestHourlyFileUrl(await dataset.json(), city.station.department), file);
   }
-  const parser = createHourlyParser(city.station, variables, axis);
+  const parser = createHourlyParser(city.station.id, variables, axis);
   const lines = createInterface({
     input: createReadStream(file).pipe(createGunzip()),
     crlfDelay: Infinity,

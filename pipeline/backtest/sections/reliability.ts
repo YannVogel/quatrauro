@@ -1,6 +1,6 @@
 // Section « indice de fiabilité » du rapport : formule, calibration, libellés.
 
-import { MODELS } from '../config.ts';
+import { MODELS } from '../../../shared/models.ts';
 import { leadsToEvaluate } from '../evaluate.ts';
 import {
   daysOf,

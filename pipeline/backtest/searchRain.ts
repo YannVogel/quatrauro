@@ -1,7 +1,7 @@
 // Réglage de la pluie sur la période de sélection : force de l'a priori de calibration, puis
 // probabilité à partir de laquelle on annonce de la pluie.
 
-import type { Model } from './config.ts';
+import type { Model } from '../../shared/models.ts';
 import type { CityData } from './data/dataset.ts';
 import type { DateRange } from './evaluate.ts';
 import { evaluateRain } from './evaluateRain.ts';

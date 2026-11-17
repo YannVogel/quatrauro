@@ -5,7 +5,9 @@
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
-import { CANDIDATE_MODEL, CITIES, MODELS, PERIOD, VARIABLES } from './config.ts';
+import { CITIES } from '../../shared/cities.ts';
+import { MODELS } from '../../shared/models.ts';
+import { CANDIDATE_MODEL, PERIOD, VARIABLES } from './config.ts';
 import { loadCityData } from './data/dataset.ts';
 import { formatNumber } from './markdown.ts';
 import { RANGES, formatRange } from './sections/context.ts';

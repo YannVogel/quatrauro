@@ -1,8 +1,8 @@
 // Prépare et évalue l'indice de fiabilité d'une ville : l'indice annoncé est-il tenu dans la
 // proportion annoncée ?
 
-import { OBSERVATION_DELAY_HOURS } from './config.ts';
-import type { Model } from './config.ts';
+import { BLEND_CONFIG } from '../../shared/blendConfig.ts';
+import type { Model } from '../../shared/models.ts';
 import type { CityData } from './data/dataset.ts';
 import { HOURS_PER_DAY } from './data/hours.ts';
 import { dailySum } from './daily.ts';
@@ -54,7 +54,7 @@ export function runReliability(
         byLead,
         observedTemperature: temperature.observation,
         observedDailyRain: dailySum(precipitation.observation),
-        observationDelayHours: OBSERVATION_DELAY_HOURS,
+        observationDelayHours: BLEND_CONFIG.observationDelayHours,
       },
       settings,
     ),

@@ -8,7 +8,7 @@ Cette page décrit la cible et se met à jour à chaque issue structurante (voir
 
 | Bloc | État |
 |---|---|
-| `shared/` | Le décalage de l'heure de Paris seulement (`parisTime.ts`, [ADR 0005](docs/adr/0005-heure-de-paris-sans-base-de-fuseaux.md)). Les schémas, la configuration et la logique du mélange arrivent avec M1 |
+| `shared/` | La configuration unique (villes, modèles, paramètres du mélange), le contrat des fichiers publiés ([fiche](docs/features/contrat-de-donnees.md)), les séries internes et le décalage de l'heure de Paris ([ADR 0005](docs/adr/0005-heure-de-paris-sans-base-de-fuseaux.md)). La logique du mélange y arrive, issue par issue, depuis `pipeline/backtest/logic/` |
 | `pipeline/` | Le backtest seulement (`pipeline/backtest/`), qui porte pour l'instant la logique pure du mélange dans `backtest/logic/`. Collecte, archive, vérification et publication arrivent avec M1 |
 | `app/` + `src/` | Le projet Expo et un écran provisoire. Le design system, la lecture des données et les écrans arrivent avec la suite de M0, puis M2 à M4 |
 

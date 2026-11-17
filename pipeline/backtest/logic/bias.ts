@@ -1,8 +1,8 @@
 // Correction de biais d'un modèle (ADR 0003, étape 1) : on suit l'écart moyen entre sa
 // prévision et l'observation, et on le retranche de ses prévisions suivantes.
 
-import { readDecayedMean, updateDecayedMean } from './decayedMean.ts';
-import type { DecayedMean } from './decayedMean.ts';
+import { readDecayedMean, updateDecayedMean } from '../../../shared/blend/decayedMean.ts';
+import type { DecayedMean } from '../../../shared/blend/decayedMean.ts';
 
 /** Intègre une paire prévision / observation au biais suivi. Une paire incomplète est ignorée. */
 export function updateBias(

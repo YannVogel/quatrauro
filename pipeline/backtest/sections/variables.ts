@@ -1,7 +1,9 @@
 // Sections « autres variables » et « modèle candidat » du rapport.
 
-import { CANDIDATE_MODEL, MODELS, VARIABLES } from '../config.ts';
-import type { Model, VariableId } from '../config.ts';
+import { MODELS } from '../../../shared/models.ts';
+import type { Model } from '../../../shared/models.ts';
+import { CANDIDATE_MODEL, VARIABLES } from '../config.ts';
+import type { VariableId } from '../config.ts';
 import type { CityData } from '../data/dataset.ts';
 import { buildInput, evaluateContinuous, leadsToEvaluate, positionsOf } from '../evaluate.ts';
 import type { BlendParams } from '../logic/params.ts';

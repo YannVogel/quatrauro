@@ -1,7 +1,7 @@
 // Section « température » du rapport : choix des paramètres, résultats par échéance, verdict.
 
-import { MODELS } from '../config.ts';
-import type { Model } from '../config.ts';
+import { MODELS } from '../../../shared/models.ts';
+import type { Model } from '../../../shared/models.ts';
 import { evaluateContinuous } from '../evaluate.ts';
 import type { LeadEvaluation } from '../evaluate.ts';
 import type { BlendParams } from '../logic/params.ts';

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 
 import { correctForecast, updateBias, updateError } from '../logic/bias.ts';
-import { EMPTY_DECAYED_MEAN, readDecayedMean } from '../logic/decayedMean.ts';
+import { EMPTY_DECAYED_MEAN, readDecayedMean } from '../../../shared/blend/decayedMean.ts';
 
 const HALF_LIFE_DAYS = 14;
 const MIN_SAMPLES = 10;

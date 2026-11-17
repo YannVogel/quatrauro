@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 
-import { EMPTY_DECAYED_MEAN, readDecayedMean, updateDecayedMean } from '../logic/decayedMean.ts';
+import { EMPTY_DECAYED_MEAN, readDecayedMean, updateDecayedMean } from '../decayedMean.ts';
 
 const HALF_LIFE_DAYS = 10;
 

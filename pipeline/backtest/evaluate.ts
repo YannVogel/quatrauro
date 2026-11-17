@@ -1,8 +1,9 @@
 // Évalue le mélange d'une variable continue et ses références, échéance par échéance,
 // sur les mêmes heures pour toutes les méthodes.
 
-import { MAX_LEAD_DAYS, OBSERVATION_DELAY_HOURS } from './config.ts';
-import type { Model, VariableId } from './config.ts';
+import { BLEND_CONFIG, MAX_LEAD_DAYS } from '../../shared/blendConfig.ts';
+import type { Model } from '../../shared/models.ts';
+import type { VariableId } from './config.ts';
 import { bestModelOnPreviousWindow, simpleMean } from './baselines.ts';
 import type { CityData } from './data/dataset.ts';
 import { hourOfDate } from './data/hours.ts';
@@ -44,7 +45,7 @@ export function buildInput(
     axis: data.axis,
     observation: data.observations[variable],
     forecasts: models.map((model) => data.forecasts[variable][model.id] ?? []),
-    observationDelayHours: OBSERVATION_DELAY_HOURS,
+    observationDelayHours: BLEND_CONFIG.observationDelayHours,
   };
 }
 
