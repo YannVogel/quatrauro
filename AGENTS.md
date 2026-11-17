@@ -2,13 +2,13 @@
 
 Quatrauro est une app météo personnelle (Expo / React Native, Android) pour Toulon et Nice. Elle croise plusieurs modèles de prévision, corrige leurs erreurs locales à partir des observations et affiche un indice de fiabilité. Il n'y a pas de serveur : un pipeline TypeScript tourne dans GitHub Actions et publie des JSON statiques que l'app lit. Le cadrage de référence est [docs/QUATRAURO_PROJECT_BRIEF.md](docs/QUATRAURO_PROJECT_BRIEF.md) ; les décisions prises depuis vivent dans les issues GitHub (sections « ⚠️ Point tranché ») et dans [docs/adr/](docs/adr/). En cas de conflit avec le brief, l'issue prime. L'architecture (couches, flux des données, mélange, hors ligne) est décrite dans [ARCHITECTURE.md](ARCHITECTURE.md).
 
-> **État du repo** : socle en place. Le projet Expo (SDK 58) compile, se teste et affiche un écran provisoire ; le backtest du mélange a donné son feu vert ([rapport](docs/features/backtest.md)). Le pipeline, le design system et les écrans restent à écrire. La section « Structure » décrit encore la cible : elle est mise à jour par M0-05.
+> **État du repo** (à tenir à jour à chaque milestone) : **socle en place.** Le projet Expo compile, se teste et affiche un écran provisoire ; la CI tourne sur chaque PR ; les deux spikes sont terminés (ADR 0002 et 0003) et le backtest a donné son feu vert ([rapport](docs/features/backtest.md)). Restent à écrire : le design system Riviera (suite de M0), le pipeline (M1), les écrans (M2 à M4).
 
 ## Ordre de travail
 
-1. **M0-02** (spike sources) puis **M0-03** (spike backtest) passent avant tout le reste.
-2. M0-03 donne un **feu vert** : si le mélange ne fait pas mieux que le meilleur modèle seul, on s'arrête et on en parle à Yann. Ne pas écrire le pipeline ni l'app avant ce feu vert.
-3. Ensuite, suivre les milestones dans l'ordre et les dépendances indiquées dans chaque issue.
+1. **M0-02** (spike sources) puis **M0-03** (spike backtest) sont terminés. Le critère du feu vert est atteint : le mélange fait mieux que le meilleur modèle seul, dans les deux villes. Les paramètres retenus sont dans l'[ADR 0003](docs/adr/0003-methode-de-melange.md).
+2. Si un changement de la logique du mélange dégrade le backtest (`npm run backtest`), on s'arrête et on en parle à Yann.
+3. Suivre les milestones dans l'ordre et les dépendances indiquées dans chaque issue.
 
 ## Conventions de travail
 
@@ -47,21 +47,37 @@ Quatrauro est une app météo personnelle (Expo / React Native, Android) pour To
 
 ## Structure
 
-Cible, à mettre à jour quand le code existe :
+Ce qui existe aujourd'hui :
 
 ```
-app/                      # routes Expo Router (uniquement des écrans et des layouts)
-__tests__/                # tests qui rendent l'app entière (renderRouter sur app/)
+app/                        # routes Expo Router (uniquement des écrans et des layouts)
+  _layout.tsx  index.tsx
+__tests__/                  # tests qui rendent l'app entière (renderRouter sur app/)
 src/
-  features/<feature>/     # forecast (accueil, détail d'un jour), models, reliability, about
-    components/ hooks/ api/ __tests__/ index.ts
-  ui/                     # design system Riviera : theme.ts (tokens clair et sombre), composants, icons.ts
-  lib/                    # dates.ts, env.ts, queryClient.ts, data.ts (lecture des JSON publiés)
-  i18n/                   # fr.ts : toutes les chaînes UI ; index.ts : accès typé
-shared/                   # schémas Zod, cities.ts, models.ts, blendConfig.ts, logique pure du mélange
-pipeline/                 # collect/ (prévisions, observations), archive/, verify/, blend/, publish/, backtest/
+  features/forecast/        # components/HomeScreen.tsx (écran provisoire), index.ts
+  ui/                       # vide : le design system Riviera arrive avec M0-08
+  lib/                      # dates.ts (mise en forme à l'heure de Paris)
+  i18n/                     # fr.ts : toutes les chaînes UI ; index.ts : accès typé (`strings`)
+shared/                     # parisTime.ts (décalage de Paris sur UTC)
+pipeline/
+  __fixtures__/             # réponses réelles d'Open-Meteo et de Météo-France, pour les tests
+  backtest/                 # backtest du mélange ; sa logique pure est dans backtest/logic/
+assets/                     # icônes provisoires du modèle Expo (remplacées en M0-11)
 docs/
   QUATRAURO_PROJECT_BRIEF.md  adr/  design/  features/
+.github/workflows/ci.yml    # intégration continue
+app.config.ts               # identité de l'app et configuration native
+```
+
+Ce qui s'y ajoutera, là et pas ailleurs :
+
+```
+src/features/<feature>/     # forecast (accueil, détail d'un jour), models, reliability, about
+  components/ hooks/ api/ __tests__/ index.ts
+src/ui/                     # theme.ts (tokens clair et sombre), composants, icons.ts
+src/lib/                    # env.ts, queryClient.ts, data.ts (lecture des JSON publiés)
+shared/                     # schémas Zod, cities.ts, models.ts, blendConfig.ts, logique pure du mélange
+pipeline/                   # collect/ (prévisions, observations), archive/, verify/, blend/, publish/
 ```
 
 - Les dépendances sont unidirectionnelles : `app/` → `features/` → `ui/` + `lib/` + `shared/` ; `pipeline/` → `shared/`. `shared/` n'importe rien du reste.
@@ -92,6 +108,10 @@ Lancer `typecheck`, `lint` et `test` avant de déclarer une tâche terminée. La
 ## Expo évolue vite
 
 Expo publie des changements cassants à chaque SDK. Avant d'écrire du code qui touche une API Expo, EAS ou React Native : lire la version majeure d'`expo` dans `package.json`, puis consulter la documentation versionnée (`https://docs.expo.dev/versions/v<majeure>.0.0/`) ou l'index https://docs.expo.dev/llms.txt. Ne jamais se fier à sa mémoire. Même règle pour l'API d'Open-Meteo : lire sa documentation avant d'écrire un appel.
+
+Le projet est sur **Expo SDK 58** (React Native 0.88, React 19.3, TypeScript 6) : documentation versionnée sur https://docs.expo.dev/versions/v58.0.0/. Chaque page de la documentation se lit aussi en markdown en ajoutant `.md` à son adresse.
+
+- Dans ce SDK, `renderRouter` et les helpers de `expo-router/testing-library` sont asynchrones : toujours les attendre (`await`).
 
 - Les dossiers `ios/` et `android/` sont générés (Continuous Native Generation) et ignorés par git : configurer le natif dans `app.config.ts`.
 - Android est la seule cible de la v1. Ne rien écrire de spécifique à iOS, et ne rien écrire qui l'empêche.
