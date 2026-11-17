@@ -70,8 +70,8 @@ shared/                     # ne dépend de rien : ni Node, ni React Native, ni 
   cities.ts  models.ts  blendConfig.ts      # la configuration unique
   conditions.ts  variables.ts               # listes fermées : conditions météo, grandeurs prévues
   schemas.ts  series.ts                     # contrat des fichiers publiés (Zod), séries internes
-  parisTime.ts                              # décalage de Paris sur UTC
-  blend/                                    # logique pure du mélange (elle arrive de pipeline/backtest/logic/)
+  parisTime.ts                              # décalage de Paris sur UTC, jours civils de Paris
+  blend/                                    # logique pure du mélange : biais, poids, mélange d'une heure, pluie, agrégats
 pipeline/
   __fixtures__/             # réponses réelles d'Open-Meteo et de Météo-France, pour les tests
   backtest/                 # backtest du mélange ; sa logique pure est dans backtest/logic/
