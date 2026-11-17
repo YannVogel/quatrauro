@@ -3,7 +3,7 @@
 
 import { HOURS_PER_DAY } from './data/hours.ts';
 import { dailyAvailabilityDelay, dailySum } from './daily.ts';
-import type { LeadGrouping } from './logic/grouping.ts';
+import type { LeadGrouping } from '../../shared/blend/grouping.ts';
 import {
   EMPTY_RAIN_CALIBRATION,
   rainAgreement,

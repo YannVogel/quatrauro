@@ -1,7 +1,7 @@
 // Rejoue l'indice de fiabilité quotidien et note, pour chaque jour, si la prévision a été tenue.
 
 import { dailyAvailabilityDelay, dailyMax, dailyMean, dailyMin } from './daily.ts';
-import type { LeadGrouping } from './logic/grouping.ts';
+import type { LeadGrouping } from '../../shared/blend/grouping.ts';
 import { emptyReliabilityTable, reliabilityIndex, updateReliability } from './logic/reliability.ts';
 import type { ReliabilityOptions, Situation } from './logic/reliability.ts';
 import { replay } from './replay.ts';

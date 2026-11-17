@@ -3,7 +3,7 @@
 import { MODELS } from '../../../shared/models.ts';
 import { evaluateRain } from '../evaluateRain.ts';
 import type { RainLeadEvaluation, RainLevel } from '../evaluateRain.ts';
-import type { LeadGrouping } from '../logic/grouping.ts';
+import type { LeadGrouping } from '../../../shared/blend/grouping.ts';
 import { formatInteger, formatNumber, formatPercent, markdownTable } from '../markdown.ts';
 import {
   accuracy,
