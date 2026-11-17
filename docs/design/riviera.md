@@ -36,12 +36,13 @@ Chaque token existe dans les deux thèmes. Les noms sont ceux de `src/ui/theme.t
 | `sun` | `#FFC93C` | `#FFC93C` | Rond du soleil, pastille mise en avant |
 | `onSun` | `#0B1B3A` | `#0B1B3A` | Texte et icône sur le jaune |
 | `pale` | `#DCE8F7` | `#DCE8F7` | Rond d'icône quand il n'y a pas de soleil |
-| `heroOverlay` | blanc à 16 % | blanc à 16 % | Fond du sélecteur de ville et du bouton de thème dans le bloc |
+| `heroOverlay` | noir à 16 % | blanc à 16 % | Fond du sélecteur de ville et du bouton de thème dans le bloc |
 
 Règles :
 
 - Aucune couleur en dur hors de `theme.ts`.
-- Les contrastes des couples texte/fond sont vérifiés par un test, dans les deux thèmes (WCAG AA : 4,5:1 pour le texte courant, 3:1 à partir de 24 px).
+- Les contrastes des couples texte/fond sont vérifiés par un test, dans les deux thèmes (WCAG AA : 4,5:1 pour le texte courant, 3:1 à partir de 24 px). La liste des couples vérifiés est `CONTRAST_PAIRS`, dans `theme.ts` : tout nouveau couple texte/fond s'y ajoute.
+- **Écart avec les maquettes** : elles posent un voile blanc à 16 % dans le bloc d'état des deux thèmes. En clair, le nom de la ville non sélectionnée (blanc, 15 px) n'y atteint que 3,8:1. Le voile du thème clair est donc noir à 16 % (6,5:1) ; celui du thème sombre reste blanc (4,8:1).
 - Les autres états du bloc (nuageux, vent fort, orage, nuit…) reçoivent leurs tokens `hero*` dans l'issue M0-10, en gardant la même logique : une couleur pleine, sur laquelle le texte blanc reste lisible.
 
 ## Typographie
@@ -57,10 +58,13 @@ Police : **Outfit** (Google Fonts), graisses 400, 500, 600 et 700, embarquée da
 | `heading` | 18 / 600 | Titre d'écran |
 | `section` | 16 / 600 | Titre de carte |
 | `stat` | 20 / 600 | Valeur d'une vignette |
-| `body` | 15 / 400 à 600 | Lignes de liste, texte courant |
+| `body` | 15 / 400 | Lignes de liste, texte courant |
+| `bodyStrong` | 15 / 600 | Texte courant mis en avant (jour, valeur d'une ligne) |
 | `label` | 14 / 600 | Pastilles |
 | `caption` | 13 / 400 | Légendes, texte secondaire |
 | `micro` | 12 / 400 | Graduations (taille minimale) |
+
+Les maquettes ne fixent l'interligne que pour les grands chiffres (0,95). Dans l'app, il vaut 1 fois le corps pour `displayXL` et `displayL` (en dessous, Android rogne le haut des chiffres), et de 1,25 à 1,4 fois pour les autres styles.
 
 Les nombres s'écrivent à la française : virgule décimale, espace avant `%` et avant les unités, `°` collé au chiffre.
 
@@ -72,7 +76,9 @@ Les nombres s'écrivent à la française : virgule décimale, espace avant `%` e
 | Espace entre blocs | 12 |
 | Rayon du bloc d'état et des cartes | 28 |
 | Rayon des vignettes | 18 |
-| Rayon des boutons ronds et du sélecteur | 22 (hauteur 44, à porter à 48 dp dans l'app) |
+| Rayon des boutons ronds et du sélecteur | 24 dans l'app (hauteur 48 dp) ; 22 dans les maquettes (hauteur 44) |
+| Marge intérieure du bloc d'état et des cartes | 20 |
+| Espace entre éléments voisins | 8 |
 | Rayon des pastilles | 16 |
 | Épaisseur des barres | 8 à 10, extrémités rondes |
 | Rond du soleil | 112 à l'accueil, 92 sur le détail d'un jour |
