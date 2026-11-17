@@ -15,7 +15,12 @@ export type DecayedMean = {
 
 export const EMPTY_DECAYED_MEAN: DecayedMean = { weightedSum: 0, weight: 0, count: 0, lastHour: 0 };
 
-export function updateDecayedMean(state: DecayedMean, value: number, hour: number, halfLifeDays: number): DecayedMean {
+export function updateDecayedMean(
+  state: DecayedMean,
+  value: number,
+  hour: number,
+  halfLifeDays: number,
+): DecayedMean {
   if (!Number.isFinite(value)) return state;
   // Une valeur arrivée dans le désordre est traitée comme contemporaine de la dernière.
   const elapsedHours = state.count === 0 ? 0 : Math.max(0, hour - state.lastHour);

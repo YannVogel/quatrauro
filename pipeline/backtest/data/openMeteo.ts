@@ -19,7 +19,12 @@ function seriesName(variable: Variable, leadDays: number): string {
   return `${variable.openMeteoName}_previous_day${leadDays}`;
 }
 
-export function buildPreviousRunsUrl(city: City, model: Model, variable: Variable, period: Period): string {
+export function buildPreviousRunsUrl(
+  city: City,
+  model: Model,
+  variable: Variable,
+  period: Period,
+): string {
   const leads = Array.from({ length: model.historyLeadDays }, (_, index) => index + 1);
   const query = new URLSearchParams({
     latitude: String(city.latitude),
@@ -41,7 +46,12 @@ function isRecord(value: unknown): value is Record<string, unknown> {
  * Convertit une réponse Previous Runs en séries alignées sur l'axe, une par échéance
  * (indice 0 = J−1). Refuse toute réponse qui n'a pas la forme attendue.
  */
-export function parsePreviousRuns(response: unknown, model: Model, variable: Variable, axis: HourAxis): Float64Array[] {
+export function parsePreviousRuns(
+  response: unknown,
+  model: Model,
+  variable: Variable,
+  axis: HourAxis,
+): Float64Array[] {
   if (!isRecord(response) || !isRecord(response.hourly)) {
     throw new Error(`Réponse Open-Meteo sans bloc « hourly » (${model.id}, ${variable.id})`);
   }
@@ -102,7 +112,11 @@ export async function loadForecasts(
   period: Period,
   axis: HourAxis,
 ): Promise<Float64Array[]> {
-  const file = path.join(cacheDir, 'open-meteo', `${city.id}_${model.id}_${variable.id}_${period.start}_${period.end}.json`);
+  const file = path.join(
+    cacheDir,
+    'open-meteo',
+    `${city.id}_${model.id}_${variable.id}_${period.start}_${period.end}.json`,
+  );
   let raw: string;
   try {
     raw = await readFile(file, 'utf8');

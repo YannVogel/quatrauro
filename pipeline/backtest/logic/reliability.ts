@@ -27,7 +27,10 @@ export type Situation = {
 const RAIN_CLASS_COUNT = 2;
 
 /** `cells[signal de pluie][niveau de désaccord]`. */
-export type ReliabilityTable = { readonly overall: Frequency; readonly cells: readonly (readonly Frequency[])[] };
+export type ReliabilityTable = {
+  readonly overall: Frequency;
+  readonly cells: readonly (readonly Frequency[])[];
+};
 
 export function emptyReliabilityTable(options: ReliabilityOptions): ReliabilityTable {
   return {
@@ -45,7 +48,9 @@ export function spreadClassOf(spread: number, thresholds: readonly number[]): nu
 
 /** 0 : signal net (pluie quasi sûre ou quasi exclue) ; 1 : signal incertain. */
 export function rainClassOf(probability: number, options: ReliabilityOptions): number {
-  return probability >= options.uncertainRain.from && probability <= options.uncertainRain.to ? 1 : 0;
+  return probability >= options.uncertainRain.from && probability <= options.uncertainRain.to
+    ? 1
+    : 0;
 }
 
 export function updateReliability(
@@ -60,7 +65,9 @@ export function updateReliability(
     overall: addOutcome(table.overall, held),
     cells: table.cells.map((row, rowIndex) =>
       row.map((frequency, columnIndex) =>
-        rowIndex === rainClass && columnIndex === spreadClass ? addOutcome(frequency, held) : frequency,
+        rowIndex === rainClass && columnIndex === spreadClass
+          ? addOutcome(frequency, held)
+          : frequency,
       ),
     ),
   };
@@ -70,13 +77,21 @@ export function updateReliability(
  * Indice de 0 à 1, ou `null` tant que l'historique est insuffisant. À signal de pluie égal,
  * il ne monte jamais quand le désaccord entre modèles augmente.
  */
-export function reliabilityIndex(table: ReliabilityTable, situation: Situation, options: ReliabilityOptions): number | null {
+export function reliabilityIndex(
+  table: ReliabilityTable,
+  situation: Situation,
+  options: ReliabilityOptions,
+): number | null {
   if (table.overall.total < options.minSamples) return null;
   const baseRate = table.overall.hits / table.overall.total;
   const row = table.cells[rainClassOf(situation.rainProbability, options)] ?? [];
   const rates = row.map((frequency) => smoothedRate(frequency, baseRate, options.priorStrength));
   const weights = row.map((frequency) => frequency.total + options.priorStrength);
-  return isotonic(rates, weights, 'decreasing')[spreadClassOf(situation.spread, options.spreadThresholds)] ?? null;
+  return (
+    isotonic(rates, weights, 'decreasing')[
+      spreadClassOf(situation.spread, options.spreadThresholds)
+    ] ?? null
+  );
 }
 
 export type ReliabilityLabel = 'sure' | 'likely' | 'uncertain';

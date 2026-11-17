@@ -6,7 +6,14 @@ import { evaluateContinuous } from '../evaluate.ts';
 import type { LeadEvaluation } from '../evaluate.ts';
 import type { BlendParams } from '../logic/params.ts';
 import { formatGain, formatInteger, formatNumber, markdownTable } from '../markdown.ts';
-import { GRID, TIE_TOLERANCE, marginalEffect, searchParams, selectCandidate, toParams } from '../search.ts';
+import {
+  GRID,
+  TIE_TOLERANCE,
+  marginalEffect,
+  searchParams,
+  selectCandidate,
+  toParams,
+} from '../search.ts';
 import type { Candidate, CandidateResult } from '../search.ts';
 import { TEMPERATURE_MIN_GAIN, gainOverBestPrevious, judgeTemperature } from '../verdict.ts';
 import type { TemperatureVerdict } from '../verdict.ts';
@@ -23,7 +30,11 @@ const PARAMETER_LABELS: Readonly<Record<keyof Candidate, string>> = {
 
 const TOP_CANDIDATES = 5;
 
-export type Selection = { readonly selected: CandidateResult; readonly params: BlendParams; readonly markdown: string };
+export type Selection = {
+  readonly selected: CandidateResult;
+  readonly params: BlendParams;
+  readonly markdown: string;
+};
 
 export function selectTemperatureParams(cities: Cities): Selection {
   const results = searchParams(cities, 'temperature', MODELS, RANGES.selection);
@@ -31,7 +42,8 @@ export function selectTemperatureParams(cities: Cities): Selection {
   const best = results[0];
   const worst = results[results.length - 1];
   if (best === undefined || worst === undefined) throw new Error('Grille de paramètres vide');
-  const describe = (candidate: Candidate): string[] => (Object.keys(PARAMETER_LABELS) as (keyof Candidate)[]).map((key) => String(candidate[key]));
+  const describe = (candidate: Candidate): string[] =>
+    (Object.keys(PARAMETER_LABELS) as (keyof Candidate)[]).map((key) => String(candidate[key]));
 
   const markdown = [
     '## Paramètres du mélange',
@@ -55,7 +67,9 @@ export function selectTemperatureParams(cities: Cities): Selection {
     '',
     markdownTable(
       [...Object.values(PARAMETER_LABELS), 'Erreur (°C)'],
-      results.slice(0, TOP_CANDIDATES).map((result) => [...describe(result.candidate), formatNumber(result.meanError, 4)]),
+      results
+        .slice(0, TOP_CANDIDATES)
+        .map((result) => [...describe(result.candidate), formatNumber(result.meanError, 4)]),
     ),
     '',
     '### Effet propre de chaque paramètre',
@@ -64,7 +78,13 @@ export function selectTemperatureParams(cities: Cities): Selection {
     '',
     ...(Object.keys(PARAMETER_LABELS) as (keyof Candidate)[]).flatMap((key) => {
       const effect = marginalEffect(results, key);
-      return [markdownTable([PARAMETER_LABELS[key], ...effect.keys()], [['Erreur moyenne (°C)', ...[...effect.values()].map((value) => formatNumber(value, 4))]]), ''];
+      return [
+        markdownTable(
+          [PARAMETER_LABELS[key], ...effect.keys()],
+          [['Erreur moyenne (°C)', ...[...effect.values()].map((value) => formatNumber(value, 4))]],
+        ),
+        '',
+      ];
     }),
   ].join('\n');
 
@@ -72,10 +92,26 @@ export function selectTemperatureParams(cities: Cities): Selection {
 }
 
 /** Tableau des erreurs par échéance d'une variable continue, pour une ville. */
-export function continuousTable(evaluations: readonly LeadEvaluation[], models: readonly Model[], unit: string): string {
-  const shown = models.filter((model) => evaluations.some((evaluation) => evaluation.models.includes(model.id)));
+export function continuousTable(
+  evaluations: readonly LeadEvaluation[],
+  models: readonly Model[],
+  unit: string,
+): string {
+  const shown = models.filter((model) =>
+    evaluations.some((evaluation) => evaluation.models.includes(model.id)),
+  );
   return markdownTable(
-    ['Échéance', 'Heures notées', ...shown.map((model) => model.name), 'Moyenne simple', 'Meilleur après coup', 'Meilleur, fenêtre précédente', '**Mélange**', 'Gain du mélange', 'Biais du mélange'],
+    [
+      'Échéance',
+      'Heures notées',
+      ...shown.map((model) => model.name),
+      'Moyenne simple',
+      'Meilleur après coup',
+      'Meilleur, fenêtre précédente',
+      '**Mélange**',
+      'Gain du mélange',
+      'Biais du mélange',
+    ],
     evaluations.map((evaluation) => [
       `J+${evaluation.lead}`,
       formatInteger(evaluation.count),
@@ -91,16 +127,29 @@ export function continuousTable(evaluations: readonly LeadEvaluation[], models: 
 }
 
 /** Meilleur modèle corrigé de son biais, connu après coup. */
-function bestCorrected(evaluation: LeadEvaluation): { readonly model: string; readonly mae: number } {
-  const [model, score] = Object.entries(evaluation.corrected).reduce((best, current) => (current[1].mae < best[1].mae ? current : best));
+function bestCorrected(evaluation: LeadEvaluation): {
+  readonly model: string;
+  readonly mae: number;
+} {
+  const [model, score] = Object.entries(evaluation.corrected).reduce((best, current) =>
+    current[1].mae < best[1].mae ? current : best,
+  );
   return { model, mae: score.mae };
 }
 
 function correctedTable(evaluations: readonly LeadEvaluation[], models: readonly Model[]): string {
-  const shown = models.filter((model) => evaluations.some((evaluation) => evaluation.models.includes(model.id)));
+  const shown = models.filter((model) =>
+    evaluations.some((evaluation) => evaluation.models.includes(model.id)),
+  );
   const nameOf = (id: string): string => models.find((model) => model.id === id)?.name ?? '?';
   return markdownTable(
-    ['Échéance', ...shown.flatMap((model) => [`${model.name} brut`, `${model.name} corrigé`]), 'Meilleur corrigé, après coup', '**Mélange**', 'Gain du mélange sur le meilleur corrigé'],
+    [
+      'Échéance',
+      ...shown.flatMap((model) => [`${model.name} brut`, `${model.name} corrigé`]),
+      'Meilleur corrigé, après coup',
+      '**Mélange**',
+      'Gain du mélange sur le meilleur corrigé',
+    ],
     evaluations.map((evaluation) => {
       const best = bestCorrected(evaluation);
       return [
@@ -119,7 +168,10 @@ function correctedTable(evaluations: readonly LeadEvaluation[], models: readonly
 
 export type CityVerdict = { readonly city: string; readonly verdict: TemperatureVerdict };
 
-export function temperatureSection(cities: Cities, params: BlendParams): { readonly markdown: string; readonly verdicts: CityVerdict[] } {
+export function temperatureSection(
+  cities: Cities,
+  params: BlendParams,
+): { readonly markdown: string; readonly verdicts: CityVerdict[] } {
   const lines: string[] = [
     '## Température',
     '',

@@ -24,18 +24,27 @@ export function agreementClassOf(agreement: number): number {
   return agreement < AGREEMENT_CLASS_BOUNDS[2] ? 2 : 3;
 }
 
-export type RainCalibration = { readonly overall: Frequency; readonly byClass: readonly Frequency[] };
+export type RainCalibration = {
+  readonly overall: Frequency;
+  readonly byClass: readonly Frequency[];
+};
 
 export const EMPTY_RAIN_CALIBRATION: RainCalibration = {
   overall: EMPTY_FREQUENCY,
   byClass: Array.from({ length: AGREEMENT_CLASS_COUNT }, () => EMPTY_FREQUENCY),
 };
 
-export function updateRainCalibration(calibration: RainCalibration, agreement: number, rained: boolean): RainCalibration {
+export function updateRainCalibration(
+  calibration: RainCalibration,
+  agreement: number,
+  rained: boolean,
+): RainCalibration {
   const updated = agreementClassOf(agreement);
   return {
     overall: addOutcome(calibration.overall, rained),
-    byClass: calibration.byClass.map((frequency, index) => (index === updated ? addOutcome(frequency, rained) : frequency)),
+    byClass: calibration.byClass.map((frequency, index) =>
+      index === updated ? addOutcome(frequency, rained) : frequency,
+    ),
   };
 }
 
@@ -47,11 +56,17 @@ export type RainOptions = {
 };
 
 /** Probabilité de pluie (0 à 1) pour un degré d'accord donné. Elle ne baisse jamais quand l'accord augmente. */
-export function rainProbability(calibration: RainCalibration, agreement: number, options: RainOptions): number {
+export function rainProbability(
+  calibration: RainCalibration,
+  agreement: number,
+  options: RainOptions,
+): number {
   const { overall, byClass } = calibration;
   if (overall.total < options.minSamples) return agreement;
   const climatology = overall.hits / overall.total;
-  const rates = byClass.map((frequency) => smoothedRate(frequency, climatology, options.priorStrength));
+  const rates = byClass.map((frequency) =>
+    smoothedRate(frequency, climatology, options.priorStrength),
+  );
   const weights = byClass.map((frequency) => frequency.total + options.priorStrength);
   return isotonic(rates, weights, 'increasing')[agreementClassOf(agreement)] ?? agreement;
 }

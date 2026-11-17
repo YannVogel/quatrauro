@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { describe, it } from 'node:test';
 
 import { EMPTY_FREQUENCY, addOutcome, smoothedRate } from '../logic/frequency.ts';
 import { isotonic } from '../logic/isotonic.ts';
@@ -14,10 +13,17 @@ import type { RainCalibration } from '../logic/rain.ts';
 
 const OPTIONS = { priorStrength: 20, minSamples: 50 };
 
-function feed(calibration: RainCalibration, agreement: number, rainy: number, dry: number): RainCalibration {
+function feed(
+  calibration: RainCalibration,
+  agreement: number,
+  rainy: number,
+  dry: number,
+): RainCalibration {
   let result = calibration;
-  for (let index = 0; index < rainy; index += 1) result = updateRainCalibration(result, agreement, true);
-  for (let index = 0; index < dry; index += 1) result = updateRainCalibration(result, agreement, false);
+  for (let index = 0; index < rainy; index += 1)
+    result = updateRainCalibration(result, agreement, true);
+  for (let index = 0; index < dry; index += 1)
+    result = updateRainCalibration(result, agreement, false);
   return result;
 }
 
@@ -25,7 +31,8 @@ describe('fréquence lissée', () => {
   it("part de l'a priori et rejoint le taux observé", () => {
     assert.equal(smoothedRate(EMPTY_FREQUENCY, 0.3, 10), 0.3);
     let frequency = EMPTY_FREQUENCY;
-    for (let index = 0; index < 1000; index += 1) frequency = addOutcome(frequency, index % 4 === 0);
+    for (let index = 0; index < 1000; index += 1)
+      frequency = addOutcome(frequency, index % 4 === 0);
     assert.ok(Math.abs(smoothedRate(frequency, 0.9, 10) - 0.25) < 0.01);
   });
 });
@@ -81,7 +88,9 @@ describe('probabilité de pluie calibrée', () => {
     calibration = feed(calibration, 0.5, 60, 40);
     calibration = feed(calibration, 0.8, 30, 70);
     calibration = feed(calibration, 1, 90, 10);
-    const probabilities = [0, 0.2, 0.5, 0.8, 1].map((agreement) => rainProbability(calibration, agreement, OPTIONS));
+    const probabilities = [0, 0.2, 0.5, 0.8, 1].map((agreement) =>
+      rainProbability(calibration, agreement, OPTIONS),
+    );
     probabilities.slice(1).forEach((probability, index) => {
       assert.ok(probability >= (probabilities[index] ?? Number.NaN), `${probabilities.join(', ')}`);
     });

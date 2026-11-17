@@ -37,7 +37,12 @@ export function buildRainSettings(
   priorStrength: number,
   announcementProbability: number,
 ): RainSettings {
-  return { leadGrouping, threshold, calibration: { priorStrength, minSamples: RAIN_FIXED.minSamples }, announcementProbability };
+  return {
+    leadGrouping,
+    threshold,
+    calibration: { priorStrength, minSamples: RAIN_FIXED.minSamples },
+    announcementProbability,
+  };
 }
 
 export function searchRain(
@@ -50,8 +55,15 @@ export function searchRain(
 ): RainCandidateResult[] {
   return RAIN_GRID.priorStrength.flatMap((priorStrength) =>
     RAIN_GRID.announcementProbability.map((announcementProbability) => {
-      const settings = buildRainSettings(leadGrouping, threshold, priorStrength, announcementProbability);
-      const evaluations = cities.flatMap((data) => evaluateRain(level, data, models, settings, range));
+      const settings = buildRainSettings(
+        leadGrouping,
+        threshold,
+        priorStrength,
+        announcementProbability,
+      );
+      const evaluations = cities.flatMap((data) =>
+        evaluateRain(level, data, models, settings, range),
+      );
       const table = mergeContingencies(evaluations.map((evaluation) => evaluation.blend));
       return {
         priorStrength,

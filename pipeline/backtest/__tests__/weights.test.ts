@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
-import { describe, it } from 'node:test';
 
 import { computeWeights } from '../logic/weights.ts';
 
-const sum = (values: readonly number[]): number => values.reduce((total, value) => total + value, 0);
+const sum = (values: readonly number[]): number =>
+  values.reduce((total, value) => total + value, 0);
 const close = (actual: number | undefined, expected: number): void => {
   assert.ok(actual !== undefined && Math.abs(actual - expected) < 1e-12, `${actual} ≠ ${expected}`);
 };
@@ -32,7 +32,9 @@ describe('pondération des modèles', () => {
   });
 
   it("répartit également quand aucun modèle n'a d'historique", () => {
-    computeWeights([null, null], { exponent: 2, errorFloor: 0.1 }).forEach((weight) => close(weight, 0.5));
+    computeWeights([null, null], { exponent: 2, errorFloor: 0.1 }).forEach((weight) =>
+      close(weight, 0.5),
+    );
   });
 
   it('donne tout le poids au seul modèle disponible', () => {
@@ -46,6 +48,8 @@ describe('pondération des modèles', () => {
   });
 
   it('ignore les erreurs avec un exposant nul', () => {
-    computeWeights([0.2, 3], { exponent: 0, errorFloor: 0.1 }).forEach((weight) => close(weight, 0.5));
+    computeWeights([0.2, 3], { exponent: 0, errorFloor: 0.1 }).forEach((weight) =>
+      close(weight, 0.5),
+    );
   });
 });

@@ -1,8 +1,13 @@
 import assert from 'node:assert/strict';
-import { describe, it } from 'node:test';
 
 import { dailyAvailabilityDelay, dailyMax, dailyMean, dailyMin, dailySum } from '../daily.ts';
-import { formatGain, formatInteger, formatNumber, formatPercent, markdownTable } from '../markdown.ts';
+import {
+  formatGain,
+  formatInteger,
+  formatNumber,
+  formatPercent,
+  markdownTable,
+} from '../markdown.ts';
 import {
   EMPTY_CONTINGENCY,
   accuracy,
@@ -67,7 +72,11 @@ describe('mesures', () => {
     const forecast = Float64Array.from([11, 8, 10, Number.NaN]);
     const positions = commonPositions([forecast], observation, 0, 4);
     assert.deepEqual(positions, [0, 1]);
-    assert.deepEqual(scoreSeries(forecast, observation, positions), { mae: 1.5, bias: -0.5, count: 2 });
+    assert.deepEqual(scoreSeries(forecast, observation, positions), {
+      mae: 1.5,
+      bias: -0.5,
+      count: 2,
+    });
     assert.ok(Number.isNaN(scoreSeries(forecast, observation, []).mae));
   });
 
@@ -85,14 +94,26 @@ describe('mesures', () => {
     assert.deepEqual(table, { hits: 1, misses: 1, falseAlarms: 1, correctNegatives: 2 });
     assert.equal(accuracy(table), 0.6);
     assert.equal(criticalSuccessIndex(table), 1 / 3);
-    assert.deepEqual(mergeContingencies([table, table]), { hits: 2, misses: 2, falseAlarms: 2, correctNegatives: 4 });
+    assert.deepEqual(mergeContingencies([table, table]), {
+      hits: 2,
+      misses: 2,
+      falseAlarms: 2,
+      correctNegatives: 4,
+    });
   });
 
   it('calcule le score de Brier et la calibration par classe', () => {
     assert.equal(brierScore([1, 0, 0.5], [true, false, true]), 0.25 / 3);
     assert.throws(() => brierScore([1], []));
-    const bins = calibrationBins([0.05, 0.2, 0.25, 1], [false, true, false, true], [0, 0.1, 0.5, 1]);
-    assert.deepEqual(bins.map((bin) => bin.count), [1, 2, 1]);
+    const bins = calibrationBins(
+      [0.05, 0.2, 0.25, 1],
+      [false, true, false, true],
+      [0, 0.1, 0.5, 1],
+    );
+    assert.deepEqual(
+      bins.map((bin) => bin.count),
+      [1, 2, 1],
+    );
     assert.equal(bins[1]?.observed, 0.5);
     assert.ok(Math.abs((bins[1]?.announced ?? Number.NaN) - 0.225) < 1e-12);
   });
@@ -119,7 +140,11 @@ describe('critère du feu vert', () => {
   });
 
   it('demande un gain de 5 % sur une majorité stricte des échéances', () => {
-    const passed = judgeTemperature([evaluation(1, 0.9, 1), evaluation(2, 0.94, 1), evaluation(3, 0.99, 1)]);
+    const passed = judgeTemperature([
+      evaluation(1, 0.9, 1),
+      evaluation(2, 0.94, 1),
+      evaluation(3, 0.99, 1),
+    ]);
     assert.deepEqual(passed.leadsWithGain, [1, 2]);
     assert.equal(passed.passed, true);
     const tied = judgeTemperature([evaluation(1, 0.9, 1), evaluation(2, 0.96, 1)]);
@@ -127,7 +152,10 @@ describe('critère du feu vert', () => {
   });
 
   it('juge la pluie dégradée au-delà des marges', () => {
-    assert.equal(isRainDegraded({ accuracy: 0.9, csi: 0.5 }, { accuracy: 0.905, csi: 0.51 }), false);
+    assert.equal(
+      isRainDegraded({ accuracy: 0.9, csi: 0.5 }, { accuracy: 0.905, csi: 0.51 }),
+      false,
+    );
     assert.equal(isRainDegraded({ accuracy: 0.88, csi: 0.5 }, { accuracy: 0.9, csi: 0.5 }), true);
     assert.equal(isRainDegraded({ accuracy: 0.9, csi: 0.4 }, { accuracy: 0.9, csi: 0.5 }), true);
   });

@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { describe, it } from 'node:test';
 
 import { enumerateCandidates, marginalEffect, selectCandidate, toParams } from '../search.ts';
 import type { Candidate } from '../search.ts';

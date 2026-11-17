@@ -2,11 +2,22 @@
 
 import { MODELS } from '../config.ts';
 import { leadsToEvaluate } from '../evaluate.ts';
-import { daysOf, mean, quantile, runReliability, valuesOn, verifiedDays } from '../evaluateReliability.ts';
+import {
+  daysOf,
+  mean,
+  quantile,
+  runReliability,
+  valuesOn,
+  verifiedDays,
+} from '../evaluateReliability.ts';
 import type { ReliabilityRun } from '../evaluateReliability.ts';
 import type { BlendParams } from '../logic/params.ts';
 import { reliabilityLabel } from '../logic/reliability.ts';
-import type { LabelThresholds, ReliabilityLabel, ReliabilityOptions } from '../logic/reliability.ts';
+import type {
+  LabelThresholds,
+  ReliabilityLabel,
+  ReliabilityOptions,
+} from '../logic/reliability.ts';
 import { formatInteger, formatNumber, formatPercent, markdownTable } from '../markdown.ts';
 import { calibrationBins } from '../rainScores.ts';
 import type { RainSettings } from '../simulateRain.ts';
@@ -20,7 +31,11 @@ export const UNCERTAIN_RAIN = { from: 0.2, to: 0.8 } as const;
 const PRIOR_STRENGTH = 10;
 const MIN_SAMPLES = 30;
 const INDEX_BOUNDS = [0, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1] as const;
-const LABELS: Readonly<Record<ReliabilityLabel, string>> = { sure: 'Sûr', likely: 'Probable', uncertain: 'Incertain' };
+const LABELS: Readonly<Record<ReliabilityLabel, string>> = {
+  sure: 'Sûr',
+  likely: 'Probable',
+  uncertain: 'Incertain',
+};
 /** Écart maximal toléré entre l'indice annoncé et la fréquence observée, dans une classe assez fournie. */
 export const CALIBRATION_TOLERANCE = 0.1;
 export const CALIBRATION_MIN_COUNT = 50;
@@ -33,7 +48,12 @@ function settingsFor(
   spreadThresholds: readonly number[],
   temperatureTolerance: number = TEMPERATURE_TOLERANCE,
 ): ReliabilitySettings {
-  const options: ReliabilityOptions = { spreadThresholds, uncertainRain: UNCERTAIN_RAIN, priorStrength: PRIOR_STRENGTH, minSamples: MIN_SAMPLES };
+  const options: ReliabilityOptions = {
+    spreadThresholds,
+    uncertainRain: UNCERTAIN_RAIN,
+    priorStrength: PRIOR_STRENGTH,
+    minSamples: MIN_SAMPLES,
+  };
   return {
     leadGrouping: params.leadGrouping,
     temperatureTolerance,
@@ -44,7 +64,11 @@ function settingsFor(
 }
 
 /** Seuils de désaccord : les terciles de l'écart quotidien entre modèles sur la période de sélection, arrondis au dixième. */
-function spreadThresholdsFromSelection(cities: Cities, params: BlendParams, rain: RainSettings): number[] {
+function spreadThresholdsFromSelection(
+  cities: Cities,
+  params: BlendParams,
+  rain: RainSettings,
+): number[] {
   const spreads = cities.flatMap((data) => {
     const run = runReliability(data, MODELS, params, rain, settingsFor(params, rain, []));
     const days = daysOf(run, RANGES.selection);
@@ -56,7 +80,15 @@ function spreadThresholdsFromSelection(cities: Cities, params: BlendParams, rain
 function componentsTable(run: ReliabilityRun): string {
   const days = daysOf(run, RANGES.year);
   return markdownTable(
-    ['Échéance', 'Jours', `Maximum à ± ${TEMPERATURE_TOLERANCE} °C`, `Minimum à ± ${TEMPERATURE_TOLERANCE} °C`, 'Pluie bien annoncée', '**Prévision tenue**', 'Indice annoncé moyen'],
+    [
+      'Échéance',
+      'Jours',
+      `Maximum à ± ${TEMPERATURE_TOLERANCE} °C`,
+      `Minimum à ± ${TEMPERATURE_TOLERANCE} °C`,
+      'Pluie bien annoncée',
+      '**Prévision tenue**',
+      'Indice annoncé moyen',
+    ],
     [...run.byLead].map(([lead, series]) => [
       `J+${lead}`,
       formatInteger(valuesOn(series.held, days).length),
@@ -72,22 +104,41 @@ function componentsTable(run: ReliabilityRun): string {
 const TOLERANCES_COMPARED = [1.5, 2, 2.5, 3] as const;
 
 /** Part des prévisions tenues selon la tolérance de température : ce que coûte ou rapporte un critère plus ou moins strict. */
-function toleranceTable(cities: Cities, params: BlendParams, rain: RainSettings, spreadThresholds: readonly number[]): string {
+function toleranceTable(
+  cities: Cities,
+  params: BlendParams,
+  rain: RainSettings,
+  spreadThresholds: readonly number[],
+): string {
   const rows = cities.flatMap((data) =>
     TOLERANCES_COMPARED.map((tolerance) => {
-      const run = runReliability(data, MODELS, params, rain, settingsFor(params, rain, spreadThresholds, tolerance));
+      const run = runReliability(
+        data,
+        MODELS,
+        params,
+        rain,
+        settingsFor(params, rain, spreadThresholds, tolerance),
+      );
       const days = daysOf(run, RANGES.year);
       return [
         data.city.name,
         `± ${formatNumber(tolerance, 1)} °C${tolerance === TEMPERATURE_TOLERANCE ? ' (retenue)' : ''}`,
-        ...[...run.byLead.values()].map((series) => formatPercent(mean(valuesOn(series.held, days)))),
+        ...[...run.byLead.values()].map((series) =>
+          formatPercent(mean(valuesOn(series.held, days))),
+        ),
       ];
     }),
   );
-  return markdownTable(['Ville', 'Tolérance', ...leadsToEvaluate(MODELS).map((lead) => `J+${lead}`)], rows);
+  return markdownTable(
+    ['Ville', 'Tolérance', ...leadsToEvaluate(MODELS).map((lead) => `J+${lead}`)],
+    rows,
+  );
 }
 
-function pooled(runs: readonly ReliabilityRun[], range: typeof RANGES.year): { announced: number[]; outcomes: boolean[] } {
+function pooled(
+  runs: readonly ReliabilityRun[],
+  range: typeof RANGES.year,
+): { announced: number[]; outcomes: boolean[] } {
   const announced: number[] = [];
   const outcomes: boolean[] = [];
   for (const run of runs) {
@@ -101,7 +152,10 @@ function pooled(runs: readonly ReliabilityRun[], range: typeof RANGES.year): { a
   return { announced, outcomes };
 }
 
-function calibrationTable(runs: readonly ReliabilityRun[], range: typeof RANGES.year): { readonly markdown: string; readonly calibrated: boolean } {
+function calibrationTable(
+  runs: readonly ReliabilityRun[],
+  range: typeof RANGES.year,
+): { readonly markdown: string; readonly calibrated: boolean } {
   const { announced, outcomes } = pooled(runs, range);
   const bins = calibrationBins(announced, outcomes, INDEX_BOUNDS);
   const calibrated = bins
@@ -114,7 +168,9 @@ function calibrationTable(runs: readonly ReliabilityRun[], range: typeof RANGES.
       formatInteger(bin.count),
       formatPercent(bin.announced),
       formatPercent(bin.observed),
-      Number.isFinite(bin.observed) ? `${formatNumber((bin.observed - bin.announced) * 100, 0)} pt` : '—',
+      Number.isFinite(bin.observed)
+        ? `${formatNumber((bin.observed - bin.announced) * 100, 0)} pt`
+        : '—',
     ]),
   );
   return { markdown, calibrated };
@@ -124,7 +180,9 @@ function labelTable(runs: readonly ReliabilityRun[]): string {
   const rows = runs.flatMap((run) => {
     const { announced, outcomes } = pooled([run], RANGES.year);
     return (Object.keys(LABELS) as ReliabilityLabel[]).map((label) => {
-      const selected = announced.map((index, at) => ({ index, held: outcomes[at] ?? false })).filter((entry) => reliabilityLabel(entry.index, LABEL_THRESHOLDS) === label);
+      const selected = announced
+        .map((index, at) => ({ index, held: outcomes[at] ?? false }))
+        .filter((entry) => reliabilityLabel(entry.index, LABEL_THRESHOLDS) === label);
       return [
         run.data.city.name,
         LABELS[label],
@@ -137,7 +195,15 @@ function labelTable(runs: readonly ReliabilityRun[]): string {
   return markdownTable(['Ville', 'Libellé', 'Jours', 'Part des jours', 'Prévisions tenues'], rows);
 }
 
-export function reliabilitySection(cities: Cities, params: BlendParams, rain: RainSettings): { readonly markdown: string; readonly calibrated: boolean; readonly spreadThresholds: readonly number[] } {
+export function reliabilitySection(
+  cities: Cities,
+  params: BlendParams,
+  rain: RainSettings,
+): {
+  readonly markdown: string;
+  readonly calibrated: boolean;
+  readonly spreadThresholds: readonly number[];
+} {
   const spreadThresholds = spreadThresholdsFromSelection(cities, params, rain);
   const settings = settingsFor(params, rain, spreadThresholds);
   const runs = cities.map((data) => runReliability(data, MODELS, params, rain, settings));
@@ -154,11 +220,23 @@ export function reliabilitySection(cities: Cities, params: BlendParams, rain: Ra
     markdownTable(
       ['Réglage', 'Valeur'],
       [
-        ['Niveaux de désaccord (écart-type entre modèles)', `faible < ${formatNumber(spreadThresholds[0] ?? Number.NaN, 1)} °C ≤ moyen < ${formatNumber(spreadThresholds[1] ?? Number.NaN, 1)} °C ≤ fort (terciles de la période de sélection)`],
-        ['Signal de pluie incertain', `probabilité entre ${formatPercent(UNCERTAIN_RAIN.from)} et ${formatPercent(UNCERTAIN_RAIN.to)}`],
+        [
+          'Niveaux de désaccord (écart-type entre modèles)',
+          `faible < ${formatNumber(spreadThresholds[0] ?? Number.NaN, 1)} °C ≤ moyen < ${formatNumber(spreadThresholds[1] ?? Number.NaN, 1)} °C ≤ fort (terciles de la période de sélection)`,
+        ],
+        [
+          'Signal de pluie incertain',
+          `probabilité entre ${formatPercent(UNCERTAIN_RAIN.from)} et ${formatPercent(UNCERTAIN_RAIN.to)}`,
+        ],
         ['Poids du taux de la tranche', `${PRIOR_STRENGTH} jours fictifs`],
-        ['Historique minimal', `${MIN_SAMPLES} jours vérifiés ; en dessous, l'indice est indisponible`],
-        ['Libellés', `Sûr à partir de ${formatPercent(LABEL_THRESHOLDS.sure)}, Probable à partir de ${formatPercent(LABEL_THRESHOLDS.likely)}, Incertain en dessous`],
+        [
+          'Historique minimal',
+          `${MIN_SAMPLES} jours vérifiés ; en dessous, l'indice est indisponible`,
+        ],
+        [
+          'Libellés',
+          `Sûr à partir de ${formatPercent(LABEL_THRESHOLDS.sure)}, Probable à partir de ${formatPercent(LABEL_THRESHOLDS.likely)}, Incertain en dessous`,
+        ],
       ],
     ),
     '',

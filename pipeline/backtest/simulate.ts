@@ -31,7 +31,10 @@ export type LeadSimulation = {
 type ModelState = { bias: DecayedMean; error: DecayedMean };
 
 /** Résultat par échéance : l'indice 0 est J+1. Une échéance hors du découpage n'est pas simulée. */
-export function simulateBlend(input: SimulationInput, params: BlendParams): Map<number, LeadSimulation> {
+export function simulateBlend(
+  input: SimulationInput,
+  params: BlendParams,
+): Map<number, LeadSimulation> {
   const { axis, observation, forecasts, observationDelayHours } = input;
   const results = new Map<number, LeadSimulation>();
 
@@ -45,9 +48,13 @@ export function simulateBlend(input: SimulationInput, params: BlendParams): Map<
     }
     // Les modèles d'une tranche partagent leur état entre ses échéances, par bloc horaire.
     const states: ModelState[][] = forecasts.map(() =>
-      Array.from({ length: params.hourBlocksPerDay }, () => ({ bias: EMPTY_DECAYED_MEAN, error: EMPTY_DECAYED_MEAN })),
+      Array.from({ length: params.hourBlocksPerDay }, () => ({
+        bias: EMPTY_DECAYED_MEAN,
+        error: EMPTY_DECAYED_MEAN,
+      })),
     );
-    const blockAt = (position: number): number => hourBlockOf(utcHourAt(axis, position), params.hourBlocksPerDay);
+    const blockAt = (position: number): number =>
+      hourBlockOf(utcHourAt(axis, position), params.hourBlocksPerDay);
 
     const learn = (position: number): void => {
       const observed = observation[position] ?? Number.NaN;
@@ -61,7 +68,13 @@ export function simulateBlend(input: SimulationInput, params: BlendParams): Map<
           const corrected = results.get(lead)?.corrected[model]?.[position] ?? Number.NaN;
           if (state === undefined || !Number.isFinite(forecast)) return;
           state.bias = updateBias(state.bias, forecast, observed, hour, params.biasHalfLifeDays);
-          state.error = updateError(state.error, corrected, observed, hour, params.errorHalfLifeDays);
+          state.error = updateError(
+            state.error,
+            corrected,
+            observed,
+            hour,
+            params.errorHalfLifeDays,
+          );
         });
       }
     };
@@ -82,7 +95,10 @@ export function simulateBlend(input: SimulationInput, params: BlendParams): Map<
         values.push(corrected);
         errors.push(readDecayedMean(state.error, params.minSamples));
       });
-      const weights = computeWeights(errors, { exponent: params.weightExponent, errorFloor: params.errorFloor });
+      const weights = computeWeights(errors, {
+        exponent: params.weightExponent,
+        errorFloor: params.errorFloor,
+      });
       const blend = blendValues(values, weights);
       if (blend === null) return;
       result.blend[position] = blend.value;

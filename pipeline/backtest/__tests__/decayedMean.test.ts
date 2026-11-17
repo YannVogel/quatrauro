@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { describe, it } from 'node:test';
 
 import { EMPTY_DECAYED_MEAN, readDecayedMean, updateDecayedMean } from '../logic/decayedMean.ts';
 
@@ -14,7 +13,8 @@ describe('moyenne à pondération exponentielle', () => {
 
   it('rend la valeur commune quand toutes les valeurs sont égales', () => {
     let state = EMPTY_DECAYED_MEAN;
-    for (let hour = 0; hour < 100; hour += 1) state = updateDecayedMean(state, 1.5, hour, HALF_LIFE_DAYS);
+    for (let hour = 0; hour < 100; hour += 1)
+      state = updateDecayedMean(state, 1.5, hour, HALF_LIFE_DAYS);
     assert.ok(Math.abs((readDecayedMean(state, 1) ?? Number.NaN) - 1.5) < 1e-12);
   });
 

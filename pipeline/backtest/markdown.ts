@@ -24,13 +24,19 @@ export function formatGain(ratio: number): string {
 }
 
 export function formatInteger(value: number): string {
-  return Number.isFinite(value) ? String(Math.round(value)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : MISSING;
+  return Number.isFinite(value)
+    ? String(Math.round(value)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+    : MISSING;
 }
 
-export function markdownTable(headers: readonly string[], rows: readonly (readonly string[])[]): string {
+export function markdownTable(
+  headers: readonly string[],
+  rows: readonly (readonly string[])[],
+): string {
   const line = (cells: readonly string[]): string => `| ${cells.join(' | ')} |`;
   rows.forEach((row) => {
-    if (row.length !== headers.length) throw new Error(`Ligne de ${row.length} cellules pour ${headers.length} colonnes`);
+    if (row.length !== headers.length)
+      throw new Error(`Ligne de ${row.length} cellules pour ${headers.length} colonnes`);
   });
   return [line(headers), line(headers.map(() => '---')), ...rows.map(line)].join('\n');
 }

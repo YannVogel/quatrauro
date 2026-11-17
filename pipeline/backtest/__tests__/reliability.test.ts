@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { describe, it } from 'node:test';
 
 import {
   emptyReliabilityTable,
@@ -21,17 +20,30 @@ const OPTIONS = {
 const calm: Situation = { spread: 0.2, rainProbability: 0.02 };
 const split: Situation = { spread: 1.5, rainProbability: 0.02 };
 
-function feed(table: ReliabilityTable, situation: Situation, held: number, missed: number): ReliabilityTable {
+function feed(
+  table: ReliabilityTable,
+  situation: Situation,
+  held: number,
+  missed: number,
+): ReliabilityTable {
   let result = table;
-  for (let index = 0; index < held; index += 1) result = updateReliability(result, situation, true, OPTIONS);
-  for (let index = 0; index < missed; index += 1) result = updateReliability(result, situation, false, OPTIONS);
+  for (let index = 0; index < held; index += 1)
+    result = updateReliability(result, situation, true, OPTIONS);
+  for (let index = 0; index < missed; index += 1)
+    result = updateReliability(result, situation, false, OPTIONS);
   return result;
 }
 
 describe('indice de fiabilité', () => {
   it('range le désaccord et le signal de pluie en classes', () => {
-    assert.deepEqual([0.1, 0.5, 0.99, 1, 3].map((spread) => spreadClassOf(spread, OPTIONS.spreadThresholds)), [0, 1, 1, 2, 2]);
-    assert.deepEqual([0, 0.2, 0.5, 0.8, 0.95].map((probability) => rainClassOf(probability, OPTIONS)), [0, 1, 1, 1, 0]);
+    assert.deepEqual(
+      [0.1, 0.5, 0.99, 1, 3].map((spread) => spreadClassOf(spread, OPTIONS.spreadThresholds)),
+      [0, 1, 1, 2, 2],
+    );
+    assert.deepEqual(
+      [0, 0.2, 0.5, 0.8, 0.95].map((probability) => rainClassOf(probability, OPTIONS)),
+      [0, 1, 1, 1, 0],
+    );
   });
 
   it("est indisponible tant que l'historique est insuffisant", () => {
@@ -51,7 +63,9 @@ describe('indice de fiabilité', () => {
     let table = feed(emptyReliabilityTable(OPTIONS), calm, 60, 40);
     table = feed(table, { spread: 0.7, rainProbability: 0.02 }, 80, 20);
     table = feed(table, split, 30, 70);
-    const indices = [0.2, 0.7, 1.5].map((spread) => reliabilityIndex(table, { spread, rainProbability: 0.02 }, OPTIONS));
+    const indices = [0.2, 0.7, 1.5].map((spread) =>
+      reliabilityIndex(table, { spread, rainProbability: 0.02 }, OPTIONS),
+    );
     assert.ok((indices[1] ?? Number.NaN) <= (indices[0] ?? Number.NaN));
     assert.ok((indices[2] ?? Number.NaN) <= (indices[1] ?? Number.NaN));
   });

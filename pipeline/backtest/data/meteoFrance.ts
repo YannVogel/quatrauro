@@ -11,7 +11,8 @@ import type { City, Variable, VariableId } from '../config.ts';
 import { emptySeries, hourOfMeteoFranceTime } from './hours.ts';
 import type { HourAxis } from './hours.ts';
 
-const DATASET_URL = 'https://www.data.gouv.fr/api/1/datasets/donnees-climatologiques-de-base-horaires/';
+const DATASET_URL =
+  'https://www.data.gouv.fr/api/1/datasets/donnees-climatologiques-de-base-horaires/';
 const SEPARATOR = ';';
 const STATION_FIELD = 'NUM_POSTE';
 const TIME_FIELD = 'AAAAMMJJHH';
@@ -38,7 +39,9 @@ export function findLatestHourlyFileUrl(dataset: unknown, department: string): s
     .filter((url): url is string => typeof url === 'string' && pattern.test(url));
   const [url] = urls;
   if (url === undefined || urls.length > 1) {
-    throw new Error(`Fichier horaire récent introuvable ou ambigu pour le département ${department}`);
+    throw new Error(
+      `Fichier horaire récent introuvable ou ambigu pour le département ${department}`,
+    );
   }
   return url;
 }
@@ -49,7 +52,9 @@ export function createHourlyParser(
   variables: readonly Variable[],
   axis: HourAxis,
 ): { readonly readLine: (line: string) => void; readonly result: () => Observations } {
-  const series = Object.fromEntries(variables.map((variable) => [variable.id, emptySeries(axis)])) as Observations;
+  const series = Object.fromEntries(
+    variables.map((variable) => [variable.id, emptySeries(axis)]),
+  ) as Observations;
   let columns: Map<string, number> | undefined;
 
   const column = (name: string): number => {
@@ -75,9 +80,11 @@ export function createHourlyParser(
     if (position < 0 || position >= axis.length) return;
     for (const variable of variables) {
       const raw = fields[column(variable.observationField)] ?? '';
-      if (raw === '' || fields[column(`Q${variable.observationField}`)] === DOUBTFUL_QUALITY) continue;
+      if (raw === '' || fields[column(`Q${variable.observationField}`)] === DOUBTFUL_QUALITY)
+        continue;
       const value = Number(raw);
-      if (!Number.isFinite(value)) throw new Error(`Mesure inattendue pour ${variable.observationField} : « ${raw} »`);
+      if (!Number.isFinite(value))
+        throw new Error(`Mesure inattendue pour ${variable.observationField} : « ${raw} »`);
       const converted = variable.toUnit(value);
       if (converted !== null) series[variable.id][position] = converted;
     }
@@ -116,7 +123,10 @@ export async function loadObservations(
     await download(findLatestHourlyFileUrl(await dataset.json(), city.department), file);
   }
   const parser = createHourlyParser(city.station, variables, axis);
-  const lines = createInterface({ input: createReadStream(file).pipe(createGunzip()), crlfDelay: Infinity });
+  const lines = createInterface({
+    input: createReadStream(file).pipe(createGunzip()),
+    crlfDelay: Infinity,
+  });
   for await (const line of lines) parser.readLine(line);
   return parser.result();
 }

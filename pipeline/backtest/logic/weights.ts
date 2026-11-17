@@ -13,13 +13,17 @@ export type WeightOptions = {
  * modèle `i`, ou `null` s'il n'a pas assez d'historique : il reçoit alors un poids neutre,
  * égal à la moyenne des poids des modèles notés.
  */
-export function computeWeights(errors: readonly (number | null)[], options: WeightOptions): number[] {
+export function computeWeights(
+  errors: readonly (number | null)[],
+  options: WeightOptions,
+): number[] {
   if (errors.length === 0) return [];
   const raw = errors.map((error) =>
     error === null ? null : (1 / Math.max(error, options.errorFloor)) ** options.exponent,
   );
   const rated = raw.filter((weight): weight is number => weight !== null);
-  const neutral = rated.length === 0 ? 1 : rated.reduce((sum, weight) => sum + weight, 0) / rated.length;
+  const neutral =
+    rated.length === 0 ? 1 : rated.reduce((sum, weight) => sum + weight, 0) / rated.length;
   const filled = raw.map((weight) => weight ?? neutral);
   const total = filled.reduce((sum, weight) => sum + weight, 0);
   return filled.map((weight) => weight / total);

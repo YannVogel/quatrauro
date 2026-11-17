@@ -35,8 +35,16 @@ export async function loadCityData(
   for (const variable of variables) {
     forecasts[variable.id] = {};
     for (const model of models) {
-      if (model.historyLeadDays > MAX_LEAD_DAYS) throw new Error(`Portée inattendue pour ${model.id}`);
-      forecasts[variable.id][model.id] = await loadForecasts(cacheDir, city, model, variable, period, axis);
+      if (model.historyLeadDays > MAX_LEAD_DAYS)
+        throw new Error(`Portée inattendue pour ${model.id}`);
+      forecasts[variable.id][model.id] = await loadForecasts(
+        cacheDir,
+        city,
+        model,
+        variable,
+        period,
+        axis,
+      );
       onProgress(`${city.name} : ${model.name}, ${variable.label.toLowerCase()}`);
     }
   }

@@ -26,7 +26,11 @@ export type RainLeadEvaluation = {
   /** Annonce tirée de la moyenne simple des cumuls. */
   readonly simpleMean: Contingency;
   readonly models: Readonly<Record<string, Contingency>>;
-  readonly brier: { readonly blend: number; readonly bestPrevious: number; readonly climatology: number };
+  readonly brier: {
+    readonly blend: number;
+    readonly bestPrevious: number;
+    readonly climatology: number;
+  };
   /** Erreur absolue moyenne du cumul, en mm. */
   readonly amountError: { readonly simpleMean: number; readonly bestPrevious: number };
   readonly probabilities: readonly number[];
@@ -42,7 +46,11 @@ function contingencyOf(
 ): Contingency {
   return positions.reduce(
     (table, position) =>
-      addToContingency(table, announces(amounts[position] ?? Number.NaN), (observation[position] ?? Number.NaN) >= threshold),
+      addToContingency(
+        table,
+        announces(amounts[position] ?? Number.NaN),
+        (observation[position] ?? Number.NaN) >= threshold,
+      ),
     EMPTY_CONTINGENCY,
   );
 }
@@ -58,7 +66,9 @@ export function evaluateRain(
   const daily = level === 'daily';
   const toLevel = (series: Float64Array): Float64Array => (daily ? dailySum(series) : series);
   const observation = toLevel(input.observation);
-  const simulation = daily ? simulateDailyRain(input, settings) : simulateHourlyRain(input, settings);
+  const simulation = daily
+    ? simulateDailyRain(input, settings)
+    : simulateHourlyRain(input, settings);
   const hours = positionsOf(input.axis, range);
   const from = daily ? hours.from / HOURS_PER_DAY : hours.from;
   const to = daily ? hours.to / HOURS_PER_DAY : hours.to;
@@ -71,12 +81,18 @@ export function evaluateRain(
       .map((model, index) => ({ model, series: input.forecasts[index]?.[lead - 1] }))
       .filter((entry) => entry.model.historyLeadDays >= lead)
       .map((entry) => {
-        if (entry.series === undefined) throw new Error(`Série absente pour ${entry.model.id} à J+${lead}`);
+        if (entry.series === undefined)
+          throw new Error(`Série absente pour ${entry.model.id} à J+${lead}`);
         return { id: entry.model.id, series: toLevel(entry.series) };
       });
     const bestPrevious = toLevel(bestModelOnPreviousWindow(input, lead, BEST_MODEL_WINDOW));
     const positions = commonPositions(
-      [...expected.map((entry) => entry.series), bestPrevious, result.probability, result.meanAmount],
+      [
+        ...expected.map((entry) => entry.series),
+        bestPrevious,
+        result.probability,
+        result.meanAmount,
+      ],
       observation,
       from,
       to,
@@ -90,16 +106,37 @@ export function evaluateRain(
       lead,
       count: positions.length,
       rainyCount,
-      blend: contingencyOf(result.probability, observation, positions, (p) => p >= settings.announcementProbability, settings.threshold),
+      blend: contingencyOf(
+        result.probability,
+        observation,
+        positions,
+        (p) => p >= settings.announcementProbability,
+        settings.threshold,
+      ),
       bestPrevious: contingencyOf(bestPrevious, observation, positions, rains, settings.threshold),
-      simpleMean: contingencyOf(result.meanAmount, observation, positions, rains, settings.threshold),
+      simpleMean: contingencyOf(
+        result.meanAmount,
+        observation,
+        positions,
+        rains,
+        settings.threshold,
+      ),
       models: Object.fromEntries(
-        expected.map((entry) => [entry.id, contingencyOf(entry.series, observation, positions, rains, settings.threshold)]),
+        expected.map((entry) => [
+          entry.id,
+          contingencyOf(entry.series, observation, positions, rains, settings.threshold),
+        ]),
       ),
       brier: {
         blend: brierScore(probabilities, outcomes),
-        bestPrevious: brierScore(positions.map((position) => (rains(bestPrevious[position] ?? Number.NaN) ? 1 : 0)), outcomes),
-        climatology: brierScore(positions.map(() => climatology), outcomes),
+        bestPrevious: brierScore(
+          positions.map((position) => (rains(bestPrevious[position] ?? Number.NaN) ? 1 : 0)),
+          outcomes,
+        ),
+        climatology: brierScore(
+          positions.map(() => climatology),
+          outcomes,
+        ),
       },
       amountError: {
         simpleMean: scoreSeries(result.meanAmount, observation, positions).mae,
