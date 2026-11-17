@@ -32,7 +32,7 @@ export const fakeWeekScale = { min: 4, max: 18 };
 export const fakeWeek: readonly {
   readonly dayLabel: string;
   readonly spokenDay: string;
-  readonly condition: Condition;
+  readonly condition: Condition | null;
   readonly min: number | null;
   readonly max: number | null;
   readonly reliability: number | null;
@@ -59,11 +59,11 @@ export const fakeWeek: readonly {
   { dayLabel: 'Sam.', spokenDay: 'samedi', condition: 'cloudy', min: 12, max: 12, reliability: 45 },
   // Valeurs hors de l'échelle de la semaine.
   { dayLabel: 'Dim.', spokenDay: 'dimanche', condition: 'windy', min: 2, max: 20, reliability: 0 },
-  // Tout est absent.
+  // Tout est absent, condition comprise.
   {
     dayLabel: 'Lun.',
     spokenDay: 'lundi',
-    condition: 'snow',
+    condition: null,
     min: null,
     max: null,
     reliability: null,

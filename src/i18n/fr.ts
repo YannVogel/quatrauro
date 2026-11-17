@@ -8,10 +8,34 @@ export const fr = {
     tagline: 'Quatre vents, une seule prévision.',
   },
   home: {
-    placeholder: 'Les prévisions de Toulon et de Nice arrivent bientôt.',
-    openCatalog: 'Ouvrir le catalogue des composants',
-    /** Résumé de ce qui est affichable, sur l'écran provisoire. */
-    upcoming: (hours: number, days: number) => `${hours} heures et ${days} jours à venir`,
+    /** Ce que choisit le sélecteur du bloc d'état, pour les lecteurs d'écran. */
+    city: 'Ville',
+    /** « Mardi 17 novembre · vent 18 km/h ». */
+    dateAndWind: (day: string, wind: string) => `${day} · vent ${wind}`,
+    reliability: (percent: string) => `Fiabilité ${percent}`,
+    agreement: (agreeing: number, total: number) => {
+      if (agreeing === total) return total === 1 ? '1 modèle' : `${total} modèles d’accord`;
+      return `${agreeing} modèles sur ${total} d’accord`;
+    },
+    openModels: 'Voir ce que prévoit chaque modèle',
+    conditionUnavailable: 'Condition indisponible',
+    nextHours: 'Prochaines heures',
+    week: 'Les sept prochains jours',
+    openDay: (day: string) => `Ouvrir le détail de ${day}`,
+    links: {
+      reliability: 'Fiabilité des prévisions',
+      about: 'À propos des données',
+      catalog: 'Catalogue des composants',
+    },
+  },
+  /** Écrans qui ne sont pas encore écrits : ils disent qu'ils arrivent, et ramènent à l'accueil. */
+  pending: {
+    back: 'Retour',
+    body: 'Cet écran arrive bientôt.',
+    day: 'Détail du jour',
+    models: 'Les modèles',
+    reliability: 'Fiabilité',
+    about: 'À propos des données',
   },
   /** Écran de développement : il n'existe pas dans l'app distribuée. */
   catalog: {

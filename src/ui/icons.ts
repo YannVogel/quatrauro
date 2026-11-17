@@ -4,6 +4,7 @@
 
 import {
   ArrowLeft,
+  ChevronRight,
   Cloud,
   CloudLightning,
   CloudMoon,
@@ -31,6 +32,8 @@ export const icons = {
   snow: CloudSnow,
   wind: Wind,
   back: ArrowLeft,
+  /** « Ouvrir » : au bout d'une ligne qui mène à un autre écran. */
+  forward: ChevronRight,
   theme: SunMoon,
 } as const;
 

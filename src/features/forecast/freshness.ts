@@ -71,8 +71,8 @@ export type ForecastView =
       readonly forecast: ForecastFile;
       /** L'heure en cours et les suivantes. */
       readonly hours: readonly HourlyForecast[];
-      /** Aujourd'hui et les jours suivants. */
-      readonly days: readonly DailyForecast[];
+      /** Aujourd'hui et les jours suivants : jamais vide. */
+      readonly days: readonly [DailyForecast, ...DailyForecast[]];
       readonly updated: string;
       readonly isStale: boolean;
       readonly isRefreshing: boolean;
@@ -87,14 +87,14 @@ export function forecastView(published: PublishedData<ForecastFile>, now: Date):
     if (isLoading) return { status: 'loading' };
     return { status: 'empty', reason: error?.kind ?? 'none' };
   }
-  const days = upcomingDays(data.daily, now);
+  const [today, ...nextDays] = upcomingDays(data.daily, now);
   // Une prévision dont tous les jours sont passés n'a plus rien à dire.
-  if (days.length === 0) return { status: 'empty', reason: error?.kind ?? 'expired' };
+  if (today === undefined) return { status: 'empty', reason: error?.kind ?? 'expired' };
   return {
     status: 'ready',
     forecast: data,
     hours: upcomingHours(data.hourly, now),
-    days,
+    days: [today, ...nextDays],
     updated: updatedLabel(data.generatedAt, now),
     isStale: isStale(data.generatedAt, now),
     isRefreshing,

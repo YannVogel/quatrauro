@@ -1,30 +1,36 @@
-import { Link } from 'expo-router';
-import { RefreshControl, ScrollView } from 'react-native';
+import { useRouter } from 'expo-router';
+import { RefreshControl, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { strings } from '@/i18n';
+import { isCityId, useCurrentCity } from '@/lib/currentCity';
 import { useNow } from '@/lib/now';
-import { Text, makeStyles, useTheme } from '@/ui';
+import { Card, Text, makeStyles, useTheme } from '@/ui';
 import { CITIES } from '@shared/cities';
 
-import { forecastView } from '../freshness';
+import { ageLabel, forecastView } from '../freshness';
+import { homeContent } from '../home';
 import { useForecast } from '../hooks/useForecast';
-import { ForecastStatus } from './ForecastStatus';
+import { EmptyState } from './EmptyState';
+import { HomeHero } from './HomeHero';
+import { LinkRow } from './LinkRow';
+import { StaleBanner } from './StaleBanner';
+import { UpcomingHours } from './UpcomingHours';
+import { WeekCard } from './WeekCard';
 
-const [toulon, nice] = CITIES;
+/** Le sélecteur est alimenté par la configuration : aucune ville n'est nommée ici. */
+const CITY_OPTIONS = CITIES.map((city) => ({ id: city.id, label: city.name }));
 
-/** Écran provisoire : il sera remplacé par l'accueil d'une ville (M2-03). */
+/** Accueil d'une ville : le temps maintenant, dans les prochaines heures, et sur sept jours. */
 export function HomeScreen() {
   const styles = useStyles();
   const theme = useTheme();
+  const router = useRouter();
   const now = useNow();
-  const forecasts = [
-    { city: toulon, forecast: useForecast(toulon.id) },
-    { city: nice, forecast: useForecast(nice.id) },
-  ];
-  const refreshAll = (): void => {
-    for (const { forecast } of forecasts) void forecast.refresh();
-  };
+  const { city, selectCity } = useCurrentCity();
+  const forecast = useForecast(city.id);
+  const view = forecastView(forecast, now);
+  const content = view.status === 'ready' ? homeContent(view.hours, view.days) : null;
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -32,29 +38,70 @@ export function HomeScreen() {
         contentContainerStyle={styles.content}
         refreshControl={
           <RefreshControl
-            refreshing={forecasts.some(({ forecast }) => forecast.isRefreshing)}
-            onRefresh={refreshAll}
+            refreshing={forecast.isRefreshing}
+            onRefresh={() => void forecast.refresh()}
             tintColor={theme.colors.heroClear}
             colors={[theme.colors.heroClear]}
             progressBackgroundColor={theme.colors.card}
           />
         }
       >
-        <Text accessibilityRole="header" variant="displayL" numberOfLines={1} adjustsFontSizeToFit>
-          {strings.app.name}
-        </Text>
-        <Text variant="title">{strings.app.tagline}</Text>
-        <Text color="textMuted" style={styles.centered}>
-          {strings.home.placeholder}
-        </Text>
-        {forecasts.map(({ city, forecast }) => (
-          <ForecastStatus key={city.id} city={city} view={forecastView(forecast, now)} now={now} />
-        ))}
-        {__DEV__ ? (
-          <Link href="/dev/catalog" style={styles.link}>
-            <Text variant="bodyStrong">{strings.home.openCatalog}</Text>
-          </Link>
+        <HomeHero
+          cities={CITY_OPTIONS}
+          cityId={city.id}
+          onSelectCity={(cityId) => {
+            if (isCityId(cityId)) selectCity(cityId);
+          }}
+          content={content?.hero ?? null}
+          updated={
+            view.status === 'ready'
+              ? view.isRefreshing
+                ? strings.freshness.refreshing
+                : view.updated
+              : null
+          }
+          onOpenModels={() => router.push('/models')}
+        />
+
+        {view.status === 'loading' ? (
+          <Text color="textMuted" style={styles.centered}>
+            {strings.states.loading}
+          </Text>
         ) : null}
+        {view.status === 'empty' ? <EmptyState reason={view.reason} /> : null}
+
+        {view.status === 'ready' && content !== null ? (
+          <>
+            {view.isStale ? <StaleBanner age={ageLabel(view.forecast.generatedAt, now)} /> : null}
+            <UpcomingHours hours={content.hours} />
+            <WeekCard
+              days={content.week}
+              scale={content.scale}
+              onOpenDay={(date) => router.push({ pathname: '/day/[date]', params: { date } })}
+            />
+            {view.refreshError === null ? null : (
+              <Text variant="caption" color="textMuted" style={styles.centered}>
+                {strings.states.refreshFailed[view.refreshError]}
+              </Text>
+            )}
+          </>
+        ) : null}
+
+        <Card>
+          <View>
+            <LinkRow
+              label={strings.home.links.reliability}
+              onPress={() => router.push('/reliability')}
+            />
+            <LinkRow label={strings.home.links.about} onPress={() => router.push('/about')} />
+            {__DEV__ ? (
+              <LinkRow
+                label={strings.home.links.catalog}
+                onPress={() => router.push('/dev/catalog')}
+              />
+            ) : null}
+          </View>
+        </Card>
       </ScrollView>
     </SafeAreaView>
   );
@@ -62,17 +109,6 @@ export function HomeScreen() {
 
 const useStyles = makeStyles((theme) => ({
   screen: { flex: 1, backgroundColor: theme.colors.background },
-  content: {
-    flexGrow: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: theme.spacing.block,
-    padding: theme.spacing.screen,
-  },
+  content: { flexGrow: 1, gap: theme.spacing.block, padding: theme.spacing.screen },
   centered: { textAlign: 'center' },
-  link: {
-    minHeight: theme.sizes.touchTarget,
-    paddingHorizontal: theme.spacing.card,
-    textAlignVertical: 'center',
-  },
 }));

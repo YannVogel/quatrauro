@@ -112,6 +112,14 @@ describe('DayRow', () => {
     reliability: 95,
   } as const;
 
+  it('garde sa place à l’icône et dit « indisponible » quand la condition manque', async () => {
+    await renderWithTheme(<DayRow {...day} condition={null} onPress={jest.fn()} />);
+    expect(
+      screen.getByLabelText(`mardi, indisponible, de 9 à 16 degrés, fiabilité 95${NBSP}%`),
+    ).toBeOnTheScreen();
+    expect(screen.getByText('Mar.')).toBeOnTheScreen();
+  });
+
   it('affiche le jour, les températures et la fiabilité', async () => {
     await renderWithTheme(<DayRow {...day} onPress={jest.fn()} />);
     expect(screen.getByText('Mar.')).toBeOnTheScreen();
