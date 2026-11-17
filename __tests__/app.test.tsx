@@ -169,7 +169,7 @@ describe('navigation depuis l’accueil', () => {
   it('ouvre le détail du jour touché', async () => {
     await fireEvent.press(screen.getByText('Jeu.'));
     expect(screen).toHavePathname('/day/2026-11-19');
-    expect(screen.getByRole('header', { name: strings.pending.day })).toBeOnTheScreen();
+    expect(screen.getByRole('header', { name: 'Jeudi 19 novembre' })).toBeOnTheScreen();
   });
 
   it('ouvre « Les modèles » depuis la pastille de fiabilité', async () => {
@@ -188,6 +188,115 @@ describe('navigation depuis l’accueil', () => {
 
     await fireEvent.press(screen.getByRole('link', { name: home.links.about }));
     expect(screen).toHavePathname('/about');
+  });
+});
+
+describe('détail d’un jour', () => {
+  const dayHeroColor = (): unknown =>
+    StyleSheet.flatten(screen.getByTestId('day-hero').props.style).backgroundColor;
+  /** Ouvre directement le détail d'un jour, mercredi matin. */
+  async function openDay(date: string, files: Readonly<Record<string, Reply>> = allPublished) {
+    servePublished(files);
+    jest.useFakeTimers({ now: new Date(CLEAR_MORNING) });
+    await renderRouter('./app', { initialUrl: `/day/${date}` });
+    await loaded('Toulon');
+  }
+
+  it('jour de pluie : températures, résumé, fiabilité et début de la pluie selon chaque modèle', async () => {
+    await openDay('2026-11-19');
+    await loaded(conditions.rain);
+
+    expect(screen.getByRole('header', { name: 'Jeudi 19 novembre' })).toBeOnTheScreen();
+    expect(dayHeroColor()).toBe(themes.light.colors.heroRain);
+    expect(screen.getByLabelText('maximum 17 degrés, minimum 13 degrés')).toBeOnTheScreen();
+    expect(screen.getByText(`Pluie jusqu’à 6${NBSP}h`)).toBeOnTheScreen();
+    expect(screen.getByText(strings.day.reliability(`51${NBSP}%`))).toBeOnTheScreen();
+    expect(screen.getByText(strings.day.coverage(5))).toBeOnTheScreen();
+    expect(screen.getByLabelText(`${strings.day.stats.rain}, 8${NBSP}mm`)).toBeOnTheScreen();
+
+    const card = within(screen.getByTestId('disagreement-card'));
+    expect(card.getByRole('header', { name: strings.day.rainStart })).toBeOnTheScreen();
+    expect(card.getByText('AROME')).toBeOnTheScreen();
+    expect(card.getAllByLabelText('ARPEGE, pluie dès 0 heure').length).toBeGreaterThan(0);
+    expect(card.getAllByLabelText('IFS, pluie dès 2 heures').length).toBeGreaterThan(0);
+  });
+
+  it('décrit le graphique heure par heure aux lecteurs d’écran', async () => {
+    await openDay('2026-11-19');
+    await loaded(strings.day.hourly);
+    const chart = screen.getByRole('image', { name: /^0 heure : / });
+    expect(chart.props.accessibilityLabel).toMatch(
+      / ; 21 heures : \d+ degrés, risque de pluie \d+/,
+    );
+    expect(chart.props.accessibilityLabel.split(' ; ')).toHaveLength(8);
+  });
+
+  it('jour sec où les modèles sont d’accord : pas de carte de désaccord', async () => {
+    await openDay('2026-11-18');
+    await loaded(conditions.partlyCloudy);
+    expect(screen.getByRole('header', { name: 'Mercredi 18 novembre' })).toBeOnTheScreen();
+    expect(screen.queryByTestId('disagreement-card')).toBeNull();
+    expect(screen.getByLabelText(`${strings.day.stats.rain}, 0${NBSP}mm`)).toBeOnTheScreen();
+  });
+
+  it('jour lointain : seuls les modèles qui le couvrent sont cités', async () => {
+    await openDay('2026-11-22');
+    await loaded(strings.day.coverage(3));
+    const card = within(screen.getByTestId('disagreement-card'));
+    expect(card.getByText('IFS')).toBeOnTheScreen();
+    expect(card.getByText('GFS')).toBeOnTheScreen();
+    expect(card.queryByText('AROME')).toBeNull();
+    expect(card.queryByText('ARPEGE')).toBeNull();
+  });
+
+  it('valeurs indisponibles : « — » à l’écran, « indisponible » à la voix', async () => {
+    const toulon = published.forecast.toulon;
+    const partial = {
+      ...toulon,
+      daily: toulon.daily.map((day) =>
+        day.date === '2026-11-20'
+          ? {
+              ...day,
+              max: null,
+              windSpeedMax: null,
+              humidity: null,
+              reliability: null,
+              condition: null,
+            }
+          : day,
+      ),
+    };
+    await openDay('2026-11-20', { ...allPublished, 'forecast/toulon.json': { json: partial } });
+    await loaded(strings.home.conditionUnavailable);
+
+    expect(screen.getByLabelText('maximum indisponible, minimum 12 degrés')).toBeOnTheScreen();
+    expect(screen.getByLabelText(`${strings.day.stats.wind}, indisponible`)).toBeOnTheScreen();
+    expect(screen.getByLabelText(`${strings.day.stats.humidity}, indisponible`)).toBeOnTheScreen();
+    expect(screen.getByText(strings.day.reliability('—'))).toBeOnTheScreen();
+  });
+
+  it('jour passé ou absent : l’écran le dit, et ramène à l’accueil', async () => {
+    await openDay('2026-11-17');
+    await loaded(strings.day.goneTitle);
+    expect(screen.getByText(strings.day.gone)).toBeOnTheScreen();
+    expect(screen.queryByTestId('day-hero')).toBeNull();
+  });
+
+  it('une adresse qui n’est pas un jour est traitée comme un jour absent', async () => {
+    await openDay('demain');
+    await waitFor(() => expect(screen.getByText(strings.day.gone)).toBeOnTheScreen());
+  });
+
+  it('suit la ville courante', async () => {
+    await AsyncStorage.setItem('quatrauro-preference-city', 'nice');
+    servePublished(allPublished);
+    jest.useFakeTimers({ now: new Date(CLEAR_MORNING) });
+    await renderRouter('./app', { initialUrl: '/day/2026-11-19' });
+    await loaded('Nice');
+    // Jeudi à Nice : de 13 à 20 degrés.
+    await waitFor(() =>
+      expect(screen.getByLabelText('maximum 20 degrés, minimum 13 degrés')).toBeOnTheScreen(),
+    );
   });
 });
 

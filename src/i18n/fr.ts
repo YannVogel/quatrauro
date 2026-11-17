@@ -28,11 +28,32 @@ export const fr = {
       catalog: 'Catalogue des composants',
     },
   },
+  /** Détail d'un jour. */
+  day: {
+    back: 'Retour à l’accueil',
+    maximum: 'maximum',
+    minimum: 'minimum',
+    reliability: (percent: string) => `Fiabilité ${percent}`,
+    coverage: (models: number) =>
+      models === 1 ? '1 modèle couvre ce jour' : `${models} modèles couvrent ce jour`,
+    hourly: 'Heure par heure',
+    hourlyLegend: 'barre = risque de pluie',
+    /** Libellés courts : la vignette n'a pas la place d'en dire plus. Vent et ressenti sont les plus forts du jour. */
+    stats: { wind: 'Vent max', rain: 'Cumul', humidity: 'Humidité', feelsLike: 'Ressenti' },
+    rainStart: 'Début de la pluie selon les modèles',
+    noRain: 'pas de pluie',
+    spokenRainStart: (model: string, hour: string) => `${model}, pluie dès ${hour}`,
+    spokenNoRain: (model: string) => `${model}, pas de pluie`,
+    maxTemperature: 'Température maximale selon les modèles',
+    spokenMaxTemperature: (model: string, degrees: string) => `${model}, ${degrees}`,
+    /** Le jour demandé n'est pas, ou plus, dans la prévision. */
+    goneTitle: 'Ce jour n’est plus dans la prévision',
+    gone: 'Il est passé, ou trop lointain. Revenez à l’accueil pour voir les jours à venir.',
+  },
   /** Écrans qui ne sont pas encore écrits : ils disent qu'ils arrivent, et ramènent à l'accueil. */
   pending: {
     back: 'Retour',
     body: 'Cet écran arrive bientôt.',
-    day: 'Détail du jour',
     models: 'Les modèles',
     reliability: 'Fiabilité',
     about: 'À propos des données',
@@ -111,7 +132,7 @@ export const fr = {
   spoken: {
     degrees: (value: string) => `${value} ${value === '0' || value === '1' ? 'degré' : 'degrés'}`,
     temperatureRange: (min: string, max: string) => `de ${min} à ${max} degrés`,
-    hour: (hour: string) => `${hour} heures`,
+    hour: (hour: string) => `${hour} ${hour === '0' || hour === '1' ? 'heure' : 'heures'}`,
     rainRisk: (percent: string) => `risque de pluie ${percent}`,
     reliability: (percent: string) => `fiabilité ${percent}`,
     weight: (percent: string) => `poids ${percent}`,

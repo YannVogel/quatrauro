@@ -1,3 +1,4 @@
+export { DayScreen } from './components/DayScreen';
 export { EmptyState } from './components/EmptyState';
 export { HomeScreen } from './components/HomeScreen';
 export { PendingScreen } from './components/PendingScreen';

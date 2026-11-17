@@ -1,7 +1,8 @@
-import { PendingScreen } from '@/features/forecast';
-import { strings } from '@/i18n';
+import { useLocalSearchParams } from 'expo-router';
 
-/** Détail d'un jour : à écrire (M2-05). */
+import { DayScreen } from '@/features/forecast';
+
 export default function DayRoute() {
-  return <PendingScreen title={strings.pending.day} />;
+  const { date } = useLocalSearchParams<{ date?: string }>();
+  return <DayScreen date={date} />;
 }

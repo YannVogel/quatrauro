@@ -181,7 +181,7 @@ describe('HourlyChart', () => {
     await renderWithTheme(<HourlyChart columns={columns.slice(0, 2)} />);
     expect(
       screen.getByRole('image', {
-        name: `0 heures : 11 degrés, risque de pluie 0${NBSP}% ; 15 heures : 15 degrés, risque de pluie 80${NBSP}%`,
+        name: `0 heure : 11 degrés, risque de pluie 0${NBSP}% ; 15 heures : 15 degrés, risque de pluie 80${NBSP}%`,
       }),
     ).toBeOnTheScreen();
   });

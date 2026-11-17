@@ -8,3 +8,13 @@ export const STALE_FORECAST_AFTER_HOURS = 12;
 
 /** Nombre de vignettes de la rangée « prochaines heures » de l'accueil. */
 export const UPCOMING_HOURS_COUNT = 5;
+
+/** Pas des colonnes du graphique « heure par heure » du détail d'un jour, en heures. */
+export const DAY_CHART_STEP_HOURS = 3;
+
+/**
+ * À partir de quand les modèles sont « en désaccord » sur un jour, pour la carte du détail :
+ * deux heures d'écart sur le début de la pluie, ou deux degrés sur la température maximale.
+ */
+export const RAIN_START_DISAGREEMENT_HOURS = 2;
+export const MAX_TEMPERATURE_DISAGREEMENT = 2;
