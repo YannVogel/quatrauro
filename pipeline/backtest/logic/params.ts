@@ -13,4 +13,7 @@ export type BlendParams = {
   /** En dessous de ce nombre de paires, un modèle n'est ni corrigé ni noté. */
   readonly minSamples: number;
   readonly errorFloor: number;
+  /** Garde-fous : poids minimal et maximal d'un modèle. */
+  readonly minWeight: number;
+  readonly maxWeight: number;
 };

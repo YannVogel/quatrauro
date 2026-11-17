@@ -27,7 +27,9 @@ export const GRID = {
 /** Réglages que la grille n'explore pas : ceux en vigueur. */
 export const FIXED_PARAMS = {
   minSamples: BLEND_CONFIG.corrected.minSamples,
-  errorFloor: BLEND_CONFIG.corrected.errorFloor,
+  errorFloor: BLEND_CONFIG.corrected.weights.errorFloor,
+  minWeight: BLEND_CONFIG.corrected.weights.minWeight,
+  maxWeight: BLEND_CONFIG.corrected.weights.maxWeight,
 } as const;
 
 export type Candidate = {

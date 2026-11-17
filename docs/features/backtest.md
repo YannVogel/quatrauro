@@ -82,10 +82,11 @@ Grille de 640 combinaisons. La mesure est l'erreur absolue moyenne du mélange e
 | Heure de la journée | **24 blocs** (un par heure UTC) | 1, 4, 8, 24 | Le paramètre qui compte le plus : sans distinction d'heure, l'erreur monte de 3 % |
 | Découpage des échéances | **J+1, J+2, J+3, J+4–5, J+6–7** | par jour, ou regroupé | Équivalents ; le regroupement divise l'état à stocker |
 
-- La combinaison retenue fait 1,1950 °C ; la meilleure de la grille 1,1948 °C (fenêtre de 120 jours). À moins de 0,1 % d'écart, on garde la fenêtre la plus courte, qui réagit plus vite quand un modèle change.
-- Toute la grille tient entre 1,19 °C et 1,28 °C : **le résultat dépend peu du réglage fin**, ce qui limite le risque de surapprentissage.
+- La combinaison retenue fait 1,1950 °C ; la meilleure de la grille 1,1947 °C (fenêtre de 120 jours). À moins de 0,1 % d'écart, on garde la fenêtre la plus courte, qui réagit plus vite quand un modèle change.
+- Toute la grille tient entre 1,19 °C et 1,28 °C, et 106 des 640 combinaisons sont à moins de 1 % de la meilleure : **le résultat dépend peu du réglage fin**, ce qui limite le risque de surapprentissage.
 - **Tenir compte de l'heure paie**, comme le brief le supposait : le biais d'un modèle en bord de mer n'est pas le même à 5 h et à 15 h. Les blocs sont en heures UTC, parce que le biais suit le soleil et non l'heure légale.
-- Deux réglages fixes, non explorés : un modèle n'est ni corrigé ni noté avant 10 paires ; l'erreur utilisée pour les poids ne descend pas sous 0,05.
+- Réglages fixes, non explorés par la grille : un modèle n'est ni corrigé ni noté avant 10 paires ; l'erreur utilisée pour les poids ne descend pas sous 0,05 ; aucun modèle ne pèse moins de 5 % ni plus de 70 %.
+- Ces deux garde-fous ont été ajoutés après le spike, avec la pondération (M1-03), et tous les tableaux ont été régénérés. Ils ne changent ni l'erreur de la combinaison retenue (1,1950 °C avec ou sans eux), ni les tableaux de température de la période de validation, ni ceux de la pluie, ni le verdict ; ailleurs, quelques valeurs bougent d'un centième. Des bornes plus serrées (15 % et 60 %) dégradent l'erreur.
 
 Écart avec la proposition de départ : l'erreur récente est une **moyenne à pondération exponentielle**, pas une fenêtre glissante. L'état d'un modèle tient alors en quatre nombres au lieu d'une liste de jours, ce qui compte pour le fichier d'état du pipeline.
 
@@ -180,17 +181,19 @@ Le taux d'une situation rare est tiré vers le taux de sa tranche, et l'indice n
 | Indice annoncé | Jours | Indice moyen | Prévisions tenues |
 |---|---|---|---|
 | moins de 30 % | 52 | 27 % | 29 % |
-| 30 % à 40 % | 372 | 36 % | 45 % |
-| 40 % à 50 % | 396 | 45 % | 49 % |
+| 30 % à 40 % | 370 | 36 % | 45 % |
+| 40 % à 50 % | 398 | 45 % | 50 % |
 | 50 % à 60 % | 370 | 56 % | 61 % |
 | 60 % à 70 % | 496 | 65 % | 66 % |
-| 70 % à 80 % | 190 | 75 % | 73 % |
+| 70 % à 80 % | 190 | 76 % | 73 % |
 | 80 % à 90 % | 284 | 84 % | 82 % |
 | 90 % et plus | 416 | 94 % | 93 % |
 
-L'indice est calibré : quand il annonce 94 %, la prévision est tenue 93 fois sur 100. Le plus grand écart est de 10 points (classe 30–40 %), à la limite du critère.
+L'indice est calibré dans sa partie haute : quand il annonce 94 %, la prévision est tenue 93 fois sur 100, et au-dessus de 60 % l'écart ne dépasse pas 3 points. **Il est pessimiste dans sa partie basse** : quand il annonce 36 %, la prévision est tenue 45 fois sur 100, soit 9,6 points d'écart, à la limite du critère.
 
 **Critère chiffré pour M1-05** : dans chaque classe de dix points qui réunit au moins 50 jours, l'écart entre l'indice moyen et la part des prévisions tenues ne dépasse pas 10 points.
+
+Ce critère est tenu sur la période de validation, **de justesse** : 9,6 points dans la classe 30–40 %, tout le reste sous 6 points. L'écart va dans le sens de la prudence (l'indice annonce moins bien que ce qui arrive). Réduire ce pessimisme des valeurs basses est une piste pour M1-05.
 
 **Le point qui demande une décision.** Part des prévisions tenues sur l'année, et libellés avec les seuils proposés (Sûr à partir de 80 %, Probable à partir de 60 %) :
 

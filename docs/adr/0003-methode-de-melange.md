@@ -33,6 +33,7 @@ Pour chaque ville, variable, modèle, tranche d'échéance et heure UTC de la jo
 | Tranches d'échéance | J+1, J+2, J+3, J+4–5, J+6–7 |
 | Historique minimal | 10 paires ; en dessous, pas de correction et poids neutre |
 | Erreur plancher | 0,05 (dans l'unité de la variable) |
+| Garde-fous des poids | aucun modèle sous 5 % ni au-dessus de 70 % (ajoutés en M1-03 ; sans effet mesurable sur l'erreur du backtest) |
 | Délai de publication des observations | 30 heures |
 
 L'erreur récente est une moyenne à pondération exponentielle et non une fenêtre glissante : l'état d'un modèle tient en quatre nombres.
@@ -57,7 +58,7 @@ Proposés, **à valider par Yann** :
 - une prévision est « tenue » si le minimum et le maximum du jour sont à moins de 2 °C de l'observé et si l'annonce de pluie est juste ;
 - libellés : « Sûr » à partir de 80 %, « Probable » à partir de 60 %, « Incertain » en dessous.
 
-Critère de calibration pour M1-05 : dans chaque classe de dix points d'au moins 50 jours, l'écart entre l'indice moyen et la part des prévisions tenues ne dépasse pas 10 points. Il est rempli sur la période de validation.
+Critère de calibration pour M1-05 : dans chaque classe de dix points d'au moins 50 jours, l'écart entre l'indice moyen et la part des prévisions tenues ne dépasse pas 10 points. Il est rempli sur la période de validation, de justesse : 9,6 points dans la classe 30–40 %, où l'indice est pessimiste, et moins de 6 points ailleurs.
 
 ## Alternatives écartées
 

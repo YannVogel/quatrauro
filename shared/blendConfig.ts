@@ -16,12 +16,20 @@ export const BLEND_CONFIG = {
     biasHalfLifeDays: 20,
     /** Fenêtre de l'erreur récente qui fixe les poids : demi-vie, en jours. */
     errorHalfLifeDays: 60,
-    /** Les poids valent l'inverse de l'erreur, élevé à cet exposant. */
-    weightExponent: 4,
     /** En dessous de ce nombre de paires, un modèle n'est ni corrigé ni noté (poids neutre). */
     minSamples: 10,
-    /** Erreur plancher, dans l'unité de la variable : un modèle presque parfait n'écrase pas les autres. */
-    errorFloor: 0.05,
+    weights: {
+      /** Les poids valent l'inverse de l'erreur, élevé à cet exposant. */
+      exponent: 4,
+      /** Erreur plancher, dans l'unité de la variable : un modèle presque parfait n'écrase pas les autres. */
+      errorFloor: 0.05,
+      /**
+       * Garde-fous : aucun modèle ne pèse moins, ni plus, quelle que soit son erreur récente.
+       * Mesurés sans effet sur l'erreur du backtest ; des bornes plus serrées la dégradent.
+       */
+      minWeight: 0.05,
+      maxWeight: 0.7,
+    },
   },
 
   rain: {

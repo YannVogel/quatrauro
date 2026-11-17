@@ -17,6 +17,8 @@ const params: BlendParams = {
   leadGrouping: [[1], [2, 3]],
   minSamples: 10,
   errorFloor: 0.05,
+  minWeight: 0,
+  maxWeight: 1,
 };
 
 /** Générateur pseudo-aléatoire déterministe (LCG), pour des séries reproductibles. */
