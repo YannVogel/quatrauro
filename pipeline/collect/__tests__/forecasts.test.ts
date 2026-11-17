@@ -8,7 +8,7 @@ import type { ConfiguredCity } from '../../../shared/cities.ts';
 import { MODELS } from '../../../shared/models.ts';
 import type { ConfiguredModel } from '../../../shared/models.ts';
 import { collectForecasts } from '../forecasts.ts';
-import type { CollectOptions } from '../forecasts.ts';
+import type { CollectOptions } from '../options.ts';
 import { buildForecastUrl } from '../openMeteoForecast.ts';
 import { fakeHttp, fixtureJson, fixtureText, respond } from '../testing/fakeHttp.ts';
 

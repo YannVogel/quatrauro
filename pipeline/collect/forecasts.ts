@@ -6,7 +6,7 @@ import type { ConfiguredModel, ModelId } from '../../shared/models.ts';
 import { toInstant } from '../instant.ts';
 import type { CityForecasts, ModelForecast } from '../../shared/series.ts';
 import { HttpStatusError, httpGet } from './http.ts';
-import type { HttpOptions } from './http.ts';
+import type { CollectOptions } from './options.ts';
 import {
   UnattributedSeriesError,
   buildForecastUrl,
@@ -15,13 +15,6 @@ import {
 import type { ParsedForecast, ParsedModel } from './openMeteoForecast.ts';
 
 type Parsed = ParsedForecast<ConfiguredModel>;
-
-export type CollectOptions = {
-  readonly http: HttpOptions;
-  readonly now: () => Date;
-  /** Reçoit ce qui mérite d'être lu dans le journal du passage. */
-  readonly log: (message: string) => void;
-};
 
 const BAD_REQUEST = 400;
 

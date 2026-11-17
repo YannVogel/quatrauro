@@ -9,43 +9,19 @@ import { createGunzip } from 'node:zlib';
 
 import type { City } from '../../../shared/cities.ts';
 import type { Variable, VariableId } from '../config.ts';
+import {
+  DOUBTFUL_QUALITY,
+  HOURLY_DATASET_URL,
+  SEPARATOR,
+  STATION_FIELD,
+  TIME_FIELD,
+  findLatestHourlyFileUrl,
+  qualityFieldOf,
+} from '../../meteoFranceHourly.ts';
 import { emptySeries, hourOfMeteoFranceTime } from './hours.ts';
 import type { HourAxis } from './hours.ts';
 
-const DATASET_URL =
-  'https://www.data.gouv.fr/api/1/datasets/donnees-climatologiques-de-base-horaires/';
-const SEPARATOR = ';';
-const STATION_FIELD = 'NUM_POSTE';
-const TIME_FIELD = 'AAAAMMJJHH';
-/** Code qualité « donnée douteuse en cours de vérification » : la mesure n'est pas utilisée. */
-const DOUBTFUL_QUALITY = '2';
-
 export type Observations = Record<VariableId, Float64Array>;
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-/**
- * Adresse du fichier « deux dernières années » d'un département. Son nom porte ses années
- * (`H_83_latest-2025-2026.csv.gz`) : on la lit dans la fiche du jeu de données.
- */
-export function findLatestHourlyFileUrl(dataset: unknown, department: string): string {
-  if (!isRecord(dataset) || !Array.isArray(dataset.resources)) {
-    throw new Error('Fiche data.gouv.fr sans liste de ressources');
-  }
-  const pattern = new RegExp(`/H_${department}_latest-\\d{4}-\\d{4}\\.csv\\.gz$`);
-  const urls = dataset.resources
-    .map((resource) => (isRecord(resource) ? resource.url : undefined))
-    .filter((url): url is string => typeof url === 'string' && pattern.test(url));
-  const [url] = urls;
-  if (url === undefined || urls.length > 1) {
-    throw new Error(
-      `Fichier horaire récent introuvable ou ambigu pour le département ${department}`,
-    );
-  }
-  return url;
-}
 
 /** Lit les lignes d'une station dans un fichier horaire (texte CSV, première ligne = en-tête). */
 export function createHourlyParser(
@@ -70,7 +46,7 @@ export function createHourlyParser(
       [STATION_FIELD, TIME_FIELD].forEach(column);
       variables.forEach((variable) => {
         column(variable.observationField);
-        column(`Q${variable.observationField}`);
+        column(qualityFieldOf(variable.observationField));
       });
       return;
     }
@@ -81,7 +57,10 @@ export function createHourlyParser(
     if (position < 0 || position >= axis.length) return;
     for (const variable of variables) {
       const raw = fields[column(variable.observationField)] ?? '';
-      if (raw === '' || fields[column(`Q${variable.observationField}`)] === DOUBTFUL_QUALITY)
+      if (
+        raw === '' ||
+        fields[column(qualityFieldOf(variable.observationField))] === DOUBTFUL_QUALITY
+      )
         continue;
       const value = Number(raw);
       if (!Number.isFinite(value))
@@ -119,7 +98,7 @@ export async function loadObservations(
 ): Promise<Observations> {
   const file = path.join(cacheDir, 'meteo-france', `H_${city.station.department}_latest.csv.gz`);
   if (!(await exists(file))) {
-    const dataset = await fetch(DATASET_URL);
+    const dataset = await fetch(HOURLY_DATASET_URL);
     if (!dataset.ok) throw new Error(`Fiche data.gouv.fr inaccessible (${dataset.status})`);
     await download(findLatestHourlyFileUrl(await dataset.json(), city.station.department), file);
   }

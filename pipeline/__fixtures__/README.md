@@ -34,6 +34,12 @@ Données sous [Licence Ouverte 2.0](https://www.etalab.gouv.fr/licence-ouverte-o
 
 Ce sont des **extraits** : le fichier d'origine fait environ 20 Mo par département et contient toutes les stations. Les lignes conservées sont intactes (séparateur `;`, 200 colonnes et plus, champs vides pour les mesures absentes). Les deux extraits couvrent la même période que `previous-runs-toulon.json`, pour pouvoir apparier une prévision et une observation dans un test.
 
+## data.gouv.fr
+
+| Fichier | Origine |
+|---|---|
+| `data-gouv/dataset-hourly-excerpt.json` | Extrait de `GET https://www.data.gouv.fr/api/1/datasets/donnees-climatologiques-de-base-horaires/`, lu le 17/11/2026 vers 21 h UTC. La fiche liste 1 463 fichiers : l'extrait garde l'identité du jeu de données et les 31 fichiers des départements 83 et 06, avec leur titre, leur adresse et leur date de modification |
+
 ## Backtest
 
 | Fichier | Origine |

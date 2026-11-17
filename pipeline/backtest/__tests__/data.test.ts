@@ -12,7 +12,8 @@ import {
   hourOfOpenMeteoTime,
   utcHourAt,
 } from '../data/hours.ts';
-import { createHourlyParser, findLatestHourlyFileUrl } from '../data/meteoFrance.ts';
+import { findLatestHourlyFileUrl } from '../../meteoFranceHourly.ts';
+import { createHourlyParser } from '../data/meteoFrance.ts';
 import { buildPreviousRunsUrl, parsePreviousRuns } from '../data/openMeteo.ts';
 
 const fixtures = path.join(__dirname, '..', '..', '__fixtures__');
