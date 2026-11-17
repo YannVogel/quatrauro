@@ -56,6 +56,10 @@ npm run android
 
 La première compilation prend plusieurs minutes : elle génère le dossier `android/` (ignoré par git, voir « Continuous Native Generation » dans la documentation d'Expo) puis construit l'app. Les fois suivantes, `npm start` suffit tant que le code natif ne change pas.
 
+### Catalogue des composants
+
+En développement, l'écran d'accueil propose un lien « Ouvrir le catalogue des composants ». Le catalogue montre chaque composant du design system et chaque condition météo, avec leurs cas limites, et a sa propre bascule entre thème clair et thème sombre. Ses données sont fictives. Il n'existe pas dans l'app distribuée.
+
 ### Intégration continue
 
 Le workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) rejoue `npm run typecheck`, `npm run lint` et `npm test` sur chaque pull request et sur chaque push sur `main`, avec la version de Node de `.nvmrc`. Une PR ne se merge que si ce contrôle est vert.

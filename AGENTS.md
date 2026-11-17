@@ -22,6 +22,7 @@ Quatrauro est une app météo personnelle (Expo / React Native, Android) pour To
 - **Secrets** : aucune clé secrète dans l'app ni dans le repo (qui est public). Une éventuelle clé d'API d'observations vit dans les secrets GitHub Actions et dans `.env.local` (ignoré) ; un `.env.example` documente les variables.
 - **Chaînes UI** : toutes dans `src/i18n/fr.ts`, lues par `strings` (`@/i18n`) ; aucune chaîne en dur dans les composants. Ce que disent les lecteurs d'écran est dans `strings.spoken`.
 - **Nombres** : toujours mis en forme par `src/lib/format.ts` (virgule décimale, espace insécable avant `%` et les unités, `°` collé, vrai signe moins). Une valeur absente s'écrit « — » et se lit « indisponible ».
+- **Catalogue** : tout composant de `@/ui` et toute condition météo se montrent dans le catalogue (`/dev/catalog`, lien sur l'accueil en développement), avec leurs cas limites. Un composant ajouté ou modifié s'y vérifie à l'œil, dans les deux thèmes, avant la PR. Ses données sont fictives et vivent dans `src/features/catalog/__fixtures__/`. Hors développement (`__DEV__` faux), l'écran renvoie à l'accueil.
 - **Composants** : un composant de `@/ui` reçoit ses données par ses props et ne lit rien lui-même ; il accepte `null` pour toute valeur météo. Un composant graphique (barre, graphique, icône qui informe) a un `accessibilityLabel` qui dit sa valeur.
 - **Accessibilité de base** : cibles tactiles d'au moins 48 dp ; contrastes WCAG AA dans les deux thèmes ; `accessibilityLabel` sur les boutons-icônes et sur les graphiques ; une information n'est jamais portée par la seule couleur.
 - **Design system** : les écrans s'appuient sur les composants et les tokens de `@/ui` (`src/ui/theme.ts`). Aucune couleur en dur ailleurs (règle ESLint, testée). Chaque token existe en clair et en sombre. Le texte passe toujours par le composant `Text` de `@/ui` (variante et couleur du thème), les styles par `makeStyles`, le thème par `useTheme()`. Tout nouveau couple texte/fond s'ajoute à `CONTRAST_PAIRS`, que le test des contrastes parcourt.
@@ -54,10 +55,11 @@ Ce qui existe aujourd'hui :
 
 ```
 app/                        # routes Expo Router (uniquement des écrans et des layouts)
-  _layout.tsx  index.tsx
+  _layout.tsx  index.tsx  dev/catalog.tsx
 __tests__/                  # tests qui rendent l'app entière (renderRouter sur app/)
 src/
   features/forecast/        # components/HomeScreen.tsx (écran provisoire), index.ts
+  features/catalog/         # catalogue des composants (développement seulement) et ses données fictives
   ui/                       # theme.ts (tokens), ThemeProvider, Text, Icon, icons.ts, conditions.ts, contrast.ts
     components/             # les composants Riviera (HeroBlock, Card, DayRow, HourlyChart…), exportés par @/ui
     testing/                # renderWithTheme, pour les tests de composants

@@ -1,3 +1,4 @@
+import { Link } from 'expo-router';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -17,6 +18,11 @@ export function HomeScreen() {
         <Text color="textMuted" style={styles.centered}>
           {strings.home.placeholder}
         </Text>
+        {__DEV__ ? (
+          <Link href="/dev/catalog" style={styles.link}>
+            <Text variant="bodyStrong">{strings.home.openCatalog}</Text>
+          </Link>
+        ) : null}
       </View>
     </SafeAreaView>
   );
@@ -32,4 +38,9 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing.screen,
   },
   centered: { textAlign: 'center' },
+  link: {
+    minHeight: theme.sizes.touchTarget,
+    paddingHorizontal: theme.spacing.card,
+    textAlignVertical: 'center',
+  },
 }));
