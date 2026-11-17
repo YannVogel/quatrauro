@@ -20,7 +20,7 @@ Quatrauro est une app météo personnelle (Expo / React Native, Android) pour To
 - **Docs de fonctionnalité** : chaque fonctionnalité notable a sa fiche dans `docs/features/<fonctionnalite>.md` (comportement, données, écrans, cas limites), mise à jour dans le même commit et listée dans l'index [docs/features/README.md](docs/features/README.md).
 - **Workflow** : une issue → une branche → une PR (`Closes #n`), CI verte avant le merge. Yann relit et merge. Sur demande de Yann, les issues d'un milestone peuvent être regroupées dans une seule PR, avec un commit par issue.
 - **Secrets** : aucune clé secrète dans l'app ni dans le repo (qui est public). Une éventuelle clé d'API d'observations vit dans les secrets GitHub Actions et dans `.env.local` (ignoré) ; un `.env.example` documente les variables.
-- **Chaînes UI** : toutes dans `src/i18n/fr.ts`, lues par `strings` (`@/i18n`) ; aucune chaîne en dur dans les composants. Ce que disent les lecteurs d'écran est dans `strings.spoken`.
+- **Chaînes UI** : toutes dans `src/i18n/fr.ts`, lues par `strings` (`@/i18n`) ; aucune chaîne en dur dans les composants. Ce que disent les lecteurs d'écran est dans `strings.spoken`. Seule exception : les phrases que le pipeline publie (résumés d'un jour) sont dans `shared/texts/fr.ts`, puisque `shared/` n'importe rien de l'app.
 - **Nombres** : toujours mis en forme par `src/lib/format.ts` (virgule décimale, espace insécable avant `%` et les unités, `°` collé, vrai signe moins). Une valeur absente s'écrit « — » et se lit « indisponible ».
 - **Catalogue** : tout composant de `@/ui` et toute condition météo se montrent dans le catalogue (`/dev/catalog`, lien sur l'accueil en développement), avec leurs cas limites. Un composant ajouté ou modifié s'y vérifie à l'œil, dans les deux thèmes, avant la PR. Ses données sont fictives et vivent dans `src/features/catalog/__fixtures__/`. Hors développement (`__DEV__` faux), l'écran renvoie à l'accueil.
 - **Composants** : un composant de `@/ui` reçoit ses données par ses props et ne lit rien lui-même ; il accepte `null` pour toute valeur météo. Un composant graphique (barre, graphique, icône qui informe) a un `accessibilityLabel` qui dit sa valeur.
@@ -70,8 +70,9 @@ shared/                     # ne dépend de rien : ni Node, ni React Native, ni 
   cities.ts  models.ts  blendConfig.ts      # la configuration unique
   conditions.ts  variables.ts               # listes fermées : conditions météo, grandeurs prévues
   schemas.ts  series.ts                     # contrat des fichiers publiés (Zod), séries internes
-  parisTime.ts                              # décalage de Paris sur UTC, jours civils de Paris
-  blend/                                    # logique pure du mélange : biais, poids, mélange d'une heure, pluie, agrégats, indice de fiabilité
+  parisTime.ts  sun.ts                      # heure et jours civils de Paris ; jour ou nuit par la hauteur du soleil
+  texts/fr.ts                               # phrases publiées par le pipeline (résumés d'un jour)
+  blend/                                    # logique pure du mélange : biais, poids, mélange d'une heure, pluie, agrégats, indice de fiabilité, condition, résumé
 pipeline/
   __fixtures__/             # réponses réelles d'Open-Meteo et de Météo-France, et données dérivées du backtest, pour les tests
   backtest/                 # backtest du mélange : rejoue shared/blend/ sur l'historique

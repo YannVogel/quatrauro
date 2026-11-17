@@ -67,6 +67,36 @@ export const BLEND_CONFIG = {
     /** Seuils des libellés : « Sûr » à partir de `sure`, « Probable » à partir de `likely`. */
     labels: { sure: 0.8, likely: 0.6 },
   },
+
+  /** Condition météo d'une heure et d'un jour (docs/features/conditions-et-resumes.md). */
+  condition: {
+    /** Nébulosité, en % : ciel dégagé en dessous de la première, couvert à partir de la seconde. */
+    clearBelow: 25,
+    cloudyFrom: 75,
+    /** Vent fort : vent moyen ou rafales à partir de ces vitesses, en km/h. */
+    strongWind: 40,
+    strongGusts: 60,
+    /** Les précipitations tombent en neige jusqu'à cette température, en °C. */
+    snowUpTo: 1,
+    /** Un jour de pluie est « Pluie » à partir de tant d'heures de pluie, « Averses » en dessous. */
+    lastingRainHours: 6,
+    /** Un jour sec est « Vent fort » à partir de tant d'heures de vent fort en journée. */
+    windyHours: 3,
+  },
+
+  /** Découpage du jour pour les résumés, en heures de Paris. */
+  summary: {
+    /** La matinée va de la première heure à la seconde, l'après-midi de la seconde à `eveningFrom`. */
+    morningFrom: 6,
+    afternoonFrom: 12,
+    eveningFrom: 18,
+    /** La pluie « dure une grande partie de la journée » à partir de tant d'heures. */
+    mostOfDayHours: 12,
+    /** Une pluie déjà là à cette heure a commencé « dès le début du jour ». */
+    earlyUntil: 7,
+    /** Une pluie encore là à cette heure dure « jusqu'au soir ». */
+    lateFrom: 21,
+  },
 } as const;
 
 /** Plus longue échéance prévue, en jours. */
