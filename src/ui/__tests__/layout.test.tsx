@@ -170,3 +170,28 @@ describe('ScreenHeader', () => {
     expect(screen.getByRole('header', { name: title })).toHaveProp('numberOfLines', 1);
   });
 });
+
+describe('CitySwitch avec beaucoup de villes', () => {
+  const MANY = [
+    ...CITIES,
+    { id: 'hyeres', label: 'Hyères' },
+    { id: 'saint-raphael', label: 'Saint-Raphaël' },
+  ];
+
+  it('range les villes dans une rangée qui défile, sans dépasser son conteneur', async () => {
+    await renderWithTheme(
+      <CitySwitch
+        options={MANY}
+        selectedId="nice"
+        onSelect={jest.fn()}
+        accessibilityLabel="Ville"
+      />,
+    );
+    expect(screen.getAllByRole('radio')).toHaveLength(4);
+    expect(screen.getByRole('radio', { name: 'Saint-Raphaël' })).toBeOnTheScreen();
+    expect(screen.getByTestId('city-switch-scroll')).toHaveProp('horizontal', true);
+    // Sans cela, la rangée s'étire sur toute la hauteur du bloc (vu sur l'émulateur).
+    expect(screen.getByTestId('city-switch-scroll')).toHaveStyle({ flexGrow: 0 });
+    expect(screen.getByLabelText('Ville')).toHaveStyle({ maxWidth: '100%' });
+  });
+});

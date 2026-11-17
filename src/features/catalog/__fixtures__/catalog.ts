@@ -9,6 +9,13 @@ export const fakeCities = [
   { id: 'nice', label: 'Nice' },
 ];
 
+/** Assez de villes pour que le sélecteur déborde. Les deux dernières n'existent pas dans l'app. */
+export const fakeManyCities = [
+  ...fakeCities,
+  { id: 'hyeres', label: 'Hyères' },
+  { id: 'saint-raphael', label: 'Saint-Raphaël' },
+];
+
 export const fakeHero = {
   temperature: 16,
   reliability: 95,

@@ -60,6 +60,7 @@ export const fr = {
     notes: {
       missing: 'Valeurs absentes',
       fewColumns: 'Trois colonnes',
+      manyCities: 'Quatre villes : la rangée défile',
     },
     stats: { wind: 'Vent', rain: 'Cumul', humidity: 'Humidité', feelsLike: 'Ressenti' },
     reliability: (percent: string) => `Fiabilité ${percent}`,

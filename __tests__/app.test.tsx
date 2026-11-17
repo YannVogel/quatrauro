@@ -1,6 +1,7 @@
 // L'app entière, rendue sur de vrais fichiers publiés (calculés le 17 novembre 2026 à 21 h 27
 // UTC, soit 22 h 27 à Paris), servis par un faux réseau. L'horloge est figée pour chaque cas.
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StyleSheet } from 'react-native';
 import { act, cleanup, fireEvent, waitFor, within } from '@testing-library/react-native';
 import { renderRouter, screen } from 'expo-router/testing-library';
@@ -35,6 +36,8 @@ async function openAt(instant: string, files: Readonly<Record<string, Reply>> = 
 afterEach(async () => {
   await cleanup();
   queryClient.clear();
+  // Le stockage de l'appareil (ville consultée, cache) repart de zéro à chaque cas.
+  await AsyncStorage.clear();
 });
 
 const heroColor = (): unknown =>
@@ -202,6 +205,42 @@ describe('bascule entre les villes', () => {
     expect(screen.getByText(home.reliability(`88${NBSP}%`))).toBeOnTheScreen();
     expect(screen.getByText('4 modèles sur 5 d’accord')).toBeOnTheScreen();
     expect(screen.queryByText(states.loading)).toBeNull();
+  });
+});
+
+describe('ville mémorisée', () => {
+  /** Ferme l'app comme le ferait le système, sans vider le stockage de l'appareil. */
+  async function closeAndReopen(): Promise<void> {
+    await cleanup();
+    queryClient.clear();
+    await openAt(CLEAR_MORNING);
+  }
+
+  it('rouvre sur la dernière ville consultée', async () => {
+    await openAt(CLEAR_MORNING);
+    await loaded(conditions.clear);
+    await fireEvent.press(screen.getByRole('radio', { name: 'Nice' }));
+    await waitFor(async () =>
+      expect(await AsyncStorage.getItem('quatrauro-preference-city')).toBe('nice'),
+    );
+
+    await closeAndReopen();
+    await loaded(home.reliability(`88${NBSP}%`));
+    expect(screen.getByRole('radio', { name: 'Nice' })).toBeChecked();
+    expect(screen.getByRole('radio', { name: 'Toulon' })).not.toBeChecked();
+  });
+
+  it('ouvre sur la première ville de la configuration la toute première fois', async () => {
+    await openAt(CLEAR_MORNING);
+    await loaded(conditions.clear);
+    expect(screen.getByRole('radio', { name: 'Toulon' })).toBeChecked();
+  });
+
+  it('revient à la première ville quand celle qui était mémorisée n’existe plus', async () => {
+    await AsyncStorage.setItem('quatrauro-preference-city', 'marseille');
+    await openAt(CLEAR_MORNING);
+    await loaded(conditions.clear);
+    expect(screen.getByRole('radio', { name: 'Toulon' })).toBeChecked();
   });
 });
 

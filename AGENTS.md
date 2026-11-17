@@ -70,7 +70,7 @@ src/
   lib/                      # dates.ts (mise en forme à l'heure de Paris), format.ts (nombres à la française)
                             # env.ts (adresse des fichiers publiés), data.ts (lecture et validation), queryClient.tsx (cache)
                             # config.ts (réglages de l'app), now.ts (l'instant présent, pour ne rien montrer de passé)
-                            # currentCity.tsx (la ville que l'app montre)
+                            # currentCity.tsx (la ville que l'app montre), preferences.ts (réglages gardés sur l'appareil)
                             # __fixtures__/published/ : vrais fichiers publiés, pour les tests ; testing/ : faux réseau
   i18n/                     # fr.ts : toutes les chaînes UI ; index.ts : accès typé (`strings`)
 shared/                     # ne dépend de rien : ni Node, ni React Native, ni le reste du repo
