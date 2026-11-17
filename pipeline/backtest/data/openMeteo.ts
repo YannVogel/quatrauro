@@ -4,7 +4,9 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
-import type { City, Model, Variable } from '../config.ts';
+import type { City } from '../../../shared/cities.ts';
+import type { Model } from '../../../shared/models.ts';
+import type { Variable } from '../config.ts';
 import { emptySeries, hourOfOpenMeteoTime } from './hours.ts';
 import type { HourAxis } from './hours.ts';
 

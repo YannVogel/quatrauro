@@ -1,7 +1,9 @@
 // Jeu de données du backtest : observations et prévisions de chaque ville, sur un axe horaire commun.
 
-import { MAX_LEAD_DAYS } from '../config.ts';
-import type { City, Model, Variable, VariableId } from '../config.ts';
+import { MAX_LEAD_DAYS } from '../../../shared/blendConfig.ts';
+import type { City } from '../../../shared/cities.ts';
+import type { Model } from '../../../shared/models.ts';
+import type { Variable, VariableId } from '../config.ts';
 import { createHourAxis } from './hours.ts';
 import type { HourAxis } from './hours.ts';
 import { loadObservations } from './meteoFrance.ts';

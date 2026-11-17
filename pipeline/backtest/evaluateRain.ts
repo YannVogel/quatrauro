@@ -1,6 +1,6 @@
 // Évalue l'annonce de pluie du mélange et de ses références, à l'heure et à la journée.
 
-import type { Model } from './config.ts';
+import type { Model } from '../../shared/models.ts';
 import { bestModelOnPreviousWindow } from './baselines.ts';
 import type { CityData } from './data/dataset.ts';
 import { HOURS_PER_DAY } from './data/hours.ts';

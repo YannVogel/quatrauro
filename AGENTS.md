@@ -35,7 +35,8 @@ Quatrauro est une app météo personnelle (Expo / React Native, Android) pour To
 - **Sources** : les modèles sont lus via Open-Meteo, les observations dans les fichiers horaires publics de Météo-France ([ADR 0002](docs/adr/0002-sources-de-donnees-meteo.md), détail dans [docs/features/donnees.md](docs/features/donnees.md)). Aucune des deux sources ne demande de clé. Ne pas ajouter une source sans ADR.
 - **Usage non commercial** : l'accès gratuit d'Open-Meteo impose un usage non commercial et une attribution. Rester sobre sur les appels : le pipeline interroge l'API, jamais l'app.
 - **Attributions** : Open-Meteo et les fournisseurs des modèles et des observations restent cités dans l'écran « À propos des données ».
-- **Configuration unique** : les villes (`shared/cities.ts`), les modèles (`shared/models.ts`) et les paramètres du mélange (`shared/blendConfig.ts`) sont chacun dans un seul fichier. Aucune ville, aucun modèle, aucun paramètre en dur ailleurs. Ajouter une ville ne doit demander qu'une entrée de configuration.
+- **Configuration unique** : les villes (`shared/cities.ts`), les modèles (`shared/models.ts`) et les paramètres du mélange (`shared/blendConfig.ts`) sont chacun dans un seul fichier. Aucune ville, aucun modèle, aucun paramètre en dur ailleurs. Ajouter une ville ne doit demander qu'une entrée de configuration. Un paramètre de `blendConfig.ts` ne change pas sans relancer `npm run backtest`.
+- **Contrat** : la forme des fichiers publiés est dans `shared/schemas.ts` et décrite dans [docs/features/contrat-de-donnees.md](docs/features/contrat-de-donnees.md). Toute valeur météo y accepte `null`.
 - **Unités** : °C, km/h, mm, %. Les conversions se font à l'entrée du pipeline, une seule fois.
 - **Vent** : une direction se moyenne en composantes vectorielles, jamais en degrés.
 
@@ -46,7 +47,7 @@ Quatrauro est une app météo personnelle (Expo / React Native, Android) pour To
 - Le contrat des fichiers publiés est versionné (`schemaVersion`). Un changement incompatible incrémente la version ; l'app refuse proprement une version inconnue.
 - Les heures se manipulent dans le fuseau `Europe/Paris` : le décalage vient de `shared/parisTime.ts` (règle européenne de changement d'heure, sans `Intl` : [ADR 0005](docs/adr/0005-heure-de-paris-sans-base-de-fuseaux.md)), la mise en forme de `src/lib/dates.ts` (`date-fns`, locale `fr`, semaine commençant le lundi). Ne jamais lire le fuseau du téléphone ni appeler `Intl` pour situer une heure. Les fichiers publiés portent des instants en UTC. Les tests figent l'horloge et écrivent leurs instants en UTC, pour ne pas dépendre du fuseau de la machine. Attention aux changements d'heure dans les agrégats journaliers.
 - Le backtest (`pipeline/backtest/`) rejoue exactement le code de `shared/` : jamais une copie de la logique. Il ne doit jamais utiliser une information postérieure à l'instant simulé. En attendant M1, la logique pure du mélange vit dans `pipeline/backtest/logic/` ; M1 la déplace telle quelle dans `shared/`.
-- Le backtest s'exécute directement avec Node (`node pipeline/backtest/run.ts`), sans compilation : ses fichiers s'importent avec l'extension `.ts` et n'utilisent que la syntaxe TypeScript effaçable (pas d'`enum`, pas de propriétés de constructeur).
+- Le backtest s'exécute directement avec Node (`node pipeline/backtest/run.ts`), sans compilation. Dans `pipeline/` et dans `shared/`, les imports relatifs portent donc l'extension `.ts`, sans alias, et le code n'utilise que la syntaxe TypeScript effaçable (pas d'`enum`, pas de propriétés de constructeur). L'app, elle, importe `shared/` par l'alias `@shared/`.
 - `docs/features/backtest-resultats.md` est généré par le backtest : ne pas le modifier à la main.
 
 ## Structure
@@ -65,7 +66,12 @@ src/
     testing/                # renderWithTheme, pour les tests de composants
   lib/                      # dates.ts (mise en forme à l'heure de Paris), format.ts (nombres à la française)
   i18n/                     # fr.ts : toutes les chaînes UI ; index.ts : accès typé (`strings`)
-shared/                     # parisTime.ts (décalage de Paris sur UTC), conditions.ts (liste des conditions)
+shared/                     # ne dépend de rien : ni Node, ni React Native, ni le reste du repo
+  cities.ts  models.ts  blendConfig.ts      # la configuration unique
+  conditions.ts  variables.ts               # listes fermées : conditions météo, grandeurs prévues
+  schemas.ts  series.ts                     # contrat des fichiers publiés (Zod), séries internes
+  parisTime.ts                              # décalage de Paris sur UTC
+  blend/                                    # logique pure du mélange (elle arrive de pipeline/backtest/logic/)
 pipeline/
   __fixtures__/             # réponses réelles d'Open-Meteo et de Météo-France, pour les tests
   backtest/                 # backtest du mélange ; sa logique pure est dans backtest/logic/
@@ -84,7 +90,6 @@ Ce qui s'y ajoutera, là et pas ailleurs :
 src/features/<feature>/     # forecast (accueil, détail d'un jour), models, reliability, about
   components/ hooks/ api/ __tests__/ index.ts
 src/lib/                    # env.ts, queryClient.ts, data.ts (lecture des JSON publiés)
-shared/                     # schémas Zod, cities.ts, models.ts, blendConfig.ts, logique pure du mélange
 pipeline/                   # collect/ (prévisions, observations), archive/, verify/, blend/, publish/
 ```
 

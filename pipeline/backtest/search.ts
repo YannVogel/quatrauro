@@ -1,7 +1,9 @@
 // Recherche des paramètres du mélange : on essaie une grille de valeurs et on garde la
 // combinaison qui donne la plus petite erreur sur la période de sélection.
 
-import type { Model, VariableId } from './config.ts';
+import { BLEND_CONFIG } from '../../shared/blendConfig.ts';
+import type { Model } from '../../shared/models.ts';
+import type { VariableId } from './config.ts';
 import type { CityData } from './data/dataset.ts';
 import { buildInput, computeBaselines, evaluateLead, leadsToEvaluate } from './evaluate.ts';
 import type { DateRange } from './evaluate.ts';
@@ -22,7 +24,11 @@ export const GRID = {
   leadGrouping: Object.keys(LEAD_GROUPINGS),
 } as const;
 
-export const FIXED_PARAMS = { minSamples: 10, errorFloor: 0.05 } as const;
+/** Réglages que la grille n'explore pas : ceux en vigueur. */
+export const FIXED_PARAMS = {
+  minSamples: BLEND_CONFIG.corrected.minSamples,
+  errorFloor: BLEND_CONFIG.corrected.errorFloor,
+} as const;
 
 export type Candidate = {
   readonly biasHalfLifeDays: number;

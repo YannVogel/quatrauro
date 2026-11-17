@@ -1,6 +1,6 @@
 // Section « pluie » du rapport : réglage, annonce pluie / pas de pluie, probabilité, cumul.
 
-import { MODELS } from '../config.ts';
+import { MODELS } from '../../../shared/models.ts';
 import { evaluateRain } from '../evaluateRain.ts';
 import type { RainLeadEvaluation, RainLevel } from '../evaluateRain.ts';
 import type { LeadGrouping } from '../logic/grouping.ts';

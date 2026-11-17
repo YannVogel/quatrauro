@@ -2,7 +2,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
-import { CITIES, MODELS, VARIABLES } from '../config.ts';
+import { CITIES } from '../../../shared/cities.ts';
+import { MODELS } from '../../../shared/models.ts';
+import { VARIABLES } from '../config.ts';
 import {
   createHourAxis,
   dateAt,
@@ -111,7 +113,7 @@ describe('fichier horaire de Météo-France', () => {
   };
 
   it('lit les mesures de la station et les convertit', () => {
-    const observations = parse('meteo-france/hourly-toulon-83137001.csv', toulon.station);
+    const observations = parse('meteo-france/hourly-toulon-83137001.csv', toulon.station.id);
     // Première ligne de l'extrait : T = 14,1 °C, FF = 5,4 m/s, FXI = 13,5 m/s, RR1 = 0,0 mm.
     assert.equal(observations.temperature[0], 14.1);
     assert.ok(Math.abs((observations.windSpeed[0] ?? Number.NaN) - 19.44) < 1e-9);
@@ -121,12 +123,12 @@ describe('fichier horaire de Météo-France', () => {
   });
 
   it('laisse absente une variable que la station ne mesure pas', () => {
-    const observations = parse('meteo-france/hourly-toulon-83137001.csv', toulon.station);
+    const observations = parse('meteo-france/hourly-toulon-83137001.csv', toulon.station.id);
     assert.ok(observations.cloudCover.every((value) => Number.isNaN(value)));
   });
 
   it('convertit la nébulosité en pourcentage', () => {
-    const observations = parse('meteo-france/hourly-nice-06088001.csv', nice.station);
+    const observations = parse('meteo-france/hourly-nice-06088001.csv', nice.station.id);
     const measured = [...observations.cloudCover].filter((value) => Number.isFinite(value));
     assert.ok(measured.length > 0);
     assert.ok(measured.every((value) => value >= 0 && value <= 100 && value % 12.5 === 0));
@@ -134,7 +136,7 @@ describe('fichier horaire de Météo-France', () => {
 
   it('ignore les autres stations et les mesures douteuses', () => {
     assert.ok(
-      parse('meteo-france/hourly-nice-06088001.csv', toulon.station).temperature.every((value) =>
+      parse('meteo-france/hourly-nice-06088001.csv', toulon.station.id).temperature.every((value) =>
         Number.isNaN(value),
       ),
     );
