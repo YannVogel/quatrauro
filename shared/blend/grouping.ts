@@ -13,3 +13,9 @@ export function hourBlockOf(utcHour: number, blocksPerDay: number): number {
   }
   return Math.floor(utcHour / (HOURS_PER_DAY / blocksPerDay));
 }
+
+/** Rang de la tranche qui contient cette échéance, ou `null` si aucune ne la contient. */
+export function leadBucketOf(leadDays: number, grouping: LeadGrouping): number | null {
+  const index = grouping.findIndex((leads) => leads.includes(leadDays));
+  return index === -1 ? null : index;
+}
