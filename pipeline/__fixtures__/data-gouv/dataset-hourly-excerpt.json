@@ -1,0 +1,225 @@
+{
+  "id": "6569b4473bedf2e7abad3b72",
+  "title": "Données climatologiques de base - horaires",
+  "slug": "donnees-climatologiques-de-base-horaires",
+  "license": "lov2",
+  "resources": [
+    {
+      "id": "ce09b9de-e6e4-4411-a6d0-3e6f282b1892",
+      "title": "HOR_departement_06_periode_1880-1889",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_06_1880-1889.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-24T19:43:39+00:00"
+    },
+    {
+      "id": "0ae7a372-6cf7-435d-b960-2b63afebfaa3",
+      "title": "HOR_departement_06_periode_1890-1899",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_06_1890-1899.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-24T19:42:20+00:00"
+    },
+    {
+      "id": "f603ba0a-1efc-40cc-a4ce-6219586b16ab",
+      "title": "HOR_departement_06_periode_1900-1909",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_06_1900-1909.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-24T19:43:12+00:00"
+    },
+    {
+      "id": "c4c80924-c656-4d8a-967e-855f2c8297a4",
+      "title": "HOR_departement_06_periode_1910-1919",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_06_1910-1919.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-24T19:43:44+00:00"
+    },
+    {
+      "id": "5ff26178-5a78-48a3-a8b8-38dae7739885",
+      "title": "HOR_departement_06_periode_1920-1929",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_06_1920-1929.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-24T19:45:11+00:00"
+    },
+    {
+      "id": "4c905695-c089-4fd2-8a02-603706a95140",
+      "title": "HOR_departement_06_periode_1930-1939",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_06_1930-1939.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-24T19:45:58+00:00"
+    },
+    {
+      "id": "f1860fe7-a84b-47c4-acc3-20b93761c694",
+      "title": "HOR_departement_06_periode_1940-1949",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_06_1940-1949.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-24T19:47:07+00:00"
+    },
+    {
+      "id": "0861995a-4f63-417a-b4c8-1d60b3e9bb16",
+      "title": "HOR_departement_06_periode_1950-1959",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_06_1950-1959.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-24T19:49:37+00:00"
+    },
+    {
+      "id": "b7411f1b-3fe3-4e00-bc0b-9aa0e8c34bb0",
+      "title": "HOR_departement_06_periode_1960-1969",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_06_1960-1969.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-24T19:49:17+00:00"
+    },
+    {
+      "id": "902beef4-494c-4662-afb4-a2282a1cfeb5",
+      "title": "HOR_departement_06_periode_1970-1979",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_06_1970-1979.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-24T19:49:22+00:00"
+    },
+    {
+      "id": "5fcf24d5-f125-4109-affb-29efad8fbc15",
+      "title": "HOR_departement_06_periode_1980-1989",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_06_1980-1989.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-24T19:49:51+00:00"
+    },
+    {
+      "id": "460c7d2a-ab4b-4fad-98b3-566d7586d83f",
+      "title": "HOR_departement_06_periode_1990-1999",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_06_1990-1999.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-24T19:50:19+00:00"
+    },
+    {
+      "id": "9b765ee8-d46c-495d-9b7c-806c3cccb05a",
+      "title": "HOR_departement_06_periode_2000-2009",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_06_2000-2009.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-24T19:51:04+00:00"
+    },
+    {
+      "id": "1d8d01e1-b83f-4a46-b73b-d3e429fe887b",
+      "title": "HOR_departement_06_periode_2010-2019",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_06_2010-2019.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-24T19:52:03+00:00"
+    },
+    {
+      "id": "ab53afc4-ad61-482b-a1ec-1f5f34df2930",
+      "title": "HOR_departement_06_periode_2020-2024",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_06_previous-2020-2024.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-10-02T05:56:27+00:00"
+    },
+    {
+      "id": "1eb49075-5855-4390-a23f-0ecae7113fbd",
+      "title": "HOR_departement_06_periode_2025-2026",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_06_latest-2025-2026.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-11-17T06:43:50+00:00"
+    },
+    {
+      "id": "adee3759-b020-453b-b118-cb89fa1f56c6",
+      "title": "HOR_departement_83_periode_1890-1899",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_83_1890-1899.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-25T07:18:27+00:00"
+    },
+    {
+      "id": "e3f1d289-e907-472d-8804-90065ed8c273",
+      "title": "HOR_departement_83_periode_1900-1909",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_83_1900-1909.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-25T07:18:32+00:00"
+    },
+    {
+      "id": "5a9b8fbc-99cb-4b69-8a78-b7b8fc43e750",
+      "title": "HOR_departement_83_periode_1910-1919",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_83_1910-1919.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-25T07:18:41+00:00"
+    },
+    {
+      "id": "a64df9a5-bd13-45c0-8149-d94fe5b49705",
+      "title": "HOR_departement_83_periode_1920-1929",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_83_1920-1929.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-25T07:21:19+00:00"
+    },
+    {
+      "id": "6bf6a06d-1f07-4a67-a516-f111d985e0bd",
+      "title": "HOR_departement_83_periode_1930-1939",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_83_1930-1939.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-25T07:19:56+00:00"
+    },
+    {
+      "id": "3103d658-bb3c-42b7-833c-dad98f7122f1",
+      "title": "HOR_departement_83_periode_1940-1949",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_83_1940-1949.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-25T07:20:08+00:00"
+    },
+    {
+      "id": "2e5a0d2b-72a3-4f9d-913b-5966ecbdd3d6",
+      "title": "HOR_departement_83_periode_1950-1959",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_83_1950-1959.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-25T07:20:19+00:00"
+    },
+    {
+      "id": "b08bce64-f5e7-4ff8-91a7-2f04a6fffda6",
+      "title": "HOR_departement_83_periode_1960-1969",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_83_1960-1969.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-25T07:21:07+00:00"
+    },
+    {
+      "id": "ca569218-fbd0-46bd-bc53-407546570025",
+      "title": "HOR_departement_83_periode_1970-1979",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_83_1970-1979.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-25T07:21:21+00:00"
+    },
+    {
+      "id": "6dfabed9-5a46-4031-9326-7fbad18f7a7e",
+      "title": "HOR_departement_83_periode_1980-1989",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_83_1980-1989.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-25T07:21:36+00:00"
+    },
+    {
+      "id": "1f127939-1289-4eea-ab50-af1f52aae375",
+      "title": "HOR_departement_83_periode_1990-1999",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_83_1990-1999.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-25T07:21:48+00:00"
+    },
+    {
+      "id": "07f379b2-0dac-4ab8-9e37-126a6e8601b8",
+      "title": "HOR_departement_83_periode_2000-2009",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_83_2000-2009.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-25T07:22:10+00:00"
+    },
+    {
+      "id": "b2b467e2-b7d5-47ca-82c7-dbad1473e5e0",
+      "title": "HOR_departement_83_periode_2010-2019",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_83_2010-2019.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-06-25T07:23:09+00:00"
+    },
+    {
+      "id": "41a5a7eb-665a-47cc-be20-92353589ecf9",
+      "title": "HOR_departement_83_periode_2020-2024",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_83_previous-2020-2024.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-10-02T06:06:26+00:00"
+    },
+    {
+      "id": "9e6bec25-d7a7-4d25-9b5f-f06e4b935b96",
+      "title": "HOR_departement_83_periode_2025-2026",
+      "url": "https://meteofrance.s3.sbg.io.cloud.ovh.net/data/synchro_ftp/BASE/HOR/H_83_latest-2025-2026.csv.gz",
+      "format": "csv.gz",
+      "last_modified": "2026-11-17T06:49:08+00:00"
+    }
+  ]
+}

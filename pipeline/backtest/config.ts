@@ -3,6 +3,7 @@
 // variables avec les deux sources et la période rejouée.
 
 import type { Model } from '../../shared/models.ts';
+import { METEO_FRANCE_FIELDS } from '../meteoFranceHourly.ts';
 import { OPEN_METEO_NAMES } from '../openMeteoNames.ts';
 
 /** Candidat écarté par l'ADR 0002 faute d'historique complet ; évalué à part par le backtest. */
@@ -30,60 +31,54 @@ export type Variable = {
   readonly toUnit: (raw: number) => number | null;
 };
 
-const identity = (raw: number): number => raw;
-const metresPerSecondToKmh = (raw: number): number => raw * 3.6;
-const SKY_OBSCURED_OKTAS = 9;
-const oktasToPercent = (raw: number): number | null =>
-  raw === SKY_OBSCURED_OKTAS ? null : raw * 12.5;
-
 export const VARIABLES: readonly Variable[] = [
   {
     id: 'temperature',
     label: 'Température',
     unit: '°C',
     openMeteoName: OPEN_METEO_NAMES.temperature,
-    observationField: 'T',
-    toUnit: identity,
+    observationField: METEO_FRANCE_FIELDS.temperature.field,
+    toUnit: METEO_FRANCE_FIELDS.temperature.toUnit,
   },
   {
     id: 'humidity',
     label: 'Humidité',
     unit: '%',
     openMeteoName: OPEN_METEO_NAMES.humidity,
-    observationField: 'U',
-    toUnit: identity,
+    observationField: METEO_FRANCE_FIELDS.humidity.field,
+    toUnit: METEO_FRANCE_FIELDS.humidity.toUnit,
   },
   {
     id: 'windSpeed',
     label: 'Vent moyen',
     unit: 'km/h',
     openMeteoName: OPEN_METEO_NAMES.windSpeed,
-    observationField: 'FF',
-    toUnit: metresPerSecondToKmh,
+    observationField: METEO_FRANCE_FIELDS.windSpeed.field,
+    toUnit: METEO_FRANCE_FIELDS.windSpeed.toUnit,
   },
   {
     id: 'windGusts',
     label: 'Rafales',
     unit: 'km/h',
     openMeteoName: OPEN_METEO_NAMES.windGusts,
-    observationField: 'FXI',
-    toUnit: metresPerSecondToKmh,
+    observationField: METEO_FRANCE_FIELDS.windGusts.field,
+    toUnit: METEO_FRANCE_FIELDS.windGusts.toUnit,
   },
   {
     id: 'cloudCover',
     label: 'Nébulosité',
     unit: '%',
     openMeteoName: OPEN_METEO_NAMES.cloudCover,
-    observationField: 'N',
-    toUnit: oktasToPercent,
+    observationField: METEO_FRANCE_FIELDS.cloudCover.field,
+    toUnit: METEO_FRANCE_FIELDS.cloudCover.toUnit,
   },
   {
     id: 'precipitation',
     label: 'Précipitations',
     unit: 'mm',
     openMeteoName: OPEN_METEO_NAMES.precipitation,
-    observationField: 'RR1',
-    toUnit: identity,
+    observationField: METEO_FRANCE_FIELDS.precipitation.field,
+    toUnit: METEO_FRANCE_FIELDS.precipitation.toUnit,
   },
 ];
 
