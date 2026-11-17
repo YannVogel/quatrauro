@@ -1,16 +1,42 @@
 import { Link } from 'expo-router';
-import { View } from 'react-native';
+import { RefreshControl, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { strings } from '@/i18n';
-import { Text, makeStyles } from '@/ui';
+import { Text, makeStyles, useTheme } from '@/ui';
+import { CITIES } from '@shared/cities';
+
+import { useForecast } from '../hooks/useForecast';
+import { DataStatus } from './DataStatus';
+
+const [toulon, nice] = CITIES;
 
 /** Écran provisoire : il sera remplacé par l'accueil d'une ville (M2-03). */
 export function HomeScreen() {
   const styles = useStyles();
+  const theme = useTheme();
+  const forecasts = [
+    { city: toulon, forecast: useForecast(toulon.id) },
+    { city: nice, forecast: useForecast(nice.id) },
+  ];
+  const refreshAll = (): void => {
+    for (const { forecast } of forecasts) void forecast.refresh();
+  };
+
   return (
     <SafeAreaView style={styles.screen}>
-      <View style={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={forecasts.some(({ forecast }) => forecast.isRefreshing)}
+            onRefresh={refreshAll}
+            tintColor={theme.colors.heroClear}
+            colors={[theme.colors.heroClear]}
+            progressBackgroundColor={theme.colors.card}
+          />
+        }
+      >
         <Text accessibilityRole="header" variant="displayL" numberOfLines={1} adjustsFontSizeToFit>
           {strings.app.name}
         </Text>
@@ -18,12 +44,15 @@ export function HomeScreen() {
         <Text color="textMuted" style={styles.centered}>
           {strings.home.placeholder}
         </Text>
+        {forecasts.map(({ city, forecast }) => (
+          <DataStatus key={city.id} city={city} forecast={forecast} />
+        ))}
         {__DEV__ ? (
           <Link href="/dev/catalog" style={styles.link}>
             <Text variant="bodyStrong">{strings.home.openCatalog}</Text>
           </Link>
         ) : null}
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -31,7 +60,7 @@ export function HomeScreen() {
 const useStyles = makeStyles((theme) => ({
   screen: { flex: 1, backgroundColor: theme.colors.background },
   content: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: theme.spacing.block,

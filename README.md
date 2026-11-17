@@ -111,6 +111,19 @@ npm start            # puis ouvrir l'app installée sur le téléphone
 
 Sur un émulateur, `npm run android` suffit et ne passe pas par EAS.
 
+### Lire des données locales
+
+Par défaut, l'app lit les fichiers publiés sur la branche `data`. Pour lui faire lire des fichiers produits sur la machine de développement :
+
+```bash
+npm run pipeline                                   # écrit dans .data/
+python3 -m http.server 8787 --directory .data      # les sert sur le port 8787
+echo 'EXPO_PUBLIC_DATA_URL=http://10.0.2.2:8787' > .env.local
+npm run android
+```
+
+`10.0.2.2` est le nom de la machine de développement vu depuis l'émulateur Android. `.env.local` est ignoré par git ; le supprimer pour revenir à l'adresse par défaut. Détail : [docs/features/lecture-des-donnees.md](docs/features/lecture-des-donnees.md).
+
 ### Catalogue des composants
 
 En développement, l'écran d'accueil propose un lien « Ouvrir le catalogue des composants ». Le catalogue montre chaque composant du design system et chaque condition météo, avec leurs cas limites, et a sa propre bascule entre thème clair et thème sombre. Ses données sont fictives. Il n'existe pas dans l'app distribuée.

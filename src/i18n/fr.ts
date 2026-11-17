@@ -10,6 +10,13 @@ export const fr = {
   home: {
     placeholder: 'Les prévisions de Toulon et de Nice arrivent bientôt.',
     openCatalog: 'Ouvrir le catalogue des composants',
+    /** État des données reçues, sur l'écran provisoire. */
+    data: {
+      computedAt: (when: string) => `Prévision calculée ${when}`,
+      loading: 'Chargement de la prévision…',
+      none: 'Aucune prévision reçue',
+      refreshFailed: 'Dernière mise à jour impossible',
+    },
   },
   /** Écran de développement : il n'existe pas dans l'app distribuée. */
   catalog: {

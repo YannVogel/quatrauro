@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
+import { QueryProvider } from '@/lib/queryClient';
 import { ThemeProvider, useTheme } from '@/ui';
 
 function Screens() {
@@ -20,8 +21,10 @@ function Screens() {
 
 export default function RootLayout() {
   return (
-    <ThemeProvider>
-      <Screens />
-    </ThemeProvider>
+    <QueryProvider>
+      <ThemeProvider>
+        <Screens />
+      </ThemeProvider>
+    </QueryProvider>
   );
 }

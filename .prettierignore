@@ -13,6 +13,7 @@ docs/design/claude-design/
 
 # Réponses réelles des API : un test doit lire exactement ce que l'API renvoie
 pipeline/__fixtures__/
+src/lib/__fixtures__/
 
 # Données téléchargées et rapport généré par le backtest
 pipeline/backtest/.cache/
