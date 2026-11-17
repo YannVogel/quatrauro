@@ -22,7 +22,7 @@ Quatrauro est une app météo personnelle (Expo / React Native, Android) pour To
 - **Secrets** : aucune clé secrète dans l'app ni dans le repo (qui est public). Une éventuelle clé d'API d'observations vit dans les secrets GitHub Actions et dans `.env.local` (ignoré) ; un `.env.example` documente les variables.
 - **Chaînes UI** : toutes dans `src/i18n/fr.ts`, lues par `strings` (`@/i18n`) ; aucune chaîne en dur dans les composants.
 - **Accessibilité de base** : cibles tactiles d'au moins 48 dp ; contrastes WCAG AA dans les deux thèmes ; `accessibilityLabel` sur les boutons-icônes et sur les graphiques ; une information n'est jamais portée par la seule couleur.
-- **Design system** : les écrans s'appuient sur les composants et les tokens de `@/ui` (`src/ui/theme.ts`). Aucune couleur en dur ailleurs (règle ESLint, testée). Chaque token existe en clair et en sombre.
+- **Design system** : les écrans s'appuient sur les composants et les tokens de `@/ui` (`src/ui/theme.ts`). Aucune couleur en dur ailleurs (règle ESLint, testée). Chaque token existe en clair et en sombre. Le texte passe toujours par le composant `Text` de `@/ui` (variante et couleur du thème), les styles par `makeStyles`, le thème par `useTheme()`. Tout nouveau couple texte/fond s'ajoute à `CONTRAST_PAIRS`, que le test des contrastes parcourt.
 - **Direction graphique** : « Riviera » ([ADR 0001](docs/adr/0001-direction-graphique-riviera.md)). Sa spécification, [docs/design/riviera.md](docs/design/riviera.md), fait foi pour les tokens, les composants et les écrans ; les maquettes sont dans `docs/design/claude-design/`, à ne pas modifier à la main. Pas de dégradé, pas d'ombre floue, pas d'emoji : aplats, grands rayons, icônes au trait.
 
 ## Données météo
@@ -55,7 +55,7 @@ app/                        # routes Expo Router (uniquement des écrans et des 
 __tests__/                  # tests qui rendent l'app entière (renderRouter sur app/)
 src/
   features/forecast/        # components/HomeScreen.tsx (écran provisoire), index.ts
-  ui/                       # vide : le design system Riviera arrive avec M0-08
+  ui/                       # theme.ts (tokens clair et sombre), ThemeProvider, Text, contrast.ts ; index.ts
   lib/                      # dates.ts (mise en forme à l'heure de Paris)
   i18n/                     # fr.ts : toutes les chaînes UI ; index.ts : accès typé (`strings`)
 shared/                     # parisTime.ts (décalage de Paris sur UTC)
@@ -74,7 +74,7 @@ Ce qui s'y ajoutera, là et pas ailleurs :
 ```
 src/features/<feature>/     # forecast (accueil, détail d'un jour), models, reliability, about
   components/ hooks/ api/ __tests__/ index.ts
-src/ui/                     # theme.ts (tokens clair et sombre), composants, icons.ts
+src/ui/                     # composants Riviera, icons.ts
 src/lib/                    # env.ts, queryClient.ts, data.ts (lecture des JSON publiés)
 shared/                     # schémas Zod, cities.ts, models.ts, blendConfig.ts, logique pure du mélange
 pipeline/                   # collect/ (prévisions, observations), archive/, verify/, blend/, publish/
