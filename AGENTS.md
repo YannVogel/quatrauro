@@ -87,7 +87,7 @@ npx expo install <paquet>   # toujours pour ajouter une dépendance de l'app (ve
 
 À venir : `npm run pipeline` (un passage complet du pipeline, en local, sans publier), avec M1.
 
-Lancer `typecheck`, `lint` et `test` avant de déclarer une tâche terminée. La CI rejoue ces trois commandes sur chaque PR et doit être verte avant le merge.
+Lancer `typecheck`, `lint` et `test` avant de déclarer une tâche terminée. La CI (`.github/workflows/ci.yml`) rejoue ces trois commandes sur chaque PR et sur `main`, et doit être verte avant le merge. Elle ne se déclenche pas sur la branche `data`. Ne jamais la rendre plus permissive pour faire passer une PR.
 
 ## Expo évolue vite
 
