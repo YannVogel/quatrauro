@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 
 import { blendValues } from '../logic/blend.ts';
-import { hourBlockOf } from '../logic/grouping.ts';
 
 describe('mélange', () => {
   it('rend la moyenne pondérée et la dispersion des modèles', () => {
@@ -20,16 +19,5 @@ describe('mélange', () => {
 
   it('refuse des poids qui ne correspondent pas aux valeurs', () => {
     assert.throws(() => blendValues([1, 2], [1]));
-  });
-});
-
-describe('regroupements', () => {
-  it('découpe la journée en blocs égaux', () => {
-    assert.equal(hourBlockOf(23, 1), 0);
-    assert.equal(hourBlockOf(5, 4), 0);
-    assert.equal(hourBlockOf(6, 4), 1);
-    assert.equal(hourBlockOf(23, 8), 7);
-    assert.equal(hourBlockOf(13, 24), 13);
-    assert.throws(() => hourBlockOf(3, 5));
   });
 });

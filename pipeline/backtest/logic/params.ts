@@ -1,4 +1,4 @@
-import type { LeadGrouping } from './grouping.ts';
+import type { LeadGrouping } from '../../../shared/blend/grouping.ts';
 
 /** Paramètres du mélange d'une variable continue. Leurs valeurs sont fixées par le backtest (ADR 0003). */
 export type BlendParams = {

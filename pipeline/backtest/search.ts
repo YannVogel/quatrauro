@@ -7,7 +7,7 @@ import type { VariableId } from './config.ts';
 import type { CityData } from './data/dataset.ts';
 import { buildInput, computeBaselines, evaluateLead, leadsToEvaluate } from './evaluate.ts';
 import type { DateRange } from './evaluate.ts';
-import type { LeadGrouping } from './logic/grouping.ts';
+import type { LeadGrouping } from '../../shared/blend/grouping.ts';
 import type { BlendParams } from './logic/params.ts';
 import { simulateBlend } from './simulate.ts';
 

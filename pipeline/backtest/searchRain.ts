@@ -6,7 +6,7 @@ import type { CityData } from './data/dataset.ts';
 import type { DateRange } from './evaluate.ts';
 import { evaluateRain } from './evaluateRain.ts';
 import type { RainLevel } from './evaluateRain.ts';
-import type { LeadGrouping } from './logic/grouping.ts';
+import type { LeadGrouping } from '../../shared/blend/grouping.ts';
 import { accuracy, brierScore, criticalSuccessIndex, mergeContingencies } from './rainScores.ts';
 import type { RainSettings } from './simulateRain.ts';
 
