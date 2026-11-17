@@ -69,7 +69,8 @@ shared/                     # parisTime.ts (décalage de Paris sur UTC), conditi
 pipeline/
   __fixtures__/             # réponses réelles d'Open-Meteo et de Météo-France, pour les tests
   backtest/                 # backtest du mélange ; sa logique pure est dans backtest/logic/
-assets/                     # icônes provisoires du modèle Expo (remplacées en M0-11)
+assets/                     # icônes provisoires du modèle Expo ; assets/icon/ : variantes proposées (docs/design/icone.md)
+scripts/brand/              # export en PNG de la variante d'icône choisie (npm run brand:export)
 docs/
   QUATRAURO_PROJECT_BRIEF.md  adr/  design/  features/
 .github/workflows/ci.yml    # intégration continue
@@ -105,6 +106,7 @@ npm run lint                # ESLint (expo lint) puis Prettier en vérification
 npm run format              # Prettier en écriture
 npm test                    # Jest : tests de l'app, de shared/ et de pipeline/
 npm run backtest            # rejoue le mélange sur l'historique et réécrit docs/features/backtest-resultats.md
+npm run brand:export -- <variante>   # exporte en PNG l'icône choisie ; pas avant le choix de Yann (docs/design/icone.md)
 npx expo install <paquet>   # toujours pour ajouter une dépendance de l'app (version compatible SDK)
 ```
 
