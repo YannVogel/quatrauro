@@ -10,13 +10,8 @@ export const fr = {
   home: {
     placeholder: 'Les prévisions de Toulon et de Nice arrivent bientôt.',
     openCatalog: 'Ouvrir le catalogue des composants',
-    /** État des données reçues, sur l'écran provisoire. */
-    data: {
-      computedAt: (when: string) => `Prévision calculée ${when}`,
-      loading: 'Chargement de la prévision…',
-      none: 'Aucune prévision reçue',
-      refreshFailed: 'Dernière mise à jour impossible',
-    },
+    /** Résumé de ce qui est affichable, sur l'écran provisoire. */
+    upcoming: (hours: number, days: number) => `${hours} heures et ${days} jours à venir`,
   },
   /** Écran de développement : il n'existe pas dans l'app distribuée. */
   catalog: {
@@ -50,6 +45,42 @@ export const fr = {
     missing: '—',
     /** Ce que lit un lecteur d'écran à la place d'une valeur absente. */
     unavailable: 'indisponible',
+  },
+  /** De quand date la prévision affichée. L'heure arrive déjà mise en forme (« 15 h 02 »). */
+  freshness: {
+    updatedToday: (time: string) => `Mis à jour à ${time}`,
+    updatedYesterday: (time: string) => `Mis à jour hier à ${time}`,
+    updatedOn: (day: string, time: string) => `Mis à jour ${day} à ${time}`,
+    refreshing: 'Mise à jour en cours…',
+    staleTitle: 'Prévision ancienne',
+    staleDetail: (hours: string) =>
+      `Elle a été calculée il y a ${hours} et n’a pas pu être mise à jour depuis.`,
+    hours: (count: number) => (count === 1 ? '1 heure' : `${count} heures`),
+    days: (count: number) => (count === 1 ? '1 jour' : `${count} jours`),
+  },
+  /** Ce que l'app dit quand elle n'a rien, ou pas mieux, à montrer. */
+  states: {
+    loading: 'Chargement de la prévision…',
+    emptyTitle: 'Pas encore de prévision',
+    retry: 'Tirez vers le bas pour réessayer.',
+    /** Pourquoi il n'y a rien à afficher. */
+    empty: {
+      network:
+        'L’app n’a pas pu joindre le serveur. Vérifiez votre connexion : la prévision apparaîtra dès qu’elle aura été reçue une première fois.',
+      http: 'Les prévisions sont momentanément indisponibles.',
+      invalid: 'Les prévisions reçues sont illisibles. Elles seront redemandées plus tard.',
+      version:
+        'Cette version de l’app ne sait pas lire les nouvelles prévisions. Mettez l’app à jour.',
+      none: 'Aucune prévision n’a encore été reçue.',
+      expired: 'La dernière prévision reçue ne décrit plus que des jours passés.',
+    },
+    /** Pourquoi la prévision affichée n'a pas pu être rafraîchie. */
+    refreshFailed: {
+      network: 'Pas de connexion : la prévision affichée n’a pas pu être mise à jour.',
+      http: 'Le serveur n’a pas répondu : la prévision affichée n’a pas pu être mise à jour.',
+      invalid: 'La nouvelle prévision était illisible : l’ancienne reste affichée.',
+      version: 'Mettez l’app à jour pour recevoir les nouvelles prévisions.',
+    },
   },
   /** Ce que disent les composants aux lecteurs d'écran. Les nombres arrivent déjà mis en forme. */
   spoken: {

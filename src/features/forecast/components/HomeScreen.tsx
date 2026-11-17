@@ -3,11 +3,13 @@ import { RefreshControl, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { strings } from '@/i18n';
+import { useNow } from '@/lib/now';
 import { Text, makeStyles, useTheme } from '@/ui';
 import { CITIES } from '@shared/cities';
 
+import { forecastView } from '../freshness';
 import { useForecast } from '../hooks/useForecast';
-import { DataStatus } from './DataStatus';
+import { ForecastStatus } from './ForecastStatus';
 
 const [toulon, nice] = CITIES;
 
@@ -15,6 +17,7 @@ const [toulon, nice] = CITIES;
 export function HomeScreen() {
   const styles = useStyles();
   const theme = useTheme();
+  const now = useNow();
   const forecasts = [
     { city: toulon, forecast: useForecast(toulon.id) },
     { city: nice, forecast: useForecast(nice.id) },
@@ -45,7 +48,7 @@ export function HomeScreen() {
           {strings.home.placeholder}
         </Text>
         {forecasts.map(({ city, forecast }) => (
-          <DataStatus key={city.id} city={city} forecast={forecast} />
+          <ForecastStatus key={city.id} city={city} view={forecastView(forecast, now)} now={now} />
         ))}
         {__DEV__ ? (
           <Link href="/dev/catalog" style={styles.link}>

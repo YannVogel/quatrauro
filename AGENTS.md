@@ -59,13 +59,15 @@ app/                        # routes Expo Router (uniquement des écrans et des 
   _layout.tsx  index.tsx  dev/catalog.tsx
 __tests__/                  # tests qui rendent l'app entière (renderRouter sur app/)
 src/
-  features/forecast/        # components/ (écran provisoire), hooks/ (useForecast, useVerification), index.ts
+  features/forecast/        # components/ (écran provisoire, bandeau, état vide), hooks/ (useForecast, useVerification),
+                            # freshness.ts (ce qu'un écran a le droit de montrer à un instant donné), index.ts
   features/catalog/         # catalogue des composants (développement seulement) et ses données fictives
   ui/                       # theme.ts (tokens), ThemeProvider, Text, Icon, icons.ts, conditions.ts, contrast.ts
     components/             # les composants Riviera (HeroBlock, Card, DayRow, HourlyChart…), exportés par @/ui
     testing/                # renderWithTheme, pour les tests de composants
   lib/                      # dates.ts (mise en forme à l'heure de Paris), format.ts (nombres à la française)
                             # env.ts (adresse des fichiers publiés), data.ts (lecture et validation), queryClient.tsx (cache)
+                            # config.ts (réglages de l'app), now.ts (l'instant présent, pour ne rien montrer de passé)
                             # __fixtures__/published/ : vrais fichiers publiés, pour les tests ; testing/ : faux réseau
   i18n/                     # fr.ts : toutes les chaînes UI ; index.ts : accès typé (`strings`)
 shared/                     # ne dépend de rien : ni Node, ni React Native, ni le reste du repo
@@ -146,6 +148,7 @@ Le projet est sur **Expo SDK 58** (React Native 0.88, React 19.3, TypeScript 6) 
 
 - Dans ce SDK, `renderRouter` et les helpers de `expo-router/testing-library` sont asynchrones : toujours les attendre (`await`).
 - `renderRouter` installe de fausses minuteries, qui remplacent `Date` : `jest.setup.ts` charge les modules de dates avant, sinon les heures sortent décalées du fuseau de la machine. Ce fichier simule aussi le stockage de l'appareil et fait échouer tout appel réseau qu'un test n'a pas prévu.
+- **Le temps qui passe** : un écran ne lit jamais `new Date()` lui-même. Il prend l'instant de `useNow()` (`src/lib/now.ts`) et le passe aux fonctions pures de `freshness.ts`, qui ne montrent ni heure passée ni prévision ancienne sans le dire. Pour figer l'horloge dans un test de l'app : `jest.useFakeTimers({ now })` avant `renderRouter`.
 - **Réseau dans l'app** : un seul endroit, `src/lib/data.ts`, et seulement vers les fichiers publiés (testé). Les tests servent ces fichiers avec `servePublished` (`src/lib/testing/published.ts`).
 
 - Les dossiers `ios/` et `android/` sont générés (Continuous Native Generation) et ignorés par git : configurer le natif dans `app.config.ts`. Après l'ajout d'une dépendance native ou d'un plugin, régénérer avec `npx expo prebuild --clean --platform android` avant `npm run android`.

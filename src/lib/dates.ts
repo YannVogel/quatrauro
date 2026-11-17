@@ -18,3 +18,15 @@ export function formatInParis(instant: Date, pattern: string): string {
   const wallClock = new UTCDate(instant.getTime() + parisOffsetMinutes(instant) * MINUTE_MS);
   return format(wallClock, pattern, { locale: fr });
 }
+
+const NON_BREAKING_SPACE = '\u00a0';
+
+/** Heure et minutes à Paris : « 15 h 02 », avec des espaces insécables. */
+export function formatTimeInParis(instant: Date): string {
+  return formatInParis(instant, "H 'h' mm").replaceAll(' ', NON_BREAKING_SPACE);
+}
+
+/** Jour à Paris : « mardi 17 novembre ». */
+export function formatDayInParis(instant: Date): string {
+  return formatInParis(instant, 'EEEE d MMMM');
+}

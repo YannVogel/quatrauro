@@ -13,4 +13,5 @@ Chaque fonctionnalité notable a sa fiche ici : comportement, données, écrans,
 | [amorcage.md](amorcage.md) | Amorçage par l'historique : la commande, ce qu'elle rejoue et écrit, les chiffres mesurés sur l'historique réel, les limites |
 | [pipeline.md](pipeline.md) | Un passage complet : la commande, les étapes, tout ou rien, ce que contient la prévision publiée, le journal |
 | [lecture-des-donnees.md](lecture-des-donnees.md) | Lecture des fichiers publiés dans l'app : adresse, validation, cache sur l'appareil, hors ligne, ce que rendent les hooks |
+| [fraicheur-et-etats.md](fraicheur-et-etats.md) | Heure de mise à jour, prévision ancienne, heures et jours à venir, états de chargement et état vide |
 | [donnees.md](donnees.md) | Sources de données : modèles, points de prévision, variables, historique, observations, attributions |
