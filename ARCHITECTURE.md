@@ -9,7 +9,7 @@ Cette page décrit la cible et se met à jour à chaque issue structurante (voir
 | Bloc | État |
 |---|---|
 | `shared/` | La configuration unique (villes, modèles, paramètres du mélange), le contrat des fichiers publiés ([fiche](docs/features/contrat-de-donnees.md)), les séries internes et le décalage de l'heure de Paris ([ADR 0005](docs/adr/0005-heure-de-paris-sans-base-de-fuseaux.md)). La logique pure du mélange (`shared/blend/` : biais, poids, mélange, pluie, agrégats, indice de fiabilité, condition et résumé du jour) y est aussi, rejouée telle quelle par le backtest |
-| `pipeline/` | La collecte des prévisions et des observations (`pipeline/collect/`, [fiche](docs/features/collecte.md)) et le backtest (`pipeline/backtest/`), qui rejoue la logique de `shared/blend/` sur l'historique. Archive, vérification et publication arrivent avec la suite de M1 |
+| `pipeline/` | La collecte des prévisions et des observations (`pipeline/collect/`, [fiche](docs/features/collecte.md)), l'archive et la vérification (`pipeline/archive/`, `pipeline/state/`, `pipeline/verify/`, [fiche](docs/features/archive-et-verification.md)) et le backtest (`pipeline/backtest/`), qui rejoue la logique de `shared/blend/` sur l'historique. Amorçage et publication arrivent avec la suite de M1 |
 | `app/` + `src/` | Le projet Expo et un écran provisoire. Le design system, la lecture des données et les écrans arrivent avec la suite de M0, puis M2 à M4 |
 
 Décisions arrêtées : sources de données ([ADR 0002](docs/adr/0002-sources-de-donnees-meteo.md)), méthode de mélange et paramètres ([ADR 0003](docs/adr/0003-methode-de-melange.md)), heure de Paris (ADR 0005). Encore ouverte : l'exploitation du pipeline dans GitHub Actions ([ADR 0004](docs/adr/0004-pipeline-github-actions.md), au statut « proposée »).
@@ -48,7 +48,7 @@ La règle qui tient l'ensemble : **`shared/` ne fait aucune entrée-sortie**. Se
 
 1. **Collecte des prévisions** : pour chaque ville, une requête par lot à Open-Meteo, un modèle par série. Chaque réponse est validée puis normalisée (unités, UTC).
 2. **Collecte des observations** : dernières mesures horaires de la station de référence de chaque ville.
-3. **Archive** : prévisions et observations sont ajoutées à l'archive de la branche `data`, par ville, modèle et jour. L'archive est en ajout seul.
+3. **Archive** : prévisions et observations sont ajoutées à l'archive de la branche `data`, par ville et par jour. L'archive est en ajout seul.
 4. **Vérification** : les prévisions arrivées à échéance sont appariées aux observations. On met à jour, par ville, variable, modèle, tranche d'échéance et heure de la journée, le biais et l'erreur absolue moyenne (deux moyennes à pondération exponentielle), puis les poids. Cet état est stocké dans `state/`.
 5. **Mélange** : pour chaque échéance des sept prochains jours, correction du biais de chaque modèle, moyenne pondérée, indice de fiabilité, condition et résumés.
 6. **Publication** : écriture de `forecast/<ville>.json` et `verification/<ville>.json`, validés contre les schémas avant d'être commités. Un passage en échec ne publie rien : le dernier fichier valide reste en place.
@@ -70,14 +70,15 @@ La méthode est décrite dans le brief (§ 5.4 à § 5.6) et arrêtée par l'[AD
 ## Données de la branche `data`
 
 ```
-archive/forecasts/<ville>/<modele>/<AAAA-MM-JJ>.json     # prévisions reçues, par run
+archive/forecasts/<ville>/<AAAA-MM-JJ>.json              # prévisions collectées ce jour-là, par heure et par échéance
 archive/observations/<ville>/<AAAA-MM>.json              # mesures horaires de la station
-state/<ville>.json                                       # biais, erreurs et poids courants
+archive/days/<ville>/<AAAA-MM>.json                      # jours jugés : prévu, observé, tenu ou non
+state/<ville>.json                                       # biais, erreurs, calibrations et repères
 forecast/<ville>.json                                    # ce que lit l'app
 verification/<ville>.json                                # scores affichés par « Fiabilité »
 ```
 
-Format, découpage et politique de rétention sont arrêtés par l'[ADR 0004](docs/adr/0004-pipeline-github-actions.md). Seul le workflow du pipeline écrit sur cette branche.
+Le format et le découpage sont décrits dans [docs/features/archive-et-verification.md](docs/features/archive-et-verification.md) ; la politique de rétention reste à arrêter par l'[ADR 0004](docs/adr/0004-pipeline-github-actions.md). Seul le workflow du pipeline écrit sur cette branche.
 
 ## App
 

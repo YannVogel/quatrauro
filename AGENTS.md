@@ -77,9 +77,15 @@ pipeline/
   __fixtures__/             # réponses réelles d'Open-Meteo et de Météo-France, et données dérivées du backtest, pour les tests
   collect/                  # collecte : http.ts (délai, tentatives), forecasts.ts et openMeteoForecast.ts (prévisions), observations.ts
     testing/                # faux réseau et lecture des données d'essai, pour les tests de la collecte
+  storage.ts  config.ts     # interface de stockage (dossier local) ; réglages du pipeline hors mélange
+  archive/                  # archive en ajout seul : forecasts.ts (cases), observations.ts, days.ts (jours jugés)
+  state/                    # cityState.ts : ce qui a été appris pour une ville
+  blend/                    # hour.ts : mélange d'une heure à une échéance, cases d'un passage
+  verify/                   # learn.ts (apprentissage), scores.ts, step.ts (l'étape d'une ville)
+  testing/                  # scénario fictif et dossier temporaire, pour les tests du pipeline
   openMeteoNames.ts         # nom et unité de chaque grandeur chez Open-Meteo
   meteoFranceHourly.ts      # fichiers horaires de Météo-France : adresse, champs, conversions
-  instant.ts                # mise en forme d'un instant UTC
+  instant.ts                # instants et heures rondes en UTC
   backtest/                 # backtest du mélange : rejoue shared/blend/ sur l'historique
 assets/                     # icônes provisoires du modèle Expo ; assets/icon/ : variantes proposées (docs/design/icone.md)
 scripts/brand/              # export en PNG de la variante d'icône choisie (npm run brand:export)
@@ -96,7 +102,7 @@ Ce qui s'y ajoutera, là et pas ailleurs :
 src/features/<feature>/     # forecast (accueil, détail d'un jour), models, reliability, about
   components/ hooks/ api/ __tests__/ index.ts
 src/lib/                    # env.ts, queryClient.ts, data.ts (lecture des JSON publiés)
-pipeline/                   # archive/, verify/, blend/, publish/
+pipeline/                   # bootstrap/, publish/
 ```
 
 - Les dépendances sont unidirectionnelles : `app/` → `features/` → `ui/` + `lib/` + `shared/` ; `pipeline/` → `shared/`. `shared/` n'importe rien du reste.

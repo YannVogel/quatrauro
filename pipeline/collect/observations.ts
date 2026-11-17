@@ -8,7 +8,7 @@ import type { City } from '../../shared/cities.ts';
 import type { Observations } from '../../shared/series.ts';
 import { FORECAST_VARIABLES } from '../../shared/variables.ts';
 import type { ForecastVariable } from '../../shared/variables.ts';
-import { toInstant } from '../instant.ts';
+import { HOUR_MS, floorToHour, toInstant } from '../instant.ts';
 import {
   DOUBTFUL_QUALITY,
   HOURLY_DATASET_URL,
@@ -22,7 +22,6 @@ import {
 import { httpGet } from './http.ts';
 import type { CollectOptions } from './options.ts';
 
-const HOUR_MS = 3_600_000;
 /** Seul serveur d'où les fichiers horaires sont téléchargés (docs/features/donnees.md). */
 const TRUSTED_FILE_HOSTS: readonly string[] = ['meteofrance.s3.sbg.io.cloud.ovh.net'];
 const METEO_FRANCE_HOUR = /^(\d{4})(\d{2})(\d{2})(\d{2})$/;
@@ -157,8 +156,6 @@ function checkFileUrl(url: string): void {
   }
 }
 
-const floorToHour = (date: Date): number => Math.floor(date.getTime() / HOUR_MS) * HOUR_MS;
-
 /**
  * Mesures horaires de la station de référence d'une ville sur la période demandée : une
  * valeur par heure, `null` quand la station n'a rien publié (ou pas encore) pour cette heure.
@@ -189,7 +186,8 @@ export async function collectObservations(
   }
 
   const times: number[] = [];
-  for (let time = floorToHour(window.from); time <= floorToHour(window.to); time += HOUR_MS) {
+  const last = floorToHour(window.to.getTime());
+  for (let time = floorToHour(window.from.getTime()); time <= last; time += HOUR_MS) {
     times.push(time);
   }
   return {
