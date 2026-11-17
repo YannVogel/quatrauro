@@ -20,7 +20,7 @@ Le nom vient du provençal « quatre auro », les quatre vents.
 | [docs/QUATRAURO_PROJECT_BRIEF.md](docs/QUATRAURO_PROJECT_BRIEF.md) | Cadrage : vision, décisions, règles métier, backlog |
 | [AGENTS.md](AGENTS.md) | Conventions de travail, structure, commandes (lu par les agents de code) |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Couches, flux des données, mélange, hors ligne |
-| [docs/adr/](docs/adr/) | Décisions d'architecture |
+| [docs/adr/](docs/adr/) | Décisions d'architecture : direction graphique, sources de données, méthode de mélange, pipeline, heure de Paris |
 | [docs/design/riviera.md](docs/design/riviera.md) | Direction graphique « Riviera » : tokens, composants, écrans |
 | [docs/design/claude-design/](docs/design/claude-design/) | Maquettes |
 | [docs/features/](docs/features/) | Fiches des fonctionnalités, au fil du développement : [sources de données](docs/features/donnees.md), [backtest du mélange](docs/features/backtest.md) |

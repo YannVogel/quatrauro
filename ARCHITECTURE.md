@@ -4,7 +4,15 @@ Ce document décrit comment les données circulent, des modèles météo jusqu'�
 
 ## État
 
-Cadrage et spikes : seul le backtest est codé (`pipeline/backtest/`). Cette page décrit la cible et se met à jour à chaque issue structurante (voir AGENTS.md, « Documentation »). Les sources de données sont arrêtées par l'ADR 0002, la méthode de mélange et ses paramètres par l'ADR 0003 ; les points encore ouverts sont portés par l'ADR 0004, au statut « proposée ».
+Cette page décrit la cible et se met à jour à chaque issue structurante (voir AGENTS.md, « Documentation »). Où en est chaque bloc :
+
+| Bloc | État |
+|---|---|
+| `shared/` | Le décalage de l'heure de Paris seulement (`parisTime.ts`, [ADR 0005](docs/adr/0005-heure-de-paris-sans-base-de-fuseaux.md)). Les schémas, la configuration et la logique du mélange arrivent avec M1 |
+| `pipeline/` | Le backtest seulement (`pipeline/backtest/`), qui porte pour l'instant la logique pure du mélange dans `backtest/logic/`. Collecte, archive, vérification et publication arrivent avec M1 |
+| `app/` + `src/` | Le projet Expo et un écran provisoire. Le design system, la lecture des données et les écrans arrivent avec la suite de M0, puis M2 à M4 |
+
+Décisions arrêtées : sources de données ([ADR 0002](docs/adr/0002-sources-de-donnees-meteo.md)), méthode de mélange et paramètres ([ADR 0003](docs/adr/0003-methode-de-melange.md)), heure de Paris (ADR 0005). Encore ouverte : l'exploitation du pipeline dans GitHub Actions ([ADR 0004](docs/adr/0004-pipeline-github-actions.md), au statut « proposée »).
 
 ## Vue d'ensemble
 

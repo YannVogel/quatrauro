@@ -5,6 +5,21 @@
 > **Ce qui fait foi.** Les issues GitHub détaillent chaque tâche et priment sur ce brief en cas d'écart. Les décisions prises en cours de route vivent dans les issues (sections « ⚠️ Point tranché ») et dans [docs/adr/](adr/).
 >
 > **Les éléments marqués « à vérifier »** doivent l'être au moment de l'implémentation, jamais tenus pour acquis. Ce brief a été écrit avant tout code : les noms d'API, d'endpoints et de versions viennent de la documentation lue en novembre 2026 ou de mémoire, et les spikes de M0 sont là pour les confirmer.
+>
+> **Ce qui a été vérifié depuis.** Ce brief n'est pas réécrit : là où il dit « à vérifier », la réponse est dans le document indiqué.
+>
+> | Point du brief | Où est la réponse |
+> |---|---|
+> | Liste, portée et identifiants des modèles (§ 2, § 5.2, § 7.1) | [ADR 0002](adr/0002-sources-de-donnees-meteo.md), [docs/features/donnees.md](features/donnees.md) : cinq modèles, GFS compris ; AROME et ARPEGE ne couvrent pas la fin de semaine |
+> | Coordonnées et stations de référence (§ 5.1) | [ADR 0002](adr/0002-sources-de-donnees-meteo.md) |
+> | Conditions, quotas et licence d'Open-Meteo (§ 2, § 7.1) | [docs/features/donnees.md](features/donnees.md), « Conditions d'usage » |
+> | Historique des prévisions (§ 7.1) | [docs/features/donnees.md](features/donnees.md), « Historique des prévisions » |
+> | Accès, licence et délai des observations (§ 7.2) | [ADR 0002](adr/0002-sources-de-donnees-meteo.md) : fichiers publics, sans clé |
+> | Paramètres du mélange, heure de la journée, pluie, indice de fiabilité (§ 5.4, § 5.5) | [ADR 0003](adr/0003-methode-de-melange.md), [docs/features/backtest.md](features/backtest.md) |
+> | Condition de poursuite (§ 2) | Feu vert : [docs/features/backtest.md](features/backtest.md) |
+> | Version d'Expo, outil de test (§ 3) | Expo SDK 58, Jest pour tout le repo : [AGENTS.md](../AGENTS.md) |
+> | Fuseau `Europe/Paris` (§ 1.1) | [ADR 0005](adr/0005-heure-de-paris-sans-base-de-fuseaux.md) |
+> | Horaires programmés, droits du `GITHUB_TOKEN` (§ 7.3) | Encore à vérifier, dans M1-12 ([ADR 0004](adr/0004-pipeline-github-actions.md)) |
 
 ---
 
