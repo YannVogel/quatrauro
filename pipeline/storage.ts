@@ -86,3 +86,43 @@ export async function readJson<Schema extends z.ZodType>(
 export async function writeJson(storage: Storage, file: string, value: unknown): Promise<void> {
   await storage.write(file, `${JSON.stringify(value)}\n`);
 }
+
+export type BufferedStorage = Storage & {
+  /** Chemins écrits depuis la création, triés. */
+  readonly pending: () => string[];
+  /** Reporte toutes les écritures sur le stockage d'origine. */
+  readonly commit: () => Promise<void>;
+};
+
+/**
+ * Stockage qui lit dans `base` mais garde ses écritures en mémoire jusqu'à `commit`. Un passage
+ * travaille dessus : s'il échoue en route, rien n'a touché aux fichiers, et les précédents
+ * restent en place.
+ */
+export function bufferedStorage(base: Storage): BufferedStorage {
+  const written = new Map<string, string>();
+  const normalize = (file: string): string => path.posix.normalize(file);
+  return {
+    read: async (file) => written.get(normalize(file)) ?? (await base.read(file)),
+    write: (file, content) => {
+      written.set(normalize(file), content);
+      return Promise.resolve();
+    },
+    async list(directory) {
+      const prefix = `${normalize(directory)}/`;
+      const names = new Set(await base.list(directory));
+      for (const file of written.keys()) {
+        const name = file.startsWith(prefix) ? file.slice(prefix.length) : null;
+        if (name !== null && !name.includes('/')) names.add(name);
+      }
+      return [...names].sort();
+    },
+    pending: () => [...written.keys()].sort(),
+    async commit() {
+      for (const [file, content] of [...written].sort(([a], [b]) => a.localeCompare(b))) {
+        await base.write(file, content);
+      }
+      written.clear();
+    },
+  };
+}
