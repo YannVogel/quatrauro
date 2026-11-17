@@ -1,5 +1,10 @@
+export { Icon } from './Icon';
+export type { IconProps } from './Icon';
 export { Text } from './Text';
 export type { TextProps } from './Text';
 export { ThemeProvider, makeStyles, useTheme } from './ThemeProvider';
 export type { ThemePreference } from './ThemeProvider';
-export type { ColorToken, Colors, TextVariant, Theme, ThemeName } from './theme';
+export { conditionAppearance } from './conditions';
+export type { ConditionAppearance } from './conditions';
+export type { IconName } from './icons';
+export type { ColorToken, Colors, HeroToken, TextVariant, Theme, ThemeName } from './theme';
