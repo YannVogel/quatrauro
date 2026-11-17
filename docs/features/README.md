@@ -11,4 +11,5 @@ Chaque fonctionnalité notable a sa fiche ici : comportement, données, écrans,
 | [collecte.md](collecte.md) | Collecte des prévisions et des observations : les requêtes, les vérifications à la lecture, les modèles indisponibles, les mesures rejetées, les tentatives réseau |
 | [archive-et-verification.md](archive-et-verification.md) | Archive des prévisions et des mesures, état d'une ville, apprentissage heure par heure et jour par jour, scores publiés, idempotence |
 | [amorcage.md](amorcage.md) | Amorçage par l'historique : la commande, ce qu'elle rejoue et écrit, les chiffres mesurés sur l'historique réel, les limites |
+| [pipeline.md](pipeline.md) | Un passage complet : la commande, les étapes, tout ou rien, ce que contient la prévision publiée, le journal |
 | [donnees.md](donnees.md) | Sources de données : modèles, points de prévision, variables, historique, observations, attributions |

@@ -9,7 +9,7 @@ Cette page décrit la cible et se met à jour à chaque issue structurante (voir
 | Bloc | État |
 |---|---|
 | `shared/` | La configuration unique (villes, modèles, paramètres du mélange), le contrat des fichiers publiés ([fiche](docs/features/contrat-de-donnees.md)), les séries internes et le décalage de l'heure de Paris ([ADR 0005](docs/adr/0005-heure-de-paris-sans-base-de-fuseaux.md)). La logique pure du mélange (`shared/blend/` : biais, poids, mélange, pluie, agrégats, indice de fiabilité, condition et résumé du jour) y est aussi, rejouée telle quelle par le backtest |
-| `pipeline/` | La collecte des prévisions et des observations (`pipeline/collect/`, [fiche](docs/features/collecte.md)), l'archive et la vérification (`pipeline/archive/`, `pipeline/state/`, `pipeline/verify/`, [fiche](docs/features/archive-et-verification.md)) et le backtest (`pipeline/backtest/`), qui rejoue la logique de `shared/blend/` sur l'historique. L'amorçage (`pipeline/bootstrap/`, [fiche](docs/features/amorcage.md)) rejoue l'historique du backtest avec le code des passages réels. La publication arrive avec la suite de M1 |
+| `pipeline/` | La collecte des prévisions et des observations (`pipeline/collect/`, [fiche](docs/features/collecte.md)), l'archive et la vérification (`pipeline/archive/`, `pipeline/state/`, `pipeline/verify/`, [fiche](docs/features/archive-et-verification.md)) et le backtest (`pipeline/backtest/`), qui rejoue la logique de `shared/blend/` sur l'historique. L'amorçage (`pipeline/bootstrap/`, [fiche](docs/features/amorcage.md)) rejoue l'historique du backtest avec le code des passages réels. Un passage complet (`pipeline/pass.ts`, [fiche](docs/features/pipeline.md)) enchaîne le tout et publie, ou n'écrit rien |
 | `app/` + `src/` | Le projet Expo et un écran provisoire. Le design system, la lecture des données et les écrans arrivent avec la suite de M0, puis M2 à M4 |
 
 Décisions arrêtées : sources de données ([ADR 0002](docs/adr/0002-sources-de-donnees-meteo.md)), méthode de mélange et paramètres ([ADR 0003](docs/adr/0003-methode-de-melange.md)), heure de Paris (ADR 0005). Encore ouverte : l'exploitation du pipeline dans GitHub Actions ([ADR 0004](docs/adr/0004-pipeline-github-actions.md), au statut « proposée »).
@@ -53,7 +53,7 @@ La règle qui tient l'ensemble : **`shared/` ne fait aucune entrée-sortie**. Se
 5. **Mélange** : pour chaque échéance des sept prochains jours, correction du biais de chaque modèle, moyenne pondérée, indice de fiabilité, condition et résumés.
 6. **Publication** : écriture de `forecast/<ville>.json` et `verification/<ville>.json`, validés contre les schémas avant d'être commités. Un passage en échec ne publie rien : le dernier fichier valide reste en place.
 
-Le passage est idempotent : relancé deux fois sur les mêmes entrées, il produit le même résultat et n'ajoute rien en double à l'archive.
+Le passage est idempotent : relancé deux fois sur les mêmes entrées, il produit le même résultat et n'ajoute rien en double à l'archive. Il travaille sur un stockage tampon, reporté à la fin seulement si tout a réussi pour toutes les villes.
 
 ## Mélange
 

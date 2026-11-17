@@ -4,7 +4,8 @@ import path from 'node:path';
 
 import { z } from 'zod';
 
-import { directoryStorage, readJson, writeJson } from '../storage.ts';
+import { parseArguments } from '../cli.ts';
+import { bufferedStorage, directoryStorage, readJson, writeJson } from '../storage.ts';
 import type { Storage } from '../storage.ts';
 import { temporaryDirectory } from '../testing/scenario.ts';
 
@@ -65,5 +66,50 @@ describe('fichiers JSON', () => {
     await writeJson(storage, 'faux.json', { value: 'douze' });
     await assert.rejects(readJson(storage, 'casse.json', schema), /casse\.json n'est pas du JSON/);
     await assert.rejects(readJson(storage, 'faux.json', schema), /Fichier invalide : faux\.json/);
+  });
+});
+
+describe('stockage tampon', () => {
+  it('lit à travers lui, mais garde ses écritures jusqu’au report', async () => {
+    await storage.write('state/toulon.json', 'avant');
+    const buffered = bufferedStorage(storage);
+    await buffered.write('state/toulon.json', 'après');
+    await buffered.write('forecast/toulon.json', 'prévision');
+
+    assert.equal(await buffered.read('state/toulon.json'), 'après');
+    assert.equal(await buffered.read('forecast/toulon.json'), 'prévision');
+    assert.equal(await storage.read('state/toulon.json'), 'avant');
+    assert.equal(await storage.read('forecast/toulon.json'), null);
+    assert.deepEqual(buffered.pending(), ['forecast/toulon.json', 'state/toulon.json']);
+
+    await buffered.commit();
+    assert.equal(await storage.read('state/toulon.json'), 'après');
+    assert.equal(await storage.read('forecast/toulon.json'), 'prévision');
+    assert.deepEqual(buffered.pending(), []);
+  });
+
+  it('liste les fichiers d’origine et ceux qu’il a en attente, sans les sous-dossiers', async () => {
+    await storage.write('archive/a.json', 'un');
+    const buffered = bufferedStorage(storage);
+    await buffered.write('archive/c.json', 'trois');
+    await buffered.write('archive/sous/d.json', 'quatre');
+    await buffered.write('ailleurs/e.json', 'cinq');
+    assert.deepEqual(await buffered.list('archive'), ['a.json', 'c.json']);
+    assert.deepEqual(await buffered.list('absent'), []);
+  });
+});
+
+describe('arguments des commandes', () => {
+  it('lit les valeurs et les drapeaux', () => {
+    const args = parseArguments(['--data-dir=/tmp/data', '--dry-run'], ['data-dir', 'dry-run']);
+    assert.equal(args.value('data-dir'), '/tmp/data');
+    assert.equal(args.flag('dry-run'), true);
+    assert.equal(args.flag('force'), false);
+    assert.equal(args.value('until'), null);
+  });
+
+  it('refuse un argument inconnu ou mal écrit', () => {
+    assert.throws(() => parseArguments(['--dry-rum'], ['dry-run']), /Argument inconnu : --dry-rum/);
+    assert.throws(() => parseArguments(['data-dir=x'], ['data-dir']), /Argument inconnu/);
   });
 });

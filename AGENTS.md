@@ -2,7 +2,7 @@
 
 Quatrauro est une app météo personnelle (Expo / React Native, Android) pour Toulon et Nice. Elle croise plusieurs modèles de prévision, corrige leurs erreurs locales à partir des observations et affiche un indice de fiabilité. Il n'y a pas de serveur : un pipeline TypeScript tourne dans GitHub Actions et publie des JSON statiques que l'app lit. Le cadrage de référence est [docs/QUATRAURO_PROJECT_BRIEF.md](docs/QUATRAURO_PROJECT_BRIEF.md) ; les décisions prises depuis vivent dans les issues GitHub (sections « ⚠️ Point tranché ») et dans [docs/adr/](docs/adr/). En cas de conflit avec le brief, l'issue prime. L'architecture (couches, flux des données, mélange, hors ligne) est décrite dans [ARCHITECTURE.md](ARCHITECTURE.md).
 
-> **État du repo** (à tenir à jour à chaque milestone) : **socle en place.** Le projet Expo compile, se teste et affiche un écran provisoire ; la CI tourne sur chaque PR ; les deux spikes sont terminés (ADR 0002 et 0003) et le backtest a donné son feu vert ([rapport](docs/features/backtest.md)). Restent à écrire : le design system Riviera (suite de M0), le pipeline (M1), les écrans (M2 à M4).
+> **État du repo** (à tenir à jour à chaque milestone) : **socle, design system et pipeline en place.** Le projet Expo compile, se teste et affiche un écran provisoire ; le design system Riviera et son catalogue sont là ; la CI tourne sur chaque PR ; les deux spikes sont terminés (ADR 0002 et 0003) et le backtest a donné son feu vert ([rapport](docs/features/backtest.md)). Le pipeline sait faire un passage complet en local (`npm run pipeline`) et s'amorcer sur l'historique (`npm run pipeline:bootstrap`). Restent à écrire : le workflow planifié, livré désactivé (M1-12), et les écrans (M2 à M4).
 
 ## Ordre de travail
 
@@ -83,6 +83,8 @@ pipeline/
   blend/                    # hour.ts : mélange d'une heure à une échéance, cases d'un passage
   verify/                   # learn.ts (apprentissage), scores.ts, step.ts (l'étape d'une ville)
   bootstrap/                # amorçage : rejoue l'historique du backtest avec le code des passages réels
+  publish/                  # forecast.ts (fichier de prévision), publish.ts (validation et écriture)
+  pass.ts  main.ts  run.ts  # un passage complet : orchestration tout ou rien, commande, point d'entrée
   cli.ts                    # arguments des commandes du pipeline
   testing/                  # scénario fictif et dossier temporaire, pour les tests du pipeline
   openMeteoNames.ts         # nom et unité de chaque grandeur chez Open-Meteo
@@ -104,7 +106,6 @@ Ce qui s'y ajoutera, là et pas ailleurs :
 src/features/<feature>/     # forecast (accueil, détail d'un jour), models, reliability, about
   components/ hooks/ api/ __tests__/ index.ts
 src/lib/                    # env.ts, queryClient.ts, data.ts (lecture des JSON publiés)
-pipeline/                   # publish/
 ```
 
 - Les dépendances sont unidirectionnelles : `app/` → `features/` → `ui/` + `lib/` + `shared/` ; `pipeline/` → `shared/`. `shared/` n'importe rien du reste.
@@ -125,12 +126,13 @@ npm run lint                # ESLint (expo lint) puis Prettier en vérification
 npm run format              # Prettier en écriture
 npm test                    # Jest : tests de l'app, de shared/ et de pipeline/
 npm run backtest            # rejoue le mélange sur l'historique et réécrit docs/features/backtest-resultats.md
+npm run pipeline            # un passage complet du pipeline dans .data/ (dossier local ignoré) ; -- --dry-run pour ne rien écrire
 npm run pipeline:bootstrap  # construit l'état de départ depuis l'historique (une fois, à la main ; refuse d'écraser un état sans --force)
 npm run brand:export -- <variante>   # exporte en PNG l'icône choisie ; pas avant le choix de Yann (docs/design/icone.md)
 npx expo install <paquet>   # toujours pour ajouter une dépendance de l'app (version compatible SDK)
 ```
 
-À venir : `npm run pipeline` (un passage complet du pipeline, en local, sans publier), avec M1.
+`npm run pipeline` et `npm run pipeline:bootstrap` écrivent dans le dossier passé par `--data-dir` (`.data/` par défaut). Ils ne committent rien : ne jamais les pointer vers un checkout de la branche `data` sans demande explicite de Yann.
 
 Lancer `typecheck`, `lint` et `test` avant de déclarer une tâche terminée. La CI (`.github/workflows/ci.yml`) rejoue ces trois commandes sur chaque PR et sur `main`, et doit être verte avant le merge. Elle ne se déclenche pas sur la branche `data`. Ne jamais la rendre plus permissive pour faire passer une PR.
 
