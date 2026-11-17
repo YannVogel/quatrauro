@@ -82,6 +82,8 @@ pipeline/
   state/                    # cityState.ts : ce qui a été appris pour une ville
   blend/                    # hour.ts : mélange d'une heure à une échéance, cases d'un passage
   verify/                   # learn.ts (apprentissage), scores.ts, step.ts (l'étape d'une ville)
+  bootstrap/                # amorçage : rejoue l'historique du backtest avec le code des passages réels
+  cli.ts                    # arguments des commandes du pipeline
   testing/                  # scénario fictif et dossier temporaire, pour les tests du pipeline
   openMeteoNames.ts         # nom et unité de chaque grandeur chez Open-Meteo
   meteoFranceHourly.ts      # fichiers horaires de Météo-France : adresse, champs, conversions
@@ -102,7 +104,7 @@ Ce qui s'y ajoutera, là et pas ailleurs :
 src/features/<feature>/     # forecast (accueil, détail d'un jour), models, reliability, about
   components/ hooks/ api/ __tests__/ index.ts
 src/lib/                    # env.ts, queryClient.ts, data.ts (lecture des JSON publiés)
-pipeline/                   # bootstrap/, publish/
+pipeline/                   # publish/
 ```
 
 - Les dépendances sont unidirectionnelles : `app/` → `features/` → `ui/` + `lib/` + `shared/` ; `pipeline/` → `shared/`. `shared/` n'importe rien du reste.
@@ -123,6 +125,7 @@ npm run lint                # ESLint (expo lint) puis Prettier en vérification
 npm run format              # Prettier en écriture
 npm test                    # Jest : tests de l'app, de shared/ et de pipeline/
 npm run backtest            # rejoue le mélange sur l'historique et réécrit docs/features/backtest-resultats.md
+npm run pipeline:bootstrap  # construit l'état de départ depuis l'historique (une fois, à la main ; refuse d'écraser un état sans --force)
 npm run brand:export -- <variante>   # exporte en PNG l'icône choisie ; pas avant le choix de Yann (docs/design/icone.md)
 npx expo install <paquet>   # toujours pour ajouter une dépendance de l'app (version compatible SDK)
 ```
