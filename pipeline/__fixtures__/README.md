@@ -32,4 +32,12 @@ Données sous [Licence Ouverte 2.0](https://www.etalab.gouv.fr/licence-ouverte-o
 
 Ce sont des **extraits** : le fichier d'origine fait environ 20 Mo par département et contient toutes les stations. Les lignes conservées sont intactes (séparateur `;`, 200 colonnes et plus, champs vides pour les mesures absentes). Les deux extraits couvrent la même période que `previous-runs-toulon.json`, pour pouvoir apparier une prévision et une observation dans un test.
 
+## Backtest
+
+| Fichier | Origine |
+|---|---|
+| `backtest/reliability-days.json` | Écrit par `npm run backtest`. Pour chaque ville et chaque échéance, la situation de chaque jour du 01/10/2025 au 15/11/2026 : écart-type moyen entre modèles, probabilité de pluie, prévision tenue (1), manquée (0) ou non vérifiable (`null`) |
+
+Ce ne sont pas des réponses d'API mais des **données dérivées** des prévisions (Open-Meteo, CC BY 4.0) et des observations (Météo-France, Licence Ouverte 2.0) réelles du backtest. Le test de calibration de l'indice de fiabilité les rejoue ([fiche du mélange](../../docs/features/melange.md)). Ne pas les modifier à la main : relancer le backtest.
+
 Le détail des sources, des unités et des conversions est dans [docs/features/donnees.md](../../docs/features/donnees.md).

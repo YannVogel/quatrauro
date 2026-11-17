@@ -1,8 +1,12 @@
 // Section « indice de fiabilité » du rapport : formule, calibration, libellés.
 
+import { BLEND_CONFIG } from '../../../shared/blendConfig.ts';
 import { MODELS } from '../../../shared/models.ts';
 import { leadsToEvaluate } from '../evaluate.ts';
 import {
+  CALIBRATION_MIN_COUNT,
+  CALIBRATION_TOLERANCE,
+  calibrationOf,
   daysOf,
   mean,
   quantile,
@@ -11,34 +15,29 @@ import {
   verifiedDays,
 } from '../evaluateReliability.ts';
 import type { ReliabilityRun } from '../evaluateReliability.ts';
-import type { BlendParams } from '../logic/params.ts';
-import { reliabilityLabel } from '../logic/reliability.ts';
-import type {
-  LabelThresholds,
-  ReliabilityLabel,
-  ReliabilityOptions,
-} from '../logic/reliability.ts';
+import type { BlendParams } from '../params.ts';
+import { reliabilityLabel } from '../../../shared/blend/reliability.ts';
+import type { ReliabilityOptions } from '../../../shared/blend/reliability.ts';
+import type { ReliabilityLabel } from '../../../shared/schemas.ts';
 import { formatInteger, formatNumber, formatPercent, markdownTable } from '../markdown.ts';
-import { calibrationBins } from '../rainScores.ts';
 import type { RainSettings } from '../simulateRain.ts';
 import type { ReliabilitySettings } from '../simulateReliability.ts';
 import { RANGES, formatRange } from './context.ts';
 import type { Cities } from './context.ts';
 
-export const TEMPERATURE_TOLERANCE = 2;
-export const LABEL_THRESHOLDS: LabelThresholds = { sure: 0.8, likely: 0.6 };
-export const UNCERTAIN_RAIN = { from: 0.2, to: 0.8 } as const;
-const PRIOR_STRENGTH = 10;
-const MIN_SAMPLES = 30;
-const INDEX_BOUNDS = [0, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1] as const;
+const {
+  temperatureTolerance: TEMPERATURE_TOLERANCE,
+  labels: LABEL_THRESHOLDS,
+  uncertainRain: UNCERTAIN_RAIN,
+  priorStrength: PRIOR_STRENGTH,
+  minSamples: MIN_SAMPLES,
+  singleModelCap: SINGLE_MODEL_CAP,
+} = BLEND_CONFIG.reliability;
 const LABELS: Readonly<Record<ReliabilityLabel, string>> = {
   sure: 'Sûr',
   likely: 'Probable',
   uncertain: 'Incertain',
 };
-/** Écart maximal toléré entre l'indice annoncé et la fréquence observée, dans une classe assez fournie. */
-export const CALIBRATION_TOLERANCE = 0.1;
-export const CALIBRATION_MIN_COUNT = 50;
 
 const round1 = (value: number): number => Math.round(value * 10) / 10;
 
@@ -53,6 +52,7 @@ function settingsFor(
     uncertainRain: UNCERTAIN_RAIN,
     priorStrength: PRIOR_STRENGTH,
     minSamples: MIN_SAMPLES,
+    singleModelCap: SINGLE_MODEL_CAP,
   };
   return {
     leadGrouping: params.leadGrouping,
@@ -157,10 +157,7 @@ function calibrationTable(
   range: typeof RANGES.year,
 ): { readonly markdown: string; readonly calibrated: boolean } {
   const { announced, outcomes } = pooled(runs, range);
-  const bins = calibrationBins(announced, outcomes, INDEX_BOUNDS);
-  const calibrated = bins
-    .filter((bin) => bin.count >= CALIBRATION_MIN_COUNT)
-    .every((bin) => Math.abs(bin.announced - bin.observed) <= CALIBRATION_TOLERANCE);
+  const { bins, calibrated } = calibrationOf(announced, outcomes);
   const markdown = markdownTable(
     ['Indice annoncé', 'Jours', 'Indice moyen', 'Prévisions tenues', 'Écart'],
     bins.map((bin) => [
@@ -203,6 +200,9 @@ export function reliabilitySection(
   readonly markdown: string;
   readonly calibrated: boolean;
   readonly spreadThresholds: readonly number[];
+  /** Les simulations et leurs réglages, pour le jeu de données de calibration. */
+  readonly runs: readonly ReliabilityRun[];
+  readonly settings: ReliabilitySettings;
 } {
   const spreadThresholds = spreadThresholdsFromSelection(cities, params, rain);
   const settings = settingsFor(params, rain, spreadThresholds);
@@ -266,5 +266,5 @@ export function reliabilitySection(
     labelTable(runs),
     '',
   ].join('\n');
-  return { markdown, calibrated: validation.calibrated, spreadThresholds };
+  return { markdown, calibrated: validation.calibrated, spreadThresholds, runs, settings };
 }

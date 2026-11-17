@@ -9,7 +9,7 @@ import type { CorrectedInput } from '../../shared/blend/corrected.ts';
 import { EMPTY_DECAYED_MEAN } from '../../shared/blend/decayedMean.ts';
 import type { DecayedMean } from '../../shared/blend/decayedMean.ts';
 import { hourBlockOf } from '../../shared/blend/grouping.ts';
-import type { BlendParams } from './logic/params.ts';
+import type { BlendParams } from './params.ts';
 import { updateError } from '../../shared/blend/weights.ts';
 import { replay } from './replay.ts';
 

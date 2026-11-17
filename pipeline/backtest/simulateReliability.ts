@@ -1,9 +1,15 @@
 // Rejoue l'indice de fiabilité quotidien et note, pour chaque jour, si la prévision a été tenue.
+// Deux temps : on établit la situation de chaque jour (désaccord, signal de pluie, prévision
+// tenue ou non), puis on rejoue l'indice sans fuite d'information.
 
-import { dailyAvailabilityDelay, dailyMax, dailyMean, dailyMin } from './daily.ts';
 import type { LeadGrouping } from '../../shared/blend/grouping.ts';
-import { emptyReliabilityTable, reliabilityIndex, updateReliability } from './logic/reliability.ts';
-import type { ReliabilityOptions, Situation } from './logic/reliability.ts';
+import {
+  emptyReliabilityTable,
+  reliabilityIndex,
+  updateReliability,
+} from '../../shared/blend/reliability.ts';
+import type { ReliabilityOptions, Situation } from '../../shared/blend/reliability.ts';
+import { dailyAvailabilityDelay, dailyMax, dailyMean, dailyMin } from './daily.ts';
 import { replay } from './replay.ts';
 
 export type ReliabilitySettings = {
@@ -23,6 +29,8 @@ export type ReliabilityLeadInput = {
   readonly spread: Float64Array;
   /** Probabilité de pluie du jour, une valeur par jour. */
   readonly rainProbability: Float64Array;
+  /** Nombre de modèles qui couvrent cette échéance. */
+  readonly modelCount: number;
 };
 
 export type ReliabilityInput = {
@@ -34,16 +42,6 @@ export type ReliabilityInput = {
   readonly observationDelayHours: number;
 };
 
-export type ReliabilitySeries = {
-  /** Indice annoncé, de 0 à 1 ; `NaN` quand il est indisponible. */
-  readonly index: Float64Array;
-  /** 1 si la prévision du jour a été tenue, 0 sinon, `NaN` si elle n'est pas vérifiable. */
-  readonly held: Float64Array;
-  readonly components: HeldComponents;
-  /** Écart-type moyen entre modèles sur la journée. */
-  readonly spread: Float64Array;
-};
-
 /** Pour chaque jour : 1 si le critère est rempli, 0 sinon, `NaN` s'il n'est pas vérifiable. */
 export type HeldComponents = {
   readonly maximum: Float64Array;
@@ -51,6 +49,23 @@ export type HeldComponents = {
   readonly rain: Float64Array;
   /** Les trois critères à la fois. */
   readonly all: Float64Array;
+};
+
+/** Situation de chaque jour d'une échéance, et ce qu'il en est advenu. */
+export type ReliabilityDays = {
+  /** Écart-type moyen entre modèles sur la journée. */
+  readonly spread: Float64Array;
+  /** Probabilité de pluie du jour. */
+  readonly rainProbability: Float64Array;
+  /** 1 si la prévision du jour a été tenue, 0 sinon, `NaN` si elle n'est pas vérifiable. */
+  readonly held: Float64Array;
+  readonly modelCount: number;
+};
+
+export type ReliabilitySeries = ReliabilityDays & {
+  /** Indice annoncé, de 0 à 1 ; `NaN` quand il est indisponible. */
+  readonly index: Float64Array;
+  readonly components: HeldComponents;
 };
 
 const asFlag = (verifiable: boolean, held: boolean): number =>
@@ -95,46 +110,47 @@ export function heldDays(
   return { maximum, minimum, rain, all };
 }
 
-export function simulateReliability(
-  input: ReliabilityInput,
-  settings: ReliabilitySettings,
-): Map<number, ReliabilitySeries> {
-  const days = input.observedDailyRain.length;
-  const results = new Map<number, ReliabilitySeries>();
+export type ReplaySettings = {
+  readonly leadGrouping: LeadGrouping;
+  readonly options: ReliabilityOptions;
+  readonly observationDelayHours: number;
+};
+
+/**
+ * Indice de fiabilité de chaque jour, par échéance, tel qu'il aurait été annoncé : il ne
+ * s'appuie que sur les jours déjà vérifiés au moment de l'émission.
+ */
+export function replayReliabilityIndex(
+  byLead: ReadonlyMap<number, ReliabilityDays>,
+  settings: ReplaySettings,
+): Map<number, Float64Array> {
+  const indices = new Map<number, Float64Array>();
 
   for (const leads of settings.leadGrouping) {
-    const available = leads.filter((lead) => input.byLead.has(lead));
+    const available = leads.filter((lead) => byLead.has(lead));
     if (available.length === 0) continue;
+    const length = Math.max(...available.map((lead) => byLead.get(lead)?.held.length ?? 0));
     let table = emptyReliabilityTable(settings.options);
-
-    for (const lead of available) {
-      const leadInput = input.byLead.get(lead);
-      if (leadInput === undefined) continue;
-      const components = heldDays(leadInput, input, settings);
-      results.set(lead, {
-        index: new Float64Array(days).fill(Number.NaN),
-        held: components.all,
-        components,
-        spread: dailyMean(leadInput.spread),
-      });
-    }
+    for (const lead of available) indices.set(lead, new Float64Array(length).fill(Number.NaN));
 
     const situationOf = (lead: number, day: number): Situation | null => {
-      const spread = results.get(lead)?.spread[day] ?? Number.NaN;
-      const rainProbability = input.byLead.get(lead)?.rainProbability[day] ?? Number.NaN;
-      return Number.isFinite(spread) && Number.isFinite(rainProbability)
-        ? { spread, rainProbability }
-        : null;
+      const days = byLead.get(lead);
+      const spread = days?.spread[day] ?? Number.NaN;
+      const rainProbability = days?.rainProbability[day] ?? Number.NaN;
+      if (days === undefined || !Number.isFinite(spread) || !Number.isFinite(rainProbability)) {
+        return null;
+      }
+      return { spread, rainProbability, modelCount: days.modelCount };
     };
 
     replay({
-      length: days,
+      length,
       leads: available,
       stepsPerLeadDay: 1,
-      availabilityDelay: dailyAvailabilityDelay(input.observationDelayHours),
+      availabilityDelay: dailyAvailabilityDelay(settings.observationDelayHours),
       learn: (day) => {
         for (const lead of available) {
-          const held = results.get(lead)?.held[day] ?? Number.NaN;
+          const held = byLead.get(lead)?.held[day] ?? Number.NaN;
           const situation = situationOf(lead, day);
           if (situation === null || !Number.isFinite(held)) continue;
           table = updateReliability(table, situation, held === 1, settings.options);
@@ -142,11 +158,43 @@ export function simulateReliability(
       },
       predict: (lead, day) => {
         const situation = situationOf(lead, day);
-        const result = results.get(lead);
-        if (situation === null || result === undefined) return;
-        result.index[day] = reliabilityIndex(table, situation, settings.options) ?? Number.NaN;
+        const index = indices.get(lead);
+        if (situation === null || index === undefined) return;
+        index[day] = reliabilityIndex(table, situation, settings.options) ?? Number.NaN;
       },
     });
+  }
+  return indices;
+}
+
+export function simulateReliability(
+  input: ReliabilityInput,
+  settings: ReliabilitySettings,
+): Map<number, ReliabilitySeries> {
+  const components = new Map<number, HeldComponents>();
+  const days = new Map<number, ReliabilityDays>();
+  for (const [lead, leadInput] of input.byLead) {
+    const held = heldDays(leadInput, input, settings);
+    components.set(lead, held);
+    days.set(lead, {
+      spread: dailyMean(leadInput.spread),
+      rainProbability: leadInput.rainProbability,
+      held: held.all,
+      modelCount: leadInput.modelCount,
+    });
+  }
+  const indices = replayReliabilityIndex(days, {
+    leadGrouping: settings.leadGrouping,
+    options: settings.options,
+    observationDelayHours: input.observationDelayHours,
+  });
+
+  const results = new Map<number, ReliabilitySeries>();
+  for (const [lead, leadDays] of days) {
+    const index = indices.get(lead);
+    const held = components.get(lead);
+    if (index === undefined || held === undefined) continue;
+    results.set(lead, { ...leadDays, index, components: held });
   }
   return results;
 }

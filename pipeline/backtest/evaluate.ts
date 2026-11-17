@@ -8,7 +8,7 @@ import { bestModelOnPreviousWindow, simpleMean } from './baselines.ts';
 import type { CityData } from './data/dataset.ts';
 import { hourOfDate } from './data/hours.ts';
 import type { HourAxis } from './data/hours.ts';
-import type { BlendParams } from './logic/params.ts';
+import type { BlendParams } from './params.ts';
 import { commonPositions, scoreSeries } from './score.ts';
 import type { Score } from './score.ts';
 import { simulateBlend } from './simulate.ts';

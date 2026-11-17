@@ -6,7 +6,7 @@ import { CANDIDATE_MODEL, VARIABLES } from '../config.ts';
 import type { VariableId } from '../config.ts';
 import type { CityData } from '../data/dataset.ts';
 import { buildInput, evaluateContinuous, leadsToEvaluate, positionsOf } from '../evaluate.ts';
-import type { BlendParams } from '../logic/params.ts';
+import type { BlendParams } from '../params.ts';
 import { formatGain, formatInteger, formatNumber, markdownTable } from '../markdown.ts';
 import { commonPositions, scoreSeries } from '../score.ts';
 import { simulateBlend } from '../simulate.ts';

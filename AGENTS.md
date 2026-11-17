@@ -46,7 +46,7 @@ Quatrauro est une app météo personnelle (Expo / React Native, Android) pour To
 - **Tout le calcul se fait dans le pipeline.** L'app n'effectue aucun mélange : elle valide le JSON reçu (schémas Zod de `shared/`) et l'affiche.
 - Le contrat des fichiers publiés est versionné (`schemaVersion`). Un changement incompatible incrémente la version ; l'app refuse proprement une version inconnue.
 - Les heures se manipulent dans le fuseau `Europe/Paris` : le décalage vient de `shared/parisTime.ts` (règle européenne de changement d'heure, sans `Intl` : [ADR 0005](docs/adr/0005-heure-de-paris-sans-base-de-fuseaux.md)), la mise en forme de `src/lib/dates.ts` (`date-fns`, locale `fr`, semaine commençant le lundi). Ne jamais lire le fuseau du téléphone ni appeler `Intl` pour situer une heure. Les fichiers publiés portent des instants en UTC. Les tests figent l'horloge et écrivent leurs instants en UTC, pour ne pas dépendre du fuseau de la machine. Attention aux changements d'heure dans les agrégats journaliers.
-- Le backtest (`pipeline/backtest/`) rejoue exactement le code de `shared/` : jamais une copie de la logique. Il ne doit jamais utiliser une information postérieure à l'instant simulé. En attendant M1, la logique pure du mélange vit dans `pipeline/backtest/logic/` ; M1 la déplace telle quelle dans `shared/`.
+- Le backtest (`pipeline/backtest/`) rejoue exactement le code de `shared/` : jamais une copie de la logique. Il ne doit jamais utiliser une information postérieure à l'instant simulé. Il régénère aussi `pipeline/__fixtures__/backtest/reliability-days.json`, que le test de calibration de l'indice de fiabilité rejoue : ne pas le modifier à la main.
 - Le backtest s'exécute directement avec Node (`node pipeline/backtest/run.ts`), sans compilation. Dans `pipeline/` et dans `shared/`, les imports relatifs portent donc l'extension `.ts`, sans alias, et le code n'utilise que la syntaxe TypeScript effaçable (pas d'`enum`, pas de propriétés de constructeur). L'app, elle, importe `shared/` par l'alias `@shared/`.
 - `docs/features/backtest-resultats.md` est généré par le backtest : ne pas le modifier à la main.
 
@@ -71,10 +71,10 @@ shared/                     # ne dépend de rien : ni Node, ni React Native, ni 
   conditions.ts  variables.ts               # listes fermées : conditions météo, grandeurs prévues
   schemas.ts  series.ts                     # contrat des fichiers publiés (Zod), séries internes
   parisTime.ts                              # décalage de Paris sur UTC, jours civils de Paris
-  blend/                                    # logique pure du mélange : biais, poids, mélange d'une heure, pluie, agrégats
+  blend/                                    # logique pure du mélange : biais, poids, mélange d'une heure, pluie, agrégats, indice de fiabilité
 pipeline/
-  __fixtures__/             # réponses réelles d'Open-Meteo et de Météo-France, pour les tests
-  backtest/                 # backtest du mélange ; sa logique pure est dans backtest/logic/
+  __fixtures__/             # réponses réelles d'Open-Meteo et de Météo-France, et données dérivées du backtest, pour les tests
+  backtest/                 # backtest du mélange : rejoue shared/blend/ sur l'historique
 assets/                     # icônes provisoires du modèle Expo ; assets/icon/ : variantes proposées (docs/design/icone.md)
 scripts/brand/              # export en PNG de la variante d'icône choisie (npm run brand:export)
 docs/
