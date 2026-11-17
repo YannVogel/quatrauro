@@ -3,9 +3,9 @@
 // tranche, tenue par l'appelant), même niveau de désaccord entre modèles, même netteté du
 // signal de pluie. L'indice utilise donc l'écart entre modèles, l'échéance et l'erreur passée.
 
-import { EMPTY_FREQUENCY, addOutcome, smoothedRate } from './frequency.ts';
-import type { Frequency } from './frequency.ts';
-import { isotonic } from './isotonic.ts';
+import { EMPTY_FREQUENCY, addOutcome, smoothedRate } from '../../../shared/blend/frequency.ts';
+import type { Frequency } from '../../../shared/blend/frequency.ts';
+import { isotonic } from '../../../shared/blend/isotonic.ts';
 
 export type ReliabilityOptions = {
   /** Seuils croissants de l'écart-type entre modèles (°C) : n seuils donnent n + 1 niveaux de désaccord. */

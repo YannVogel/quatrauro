@@ -3,13 +3,14 @@
 
 import { HOURS_PER_DAY, emptySeries, utcHourAt } from './data/hours.ts';
 import type { HourAxis } from './data/hours.ts';
-import { correctForecast, updateBias } from '../../shared/blend/bias.ts';
-import { blendValues } from './logic/blend.ts';
+import { updateBias } from '../../shared/blend/bias.ts';
+import { blendCorrected } from '../../shared/blend/corrected.ts';
+import type { CorrectedInput } from '../../shared/blend/corrected.ts';
 import { EMPTY_DECAYED_MEAN } from '../../shared/blend/decayedMean.ts';
 import type { DecayedMean } from '../../shared/blend/decayedMean.ts';
 import { hourBlockOf } from '../../shared/blend/grouping.ts';
 import type { BlendParams } from './logic/params.ts';
-import { computeWeights, readError, updateError } from '../../shared/blend/weights.ts';
+import { updateError } from '../../shared/blend/weights.ts';
 import { replay } from './replay.ts';
 
 export type SimulationInput = {
@@ -83,26 +84,29 @@ export function simulateBlend(
       const result = results.get(lead);
       if (result === undefined) return;
       const block = blockAt(position);
-      const values: number[] = [];
-      const errors: (number | null)[] = [];
+      const present: number[] = [];
+      const inputs: CorrectedInput[] = [];
       forecasts.forEach((byLead, model) => {
         const forecast = byLead[lead - 1]?.[position] ?? Number.NaN;
         const state = states[model]?.[block];
-        const series = result.corrected[model];
-        if (state === undefined || series === undefined || !Number.isFinite(forecast)) return;
-        const corrected = correctForecast(forecast, state.bias, params.minSamples);
-        series[position] = corrected;
-        values.push(corrected);
-        errors.push(readError(state.error, params.minSamples));
+        if (state === undefined || !Number.isFinite(forecast)) return;
+        present.push(model);
+        inputs.push({ forecast, bias: state.bias, error: state.error });
       });
-      const weights = computeWeights(errors, {
-        exponent: params.weightExponent,
-        errorFloor: params.errorFloor,
-        minWeight: params.minWeight,
-        maxWeight: params.maxWeight,
+      const blend = blendCorrected(inputs, {
+        minSamples: params.minSamples,
+        weights: {
+          exponent: params.weightExponent,
+          errorFloor: params.errorFloor,
+          minWeight: params.minWeight,
+          maxWeight: params.maxWeight,
+        },
       });
-      const blend = blendValues(values, weights);
       if (blend === null) return;
+      present.forEach((model, index) => {
+        const series = result.corrected[model];
+        if (series !== undefined) series[position] = blend.corrected[index] ?? Number.NaN;
+      });
       result.blend[position] = blend.value;
       result.spread[position] = blend.spread;
     };

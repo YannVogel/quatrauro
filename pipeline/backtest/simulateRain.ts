@@ -9,8 +9,8 @@ import {
   rainAgreement,
   rainProbability,
   updateRainCalibration,
-} from './logic/rain.ts';
-import type { RainOptions } from './logic/rain.ts';
+} from '../../shared/blend/rain.ts';
+import type { RainOptions } from '../../shared/blend/rain.ts';
 import { replay } from './replay.ts';
 import type { SimulationInput } from './simulate.ts';
 

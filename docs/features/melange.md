@@ -79,3 +79,52 @@ Cas limites :
 | Trop peu de modèles pour respecter une borne | La borne s'efface devant le partage égal (deux modèles ne peuvent pas peser chacun au plus 40 %) |
 | Un poids dépasse une borne | Tous les poids sont multipliés par un même facteur, puis bornés, de façon que leur somme vaille 1 : les modèles que les bornes ne touchent pas gardent entre eux leurs proportions |
 | Plafond et plancher atteints en même temps | Même règle : un modèle à 70 %, les autres se partagent les 30 % restants sans descendre sous 5 % |
+
+## Mélange d'une heure (`hourly.ts`)
+
+`blendHour(models, calibration, params)` prend ce que chaque modèle prévoit pour une heure, avec son état pour la tranche d'échéance et l'heure de la journée concernées, et rend la valeur combinée de chaque variable.
+
+| Variable | Comment elle se mélange | Fichier |
+|---|---|---|
+| Température, humidité, vent moyen, rafales | Biais corrigé, puis moyenne pondérée par l'erreur récente | `corrected.ts` (`blendCorrected`) |
+| Direction du vent | Moyenne **vectorielle**, avec les poids du vent moyen | `wind.ts` (`meanDirection`) |
+| Nébulosité | Moyenne simple, sans correction : elle n'est pas mesurée à Toulon, et le mélange pondéré ne fait pas mieux à Nice | `hourly.ts` |
+| Cumul de pluie | Moyenne simple des modèles | `hourly.ts` |
+| Probabilité de pluie | Part des modèles qui annoncent au moins 0,2 mm, remplacée par la fréquence observée pour ce degré d'accord | `rain.ts` |
+| Température ressentie | Dérivée de la température, de l'humidité et du vent **mélangés** | `apparentTemperature.ts` |
+
+Le résultat garde aussi ce qu'il faut pour être transparent : l'écart-type entre les températures corrigées (`temperatureSpread`), la liste des modèles qui donnent une température à cette heure (`temperatureModels`), leur poids, et la température corrigée et le cumul de chaque modèle.
+
+Le backtest rejoue `blendCorrected`, la même fonction que le pipeline.
+
+### Direction du vent
+
+350° et 10° font 0°, pas 180° : on additionne les vecteurs unitaires, pondérés, et on lit l'angle de la somme. Quand les directions s'annulent (un modèle au nord, l'autre au sud, à poids égaux), il n'y a pas de direction moyenne : le résultat est `null`.
+
+### Température ressentie
+
+Formule de Steadman, celle du Bureau of Meteorology australien, sans le terme de rayonnement : `ressenti = T + 0,33 × e − 0,70 × v − 4`, où `e` est la pression de vapeur d'eau en hPa et `v` le vent à 10 m en m/s. Elle ne donne pas le même chiffre que la température ressentie d'Open-Meteo, qui ajoute le rayonnement solaire : c'est voulu, le ressenti de Quatrauro vient des champs qu'il a lui-même corrigés.
+
+### Probabilité de pluie
+
+L'accord entre modèles est rangé en cinq classes : aucun, une minorité, la moitié, une majorité, tous. Pour chaque tranche d'échéance, on compte combien de fois il a plu dans chaque classe ; la probabilité annoncée est cette fréquence, lissée vers la fréquence d'ensemble tant que la classe compte peu de cas, et rendue croissante avec l'accord. Avant 30 cas, la probabilité est l'accord brut.
+
+### Cas limites
+
+| Cas | Comportement |
+|---|---|
+| Aucun modèle ne donne une variable | Elle vaut `null` ; les autres variables se calculent normalement |
+| Un seul modèle couvre l'heure | Sa valeur est rendue, avec un écart nul et lui seul dans `temperatureModels` |
+| Un modèle ne fournit pas une variable (rafales d'IFS dans l'historique) | Il est ignoré pour cette variable seulement |
+| La correction pousse une valeur hors de son domaine | Humidité ramenée entre 0 et 100, vent et rafales à 0 au moins |
+| Il manque la température, l'humidité ou le vent | Pas de ressenti |
+| Les directions du vent s'annulent | Pas de direction |
+
+## Agrégats quotidiens (`daily.ts`)
+
+`aggregateDaily(hours, minCoverage)` range les heures par **jour civil de Paris** (`shared/parisTime.ts`) et calcule le minimum et le maximum de température et de ressenti, le cumul de pluie, le vent et les rafales les plus forts, l'humidité moyenne.
+
+- Un jour compte 24 heures, ou 23 et 25 les jours de changement d'heure : le cumul d'un jour de 25 heures additionne bien 25 heures.
+- Une variable n'a d'agrégat que si elle couvre au moins **75 %** des heures du jour (`minDayCoverage`). En dessous, il vaut `null` : le minimum d'une demi-journée n'est pas le minimum du jour.
+- La couverture se juge variable par variable : un jour peut avoir un maximum de température et pas de rafales.
+

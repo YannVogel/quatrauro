@@ -9,6 +9,8 @@ export const BLEND_CONFIG = {
   hourBlocksPerDay: 24,
   /** Délai, en heures, entre une mesure et sa publication par Météo-France (27 h au plus, mesuré). */
   observationDelayHours: 30,
+  /** Part des heures d'un jour qu'une variable doit couvrir pour que son agrégat quotidien existe. */
+  minDayCoverage: 0.75,
 
   /** Variables corrigées de leur biais et pondérées. */
   corrected: {
