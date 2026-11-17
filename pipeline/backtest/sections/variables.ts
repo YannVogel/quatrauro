@@ -23,7 +23,11 @@ function fillOf(series: Float64Array | undefined): number {
 }
 
 /** Modèles dont l'historique de cette variable couvre la période (échéance J+1). */
-export function modelsWithHistory(data: CityData, variable: VariableId, models: readonly Model[]): Model[] {
+export function modelsWithHistory(
+  data: CityData,
+  variable: VariableId,
+  models: readonly Model[],
+): Model[] {
   return models.filter((model) => fillOf(data.forecasts[variable][model.id]?.[0]) >= MIN_FILL);
 }
 
@@ -40,17 +44,30 @@ export function otherVariablesSection(cities: Cities, params: BlendParams): stri
     lines.push(`### ${variable.label} (${variable.unit})`, '');
     for (const data of cities) {
       if (fillOf(data.observations[variableId]) < MIN_FILL) {
-        lines.push(`**${data.city.name}** : la station ne mesure pas cette variable, rien n'est vérifiable.`, '');
+        lines.push(
+          `**${data.city.name}** : la station ne mesure pas cette variable, rien n'est vérifiable.`,
+          '',
+        );
         continue;
       }
       const models = modelsWithHistory(data, variableId, MODELS);
       const excluded = MODELS.filter((model) => !models.includes(model)).map((model) => model.name);
-      const note = excluded.length === 0 ? '' : ` Sans ${excluded.join(', ')} (historique insuffisant).`;
+      const note =
+        excluded.length === 0 ? '' : ` Sans ${excluded.join(', ')} (historique insuffisant).`;
       if (leadsToEvaluate(models).length === 0) {
         lines.push(`**${data.city.name}** : moins de deux modèles ont un historique.${note}`, '');
         continue;
       }
-      lines.push(`**${data.city.name}**.${note}`, '', continuousTable(evaluateContinuous(data, variableId, models, params, RANGES.year), models, variable.unit), '');
+      lines.push(
+        `**${data.city.name}**.${note}`,
+        '',
+        continuousTable(
+          evaluateContinuous(data, variableId, models, params, RANGES.year),
+          models,
+          variable.unit,
+        ),
+        '',
+      );
     }
   }
   return lines.join('\n');
@@ -77,7 +94,9 @@ export function candidateSection(cities: Cities, params: BlendParams): string {
       const candidate = extended.forecasts[withCandidate.length - 1]?.[lead - 1];
       if (five === undefined || six === undefined || candidate === undefined) return [];
       const raw = withCandidate
-        .map((model, index) => (model.historyLeadDays >= lead ? extended.forecasts[index]?.[lead - 1] : undefined))
+        .map((model, index) =>
+          model.historyLeadDays >= lead ? extended.forecasts[index]?.[lead - 1] : undefined,
+        )
         .filter((series): series is Float64Array => series !== undefined);
       const positions = commonPositions([...raw, five, six], base.observation, from, to);
       const scoreFive = scoreSeries(five, base.observation, positions);
@@ -96,7 +115,17 @@ export function candidateSection(cities: Cities, params: BlendParams): string {
     lines.push(
       `### ${data.city.name}`,
       '',
-      markdownTable(['Échéance', 'Heures notées', `${CANDIDATE_MODEL.name} brut`, 'Mélange à cinq', 'Mélange à six', 'Gain du sixième modèle'], rows),
+      markdownTable(
+        [
+          'Échéance',
+          'Heures notées',
+          `${CANDIDATE_MODEL.name} brut`,
+          'Mélange à cinq',
+          'Mélange à six',
+          'Gain du sixième modèle',
+        ],
+        rows,
+      ),
       '',
     );
   }

@@ -1,14 +1,19 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { describe, it } from 'node:test';
 
 import { CITIES, MODELS, VARIABLES } from '../config.ts';
-import { createHourAxis, dateAt, hourOfMeteoFranceTime, hourOfOpenMeteoTime, utcHourAt } from '../data/hours.ts';
+import {
+  createHourAxis,
+  dateAt,
+  hourOfMeteoFranceTime,
+  hourOfOpenMeteoTime,
+  utcHourAt,
+} from '../data/hours.ts';
 import { createHourlyParser, findLatestHourlyFileUrl } from '../data/meteoFrance.ts';
 import { buildPreviousRunsUrl, parsePreviousRuns } from '../data/openMeteo.ts';
 
-const fixtures = path.join(import.meta.dirname, '..', '..', '__fixtures__');
+const fixtures = path.join(__dirname, '..', '..', '__fixtures__');
 const read = (file: string): string => readFileSync(path.join(fixtures, file), 'utf8');
 
 const find = <T extends { readonly id: string }>(items: readonly T[], id: string): T => {
@@ -43,8 +48,16 @@ describe('réponse Previous Runs', () => {
   const response: unknown = JSON.parse(read('open-meteo/previous-runs-toulon.json'));
 
   it('demande les décalages couverts par le modèle', () => {
-    const url = new URL(buildPreviousRunsUrl(toulon, find(MODELS, 'arpege'), temperature, { start: '2026-11-15', end: '2026-11-16' }));
-    assert.equal(url.searchParams.get('hourly'), 'temperature_2m_previous_day1,temperature_2m_previous_day2,temperature_2m_previous_day3');
+    const url = new URL(
+      buildPreviousRunsUrl(toulon, find(MODELS, 'arpege'), temperature, {
+        start: '2026-11-15',
+        end: '2026-11-16',
+      }),
+    );
+    assert.equal(
+      url.searchParams.get('hourly'),
+      'temperature_2m_previous_day1,temperature_2m_previous_day2,temperature_2m_previous_day3',
+    );
     assert.equal(url.searchParams.get('models'), 'meteofrance_arpege_europe');
     assert.equal(url.searchParams.get('timezone'), 'GMT');
   });
@@ -53,7 +66,11 @@ describe('réponse Previous Runs', () => {
     const ifs = { ...find(MODELS, 'ifs'), historyLeadDays: 3 };
     const series = parsePreviousRuns(response, ifs, temperature, axis);
     assert.equal(series.length, 3);
-    assert.ok(series.every((values) => values.length === 48 && values.every((value) => Number.isFinite(value))));
+    assert.ok(
+      series.every(
+        (values) => values.length === 48 && values.every((value) => Number.isFinite(value)),
+      ),
+    );
   });
 
   it('garde absente une valeur absente', () => {
@@ -66,10 +83,19 @@ describe('réponse Previous Runs', () => {
 
   it('refuse une réponse qui n’a pas la forme attendue', () => {
     const ifs = find(MODELS, 'ifs');
-    assert.throws(() => parsePreviousRuns({ error: true, reason: 'No data' }, ifs, temperature, axis));
-    assert.throws(() => parsePreviousRuns({ hourly: { time: ['2026-11-15T00:00'] } }, ifs, temperature, axis));
     assert.throws(() =>
-      parsePreviousRuns({ hourly: { time: ['2026-11-15T00:00'], temperature_2m_previous_day1: ['chaud'] } }, { ...ifs, historyLeadDays: 1 }, temperature, axis),
+      parsePreviousRuns({ error: true, reason: 'No data' }, ifs, temperature, axis),
+    );
+    assert.throws(() =>
+      parsePreviousRuns({ hourly: { time: ['2026-11-15T00:00'] } }, ifs, temperature, axis),
+    );
+    assert.throws(() =>
+      parsePreviousRuns(
+        { hourly: { time: ['2026-11-15T00:00'], temperature_2m_previous_day1: ['chaud'] } },
+        { ...ifs, historyLeadDays: 1 },
+        temperature,
+        axis,
+      ),
     );
   });
 });
@@ -77,7 +103,10 @@ describe('réponse Previous Runs', () => {
 describe('fichier horaire de Météo-France', () => {
   const parse = (file: string, station: string) => {
     const parser = createHourlyParser(station, VARIABLES, axis);
-    read(file).split('\n').filter((line) => line !== '').forEach(parser.readLine);
+    read(file)
+      .split('\n')
+      .filter((line) => line !== '')
+      .forEach(parser.readLine);
     return parser.result();
   };
 
@@ -91,7 +120,7 @@ describe('fichier horaire de Météo-France', () => {
     assert.ok(observations.temperature.every((value) => Number.isFinite(value)));
   });
 
-  it("laisse absente une variable que la station ne mesure pas", () => {
+  it('laisse absente une variable que la station ne mesure pas', () => {
     const observations = parse('meteo-france/hourly-toulon-83137001.csv', toulon.station);
     assert.ok(observations.cloudCover.every((value) => Number.isNaN(value)));
   });
@@ -104,9 +133,22 @@ describe('fichier horaire de Météo-France', () => {
   });
 
   it('ignore les autres stations et les mesures douteuses', () => {
-    assert.ok(parse('meteo-france/hourly-nice-06088001.csv', toulon.station).temperature.every((value) => Number.isNaN(value)));
-    const parser = createHourlyParser('1', VARIABLES.filter((variable) => variable.id === 'temperature'), axis);
-    ['NUM_POSTE;AAAAMMJJHH;T;QT', '1;2026111500;12.5;1', '1;2026111501;40.0;2', '1;2026111502;;'].forEach(parser.readLine);
+    assert.ok(
+      parse('meteo-france/hourly-nice-06088001.csv', toulon.station).temperature.every((value) =>
+        Number.isNaN(value),
+      ),
+    );
+    const parser = createHourlyParser(
+      '1',
+      VARIABLES.filter((variable) => variable.id === 'temperature'),
+      axis,
+    );
+    [
+      'NUM_POSTE;AAAAMMJJHH;T;QT',
+      '1;2026111500;12.5;1',
+      '1;2026111501;40.0;2',
+      '1;2026111502;;',
+    ].forEach(parser.readLine);
     const { temperature: values } = parser.result();
     assert.equal(values[0], 12.5);
     assert.ok(Number.isNaN(values[1]));
@@ -115,7 +157,11 @@ describe('fichier horaire de Météo-France', () => {
 
   it('refuse un fichier sans les colonnes attendues ou une mesure illisible', () => {
     assert.throws(() => createHourlyParser('1', VARIABLES, axis).readLine('NUM_POSTE;AAAAMMJJHH'));
-    const parser = createHourlyParser('1', VARIABLES.filter((variable) => variable.id === 'temperature'), axis);
+    const parser = createHourlyParser(
+      '1',
+      VARIABLES.filter((variable) => variable.id === 'temperature'),
+      axis,
+    );
     parser.readLine('NUM_POSTE;AAAAMMJJHH;T;QT');
     assert.throws(() => parser.readLine('1;2026111500;doux;1'));
   });
@@ -128,7 +174,10 @@ describe('fichier horaire de Météo-France', () => {
         { url: 'https://exemple.test/BASE/HOR/H_06_latest-2025-2026.csv.gz' },
       ],
     };
-    assert.equal(findLatestHourlyFileUrl(dataset, '83'), 'https://exemple.test/BASE/HOR/H_83_latest-2025-2026.csv.gz');
+    assert.equal(
+      findLatestHourlyFileUrl(dataset, '83'),
+      'https://exemple.test/BASE/HOR/H_83_latest-2025-2026.csv.gz',
+    );
     assert.throws(() => findLatestHourlyFileUrl(dataset, '13'));
     assert.throws(() => findLatestHourlyFileUrl({}, '83'));
   });

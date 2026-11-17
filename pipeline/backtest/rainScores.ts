@@ -11,9 +11,18 @@ export type Contingency = {
   readonly correctNegatives: number;
 };
 
-export const EMPTY_CONTINGENCY: Contingency = { hits: 0, misses: 0, falseAlarms: 0, correctNegatives: 0 };
+export const EMPTY_CONTINGENCY: Contingency = {
+  hits: 0,
+  misses: 0,
+  falseAlarms: 0,
+  correctNegatives: 0,
+};
 
-export function addToContingency(table: Contingency, announced: boolean, observed: boolean): Contingency {
+export function addToContingency(
+  table: Contingency,
+  announced: boolean,
+  observed: boolean,
+): Contingency {
   if (announced && observed) return { ...table, hits: table.hits + 1 };
   if (!announced && observed) return { ...table, misses: table.misses + 1 };
   if (announced) return { ...table, falseAlarms: table.falseAlarms + 1 };
@@ -52,8 +61,12 @@ export function criticalSuccessIndex(table: Contingency): number {
 
 /** Score de Brier : erreur quadratique moyenne d'une probabilité (0 = parfait). */
 export function brierScore(probabilities: readonly number[], outcomes: readonly boolean[]): number {
-  if (probabilities.length !== outcomes.length) throw new Error('Autant de résultats que de probabilités sont attendus');
-  const total = probabilities.reduce((sum, probability, index) => sum + (probability - (outcomes[index] ? 1 : 0)) ** 2, 0);
+  if (probabilities.length !== outcomes.length)
+    throw new Error('Autant de résultats que de probabilités sont attendus');
+  const total = probabilities.reduce(
+    (sum, probability, index) => sum + (probability - (outcomes[index] ? 1 : 0)) ** 2,
+    0,
+  );
   return total / probabilities.length;
 }
 
@@ -85,6 +98,12 @@ export function calibrationBins(
       sum += value;
       hits += outcomes[at] ? 1 : 0;
     });
-    return { from, to, count, announced: count === 0 ? Number.NaN : sum / count, observed: count === 0 ? Number.NaN : hits / count };
+    return {
+      from,
+      to,
+      count,
+      announced: count === 0 ? Number.NaN : sum / count,
+      observed: count === 0 ? Number.NaN : hits / count,
+    };
   });
 }

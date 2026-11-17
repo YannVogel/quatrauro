@@ -53,13 +53,18 @@ export type HeldComponents = {
   readonly all: Float64Array;
 };
 
-const asFlag = (verifiable: boolean, held: boolean): number => (verifiable ? (held ? 1 : 0) : Number.NaN);
+const asFlag = (verifiable: boolean, held: boolean): number =>
+  verifiable ? (held ? 1 : 0) : Number.NaN;
 
 /**
  * Une prévision est « tenue » si le minimum et le maximum du jour tombent dans la tolérance
  * et si l'annonce de pluie (oui ou non) est juste.
  */
-export function heldDays(lead: ReliabilityLeadInput, input: ReliabilityInput, settings: ReliabilitySettings): HeldComponents {
+export function heldDays(
+  lead: ReliabilityLeadInput,
+  input: ReliabilityInput,
+  settings: ReliabilitySettings,
+): HeldComponents {
   const forecastMax = dailyMax(lead.temperature);
   const forecastMin = dailyMin(lead.temperature);
   const observedMax = dailyMax(input.observedTemperature);
@@ -75,16 +80,25 @@ export function heldDays(lead: ReliabilityLeadInput, input: ReliabilityInput, se
   const rain = lead.rainProbability.map((probability, day) => {
     const observed = input.observedDailyRain[day] ?? Number.NaN;
     const announced = probability >= settings.rainAnnouncementProbability;
-    return asFlag(Number.isFinite(probability) && Number.isFinite(observed), announced === observed >= settings.rainThreshold);
+    return asFlag(
+      Number.isFinite(probability) && Number.isFinite(observed),
+      announced === observed >= settings.rainThreshold,
+    );
   });
   const all = maximum.map((max, day) => {
     const flags = [max, minimum[day] ?? Number.NaN, rain[day] ?? Number.NaN];
-    return asFlag(flags.every((flag) => Number.isFinite(flag)), flags.every((flag) => flag === 1));
+    return asFlag(
+      flags.every((flag) => Number.isFinite(flag)),
+      flags.every((flag) => flag === 1),
+    );
   });
   return { maximum, minimum, rain, all };
 }
 
-export function simulateReliability(input: ReliabilityInput, settings: ReliabilitySettings): Map<number, ReliabilitySeries> {
+export function simulateReliability(
+  input: ReliabilityInput,
+  settings: ReliabilitySettings,
+): Map<number, ReliabilitySeries> {
   const days = input.observedDailyRain.length;
   const results = new Map<number, ReliabilitySeries>();
 
@@ -108,7 +122,9 @@ export function simulateReliability(input: ReliabilityInput, settings: Reliabili
     const situationOf = (lead: number, day: number): Situation | null => {
       const spread = results.get(lead)?.spread[day] ?? Number.NaN;
       const rainProbability = input.byLead.get(lead)?.rainProbability[day] ?? Number.NaN;
-      return Number.isFinite(spread) && Number.isFinite(rainProbability) ? { spread, rainProbability } : null;
+      return Number.isFinite(spread) && Number.isFinite(rainProbability)
+        ? { spread, rainProbability }
+        : null;
     };
 
     replay({

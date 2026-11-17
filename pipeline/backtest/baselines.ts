@@ -36,7 +36,11 @@ export type BestModelOptions = {
  * précédant l'émission, parmi les observations alors publiées. C'est la comparaison honnête :
  * elle n'utilise rien de postérieur à l'émission.
  */
-export function bestModelOnPreviousWindow(input: SimulationInput, lead: number, options: BestModelOptions): Float64Array {
+export function bestModelOnPreviousWindow(
+  input: SimulationInput,
+  lead: number,
+  options: BestModelOptions,
+): Float64Array {
   const { axis, observation, observationDelayHours } = input;
   const cumulativeError = input.forecasts.map(() => new Float64Array(axis.length + 1));
   const cumulativeCount = input.forecasts.map(() => new Float64Array(axis.length + 1));
@@ -45,7 +49,9 @@ export function bestModelOnPreviousWindow(input: SimulationInput, lead: number, 
     const counts = cumulativeCount[model];
     if (errors === undefined || counts === undefined) continue;
     for (let position = 0; position < axis.length; position += 1) {
-      const error = Math.abs(forecastAt(input, model, lead, position) - (observation[position] ?? Number.NaN));
+      const error = Math.abs(
+        forecastAt(input, model, lead, position) - (observation[position] ?? Number.NaN),
+      );
       const usable = Number.isFinite(error);
       errors[position + 1] = (errors[position] ?? 0) + (usable ? error : 0);
       counts[position + 1] = (counts[position] ?? 0) + (usable ? 1 : 0);
@@ -64,7 +70,8 @@ export function bestModelOnPreviousWindow(input: SimulationInput, lead: number, 
       const value = forecastAt(input, model, lead, position);
       const count = (cumulativeCount[model]?.[end] ?? 0) - (cumulativeCount[model]?.[start] ?? 0);
       if (!Number.isFinite(value) || count < options.minSamples) continue;
-      const error = ((cumulativeError[model]?.[end] ?? 0) - (cumulativeError[model]?.[start] ?? 0)) / count;
+      const error =
+        ((cumulativeError[model]?.[end] ?? 0) - (cumulativeError[model]?.[start] ?? 0)) / count;
       if (error < bestError) {
         bestError = error;
         bestValue = value;

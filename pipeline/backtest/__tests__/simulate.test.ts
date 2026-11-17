@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { describe, it } from 'node:test';
 
 import { bestModelOnPreviousWindow, simpleMean } from '../baselines.ts';
 import { createHourAxis, emptySeries } from '../data/hours.ts';
@@ -60,7 +59,12 @@ describe('simulation du mélange', () => {
     const [a, b] = [input.forecasts[0]?.[0], input.forecasts[1]?.[0]];
     assert.ok(a !== undefined && b !== undefined);
     const mean = simpleMean(input, 1);
-    const positions = commonPositions([result.blend, a, b, mean], input.observation, 24 * 20, axis.length);
+    const positions = commonPositions(
+      [result.blend, a, b, mean],
+      input.observation,
+      24 * 20,
+      axis.length,
+    );
     const blend = scoreSeries(result.blend, input.observation, positions);
     assert.ok(blend.mae < scoreSeries(a, input.observation, positions).mae);
     assert.ok(blend.mae < scoreSeries(b, input.observation, positions).mae);
@@ -81,7 +85,12 @@ describe('simulation du mélange', () => {
     const reference = simulateBlend(input, params);
     const cut = 24 * 30;
     // On falsifie toutes les observations à partir de `cut`.
-    const tampered = { ...input, observation: input.observation.map((value, position) => (position >= cut ? value + 50 : value)) };
+    const tampered = {
+      ...input,
+      observation: input.observation.map((value, position) =>
+        position >= cut ? value + 50 : value,
+      ),
+    };
     const result = simulateBlend(tampered, params);
     for (const lead of [1, 2, 3]) {
       const expected = reference.get(lead)?.blend;
@@ -100,18 +109,29 @@ describe('simulation du mélange', () => {
   it('se passe d’un modèle absent et ne rend rien quand tous manquent', () => {
     const input = createInput();
     const missing = emptySeries(axis);
-    const partial = { ...input, forecasts: [[missing, missing, missing], input.forecasts[1] ?? []] };
+    const partial = {
+      ...input,
+      forecasts: [[missing, missing, missing], input.forecasts[1] ?? []],
+    };
     const result = simulateBlend(partial, params).get(1);
     assert.ok(result !== undefined);
     assert.ok(Number.isFinite(result.blend[24 * 40]));
     assert.equal(result.spread[24 * 40], 0);
-    const none = simulateBlend({ ...input, forecasts: [[missing], [missing]] }, { ...params, leadGrouping: [[1]] }).get(1);
+    const none = simulateBlend(
+      { ...input, forecasts: [[missing], [missing]] },
+      { ...params, leadGrouping: [[1]] },
+    ).get(1);
     assert.ok(none !== undefined && none.blend.every((value) => Number.isNaN(value)));
   });
 
   it('ignore les trous dans les observations', () => {
     const input = createInput();
-    const holed = { ...input, observation: input.observation.map((value, position) => (position % 5 === 0 ? Number.NaN : value)) };
+    const holed = {
+      ...input,
+      observation: input.observation.map((value, position) =>
+        position % 5 === 0 ? Number.NaN : value,
+      ),
+    };
     const result = simulateBlend(holed, params).get(1);
     assert.ok(result !== undefined && Number.isFinite(result.blend[24 * 40]));
   });
@@ -130,7 +150,12 @@ describe('meilleur modèle sur la fenêtre précédente', () => {
     assert.ok(Number.isNaN(best[10]));
 
     const cut = 24 * 30;
-    const tampered = { ...input, observation: input.observation.map((value, position) => (position >= cut ? value + 2 : value)) };
+    const tampered = {
+      ...input,
+      observation: input.observation.map((value, position) =>
+        position >= cut ? value + 2 : value,
+      ),
+    };
     const after = bestModelOnPreviousWindow(tampered, 1, options);
     for (let position = 0; position <= cut + DELAY + 24 - 1; position += 1) {
       assert.equal(after[position], best[position]);

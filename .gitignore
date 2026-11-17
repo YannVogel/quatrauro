@@ -1,5 +1,37 @@
+# Dépendances
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Dossiers natifs générés (Continuous Native Generation) : configurer le natif dans app.config.ts
+/ios
+/android
+.kotlin/
+*.orig.*
+
+# Signature et secrets : jamais dans le repo
+*.jks
+*.p8
+*.p12
+*.key
+*.pem
+*.mobileprovision
+.env*.local
+
+# Metro, TypeScript, tests
+.metro-health-check*
+*.tsbuildinfo
+coverage/
+
+# Journaux
+npm-debug.*
+
 # Données téléchargées par le backtest (réponses d'Open-Meteo, fichiers de Météo-France)
 pipeline/backtest/.cache/
 
-node_modules/
+# macOS
 .DS_Store

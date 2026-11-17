@@ -17,12 +17,28 @@ import { candidateSection, otherVariablesSection } from './sections/variables.ts
 import { TEMPERATURE_MIN_GAIN } from './verdict.ts';
 
 const cacheDir = path.join(import.meta.dirname, '.cache');
-const reportFile = path.join(import.meta.dirname, '..', '..', 'docs', 'features', 'backtest-resultats.md');
+const reportFile = path.join(
+  import.meta.dirname,
+  '..',
+  '..',
+  'docs',
+  'features',
+  'backtest-resultats.md',
+);
 const log = (message: string): void => console.log(message);
 
 const cities = [];
 for (const city of CITIES) {
-  cities.push(await loadCityData(cacheDir, city, [...MODELS, CANDIDATE_MODEL], VARIABLES, PERIOD, () => undefined));
+  cities.push(
+    await loadCityData(
+      cacheDir,
+      city,
+      [...MODELS, CANDIDATE_MODEL],
+      VARIABLES,
+      PERIOD,
+      () => undefined,
+    ),
+  );
   log(`Données lues : ${city.name}`);
 }
 
@@ -46,9 +62,13 @@ const verdict = [
     (entry) =>
       `- **Température, ${entry.city}** : gain d'au moins ${formatNumber(TEMPERATURE_MIN_GAIN * 100, 0)} % sur ${entry.verdict.leadsWithGain.length} échéances sur ${entry.verdict.leadsEvaluated.length} → critère ${entry.verdict.passed ? 'rempli' : '**non rempli**'}.`,
   ),
-  ...rain.verdicts.map((entry) => `- **Pluie, ${entry.city}** : ${entry.degraded ? '**dégradée**' : 'non dégradée'}.`),
+  ...rain.verdicts.map(
+    (entry) => `- **Pluie, ${entry.city}** : ${entry.degraded ? '**dégradée**' : 'non dégradée'}.`,
+  ),
   '',
-  greenLight ? '**Feu vert : le critère est atteint dans les deux villes.**' : '**Le critère n’est pas atteint partout : pas de feu vert en l’état.**',
+  greenLight
+    ? '**Feu vert : le critère est atteint dans les deux villes.**'
+    : '**Le critère n’est pas atteint partout : pas de feu vert en l’état.**',
   '',
 ].join('\n');
 

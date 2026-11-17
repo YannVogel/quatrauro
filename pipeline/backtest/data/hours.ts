@@ -35,8 +35,12 @@ export function hourOfOpenMeteoTime(time: string): number {
 
 /** Heures depuis l'époque Unix d'une heure UTC au format de Météo-France (`AAAAMMJJHH`). */
 export function hourOfMeteoFranceTime(time: string): number {
-  if (!METEO_FRANCE_TIME_FORMAT.test(time)) throw new Error(`Heure Météo-France invalide : ${time}`);
-  return hourOfIso(`${time.slice(0, 4)}-${time.slice(4, 6)}-${time.slice(6, 8)}T${time.slice(8, 10)}:00:00Z`, 'Heure Météo-France');
+  if (!METEO_FRANCE_TIME_FORMAT.test(time))
+    throw new Error(`Heure Météo-France invalide : ${time}`);
+  return hourOfIso(
+    `${time.slice(0, 4)}-${time.slice(4, 6)}-${time.slice(6, 8)}T${time.slice(8, 10)}:00:00Z`,
+    'Heure Météo-France',
+  );
 }
 
 /** Axe qui couvre les jours UTC de `startDate` à `endDate`, bornes comprises. */

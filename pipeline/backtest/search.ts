@@ -47,7 +47,13 @@ export function enumerateCandidates(): Candidate[] {
       for (const weightExponent of GRID.weightExponent)
         for (const hourBlocksPerDay of GRID.hourBlocksPerDay)
           for (const leadGrouping of GRID.leadGrouping)
-            candidates.push({ biasHalfLifeDays, errorHalfLifeDays, weightExponent, hourBlocksPerDay, leadGrouping });
+            candidates.push({
+              biasHalfLifeDays,
+              errorHalfLifeDays,
+              weightExponent,
+              hourBlocksPerDay,
+              leadGrouping,
+            });
   return candidates;
 }
 
@@ -77,7 +83,8 @@ export function searchParams(
       for (const lead of leads) {
         const leadSimulation = simulation.get(lead);
         const leadBaselines = baselines.get(lead);
-        if (leadSimulation === undefined || leadBaselines === undefined) throw new Error(`Échéance J+${lead} non simulée`);
+        if (leadSimulation === undefined || leadBaselines === undefined)
+          throw new Error(`Échéance J+${lead} non simulée`);
         total += evaluateLead(input, models, lead, leadSimulation, leadBaselines, range).blend.mae;
         terms += 1;
       }
@@ -91,9 +98,13 @@ export function searchParams(
  * Erreur moyenne des candidats pour chaque valeur d'un paramètre : l'effet propre de ce
  * paramètre. Les valeurs sont rendues dans l'ordre de la grille.
  */
-export function marginalEffect(results: readonly CandidateResult[], parameter: keyof Candidate): Map<string, number> {
+export function marginalEffect(
+  results: readonly CandidateResult[],
+  parameter: keyof Candidate,
+): Map<string, number> {
   const groups = new Map<string, number[]>(GRID[parameter].map((value) => [String(value), []]));
-  for (const result of results) groups.get(String(result.candidate[parameter]))?.push(result.meanError);
+  for (const result of results)
+    groups.get(String(result.candidate[parameter]))?.push(result.meanError);
   return new Map(
     [...groups]
       .filter(([, errors]) => errors.length > 0)

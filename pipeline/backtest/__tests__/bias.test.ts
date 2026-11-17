@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { describe, it } from 'node:test';
 
 import { correctForecast, updateBias, updateError } from '../logic/bias.ts';
 import { EMPTY_DECAYED_MEAN, readDecayedMean } from '../logic/decayedMean.ts';
@@ -23,15 +22,18 @@ describe('correction de biais', () => {
 
   it('suit un biais qui change', () => {
     let state = EMPTY_DECAYED_MEAN;
-    for (let hour = 0; hour < 24 * 30; hour += 1) state = updateBias(state, 12, 10, hour, HALF_LIFE_DAYS);
-    for (let hour = 24 * 30; hour < 24 * 120; hour += 1) state = updateBias(state, 9, 10, hour, HALF_LIFE_DAYS);
+    for (let hour = 0; hour < 24 * 30; hour += 1)
+      state = updateBias(state, 12, 10, hour, HALF_LIFE_DAYS);
+    for (let hour = 24 * 30; hour < 24 * 120; hour += 1)
+      state = updateBias(state, 9, 10, hour, HALF_LIFE_DAYS);
     const bias = readDecayedMean(state, MIN_SAMPLES) ?? Number.NaN;
     assert.ok(Math.abs(bias - -1) < 0.05, `biais suivi : ${bias}`);
   });
 
   it('ne corrige pas un modèle sans historique suffisant', () => {
     let state = EMPTY_DECAYED_MEAN;
-    for (let hour = 0; hour < MIN_SAMPLES - 1; hour += 1) state = updateBias(state, 12, 10, hour, HALF_LIFE_DAYS);
+    for (let hour = 0; hour < MIN_SAMPLES - 1; hour += 1)
+      state = updateBias(state, 12, 10, hour, HALF_LIFE_DAYS);
     assert.equal(correctForecast(20, state, MIN_SAMPLES), 20);
   });
 

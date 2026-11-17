@@ -5,8 +5,13 @@
 
 export type Direction = 'increasing' | 'decreasing';
 
-export function isotonic(values: readonly number[], weights: readonly number[], direction: Direction): number[] {
-  if (values.length !== weights.length) throw new Error('Autant de poids que de valeurs sont attendus');
+export function isotonic(
+  values: readonly number[],
+  weights: readonly number[],
+  direction: Direction,
+): number[] {
+  if (values.length !== weights.length)
+    throw new Error('Autant de poids que de valeurs sont attendus');
   const sign = direction === 'increasing' ? 1 : -1;
   // Chaque bloc regroupe des valeurs voisines fusionnées en leur moyenne pondérée.
   const blocks: { mean: number; weight: number; size: number }[] = [];
@@ -17,7 +22,10 @@ export function isotonic(values: readonly number[], weights: readonly number[], 
       const previous = blocks[blocks.length - 2];
       if (last === undefined || previous === undefined || previous.mean <= last.mean) break;
       const weight = previous.weight + last.weight;
-      const mean = weight === 0 ? (previous.mean + last.mean) / 2 : (previous.mean * previous.weight + last.mean * last.weight) / weight;
+      const mean =
+        weight === 0
+          ? (previous.mean + last.mean) / 2
+          : (previous.mean * previous.weight + last.mean * last.weight) / weight;
       blocks.splice(blocks.length - 2, 2, { mean, weight, size: previous.size + last.size });
     }
   });

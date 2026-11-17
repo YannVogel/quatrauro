@@ -19,14 +19,22 @@ export function commonPositions(
   to: number,
 ): number[] {
   const positions: number[] = [];
-  for (let position = Math.max(from, 0); position < Math.min(to, observation.length); position += 1) {
+  for (
+    let position = Math.max(from, 0);
+    position < Math.min(to, observation.length);
+    position += 1
+  ) {
     if (!Number.isFinite(observation[position])) continue;
     if (series.every((values) => Number.isFinite(values[position]))) positions.push(position);
   }
   return positions;
 }
 
-export function scoreSeries(forecast: Float64Array, observation: Float64Array, positions: readonly number[]): Score {
+export function scoreSeries(
+  forecast: Float64Array,
+  observation: Float64Array,
+  positions: readonly number[],
+): Score {
   let absolute = 0;
   let signed = 0;
   for (const position of positions) {

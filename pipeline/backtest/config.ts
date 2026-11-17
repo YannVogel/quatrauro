@@ -13,8 +13,22 @@ export type City = {
 };
 
 export const CITIES: readonly City[] = [
-  { id: 'toulon', name: 'Toulon', latitude: 43.1257, longitude: 5.9304, department: '83', station: '83137001' },
-  { id: 'nice', name: 'Nice', latitude: 43.6973, longitude: 7.2702, department: '06', station: '06088001' },
+  {
+    id: 'toulon',
+    name: 'Toulon',
+    latitude: 43.1257,
+    longitude: 5.9304,
+    department: '83',
+    station: '83137001',
+  },
+  {
+    id: 'nice',
+    name: 'Nice',
+    latitude: 43.6973,
+    longitude: 7.2702,
+    department: '06',
+    station: '06088001',
+  },
 ];
 
 export type Model = {
@@ -41,7 +55,8 @@ export const CANDIDATE_MODEL: Model = {
   historyLeadDays: 6,
 };
 
-export type VariableId = 'temperature' | 'humidity' | 'windSpeed' | 'windGusts' | 'cloudCover' | 'precipitation';
+export type VariableId =
+  'temperature' | 'humidity' | 'windSpeed' | 'windGusts' | 'cloudCover' | 'precipitation';
 
 export type Variable = {
   readonly id: VariableId;
@@ -57,15 +72,58 @@ export type Variable = {
 const identity = (raw: number): number => raw;
 const metresPerSecondToKmh = (raw: number): number => raw * 3.6;
 const SKY_OBSCURED_OKTAS = 9;
-const oktasToPercent = (raw: number): number | null => (raw === SKY_OBSCURED_OKTAS ? null : raw * 12.5);
+const oktasToPercent = (raw: number): number | null =>
+  raw === SKY_OBSCURED_OKTAS ? null : raw * 12.5;
 
 export const VARIABLES: readonly Variable[] = [
-  { id: 'temperature', label: 'Température', unit: '°C', openMeteoName: 'temperature_2m', observationField: 'T', toUnit: identity },
-  { id: 'humidity', label: 'Humidité', unit: '%', openMeteoName: 'relative_humidity_2m', observationField: 'U', toUnit: identity },
-  { id: 'windSpeed', label: 'Vent moyen', unit: 'km/h', openMeteoName: 'wind_speed_10m', observationField: 'FF', toUnit: metresPerSecondToKmh },
-  { id: 'windGusts', label: 'Rafales', unit: 'km/h', openMeteoName: 'wind_gusts_10m', observationField: 'FXI', toUnit: metresPerSecondToKmh },
-  { id: 'cloudCover', label: 'Nébulosité', unit: '%', openMeteoName: 'cloud_cover', observationField: 'N', toUnit: oktasToPercent },
-  { id: 'precipitation', label: 'Précipitations', unit: 'mm', openMeteoName: 'precipitation', observationField: 'RR1', toUnit: identity },
+  {
+    id: 'temperature',
+    label: 'Température',
+    unit: '°C',
+    openMeteoName: 'temperature_2m',
+    observationField: 'T',
+    toUnit: identity,
+  },
+  {
+    id: 'humidity',
+    label: 'Humidité',
+    unit: '%',
+    openMeteoName: 'relative_humidity_2m',
+    observationField: 'U',
+    toUnit: identity,
+  },
+  {
+    id: 'windSpeed',
+    label: 'Vent moyen',
+    unit: 'km/h',
+    openMeteoName: 'wind_speed_10m',
+    observationField: 'FF',
+    toUnit: metresPerSecondToKmh,
+  },
+  {
+    id: 'windGusts',
+    label: 'Rafales',
+    unit: 'km/h',
+    openMeteoName: 'wind_gusts_10m',
+    observationField: 'FXI',
+    toUnit: metresPerSecondToKmh,
+  },
+  {
+    id: 'cloudCover',
+    label: 'Nébulosité',
+    unit: '%',
+    openMeteoName: 'cloud_cover',
+    observationField: 'N',
+    toUnit: oktasToPercent,
+  },
+  {
+    id: 'precipitation',
+    label: 'Précipitations',
+    unit: 'mm',
+    openMeteoName: 'precipitation',
+    observationField: 'RR1',
+    toUnit: identity,
+  },
 ];
 
 export const MAX_LEAD_DAYS = 7;

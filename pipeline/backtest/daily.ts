@@ -3,7 +3,10 @@
 
 import { HOURS_PER_DAY } from './data/hours.ts';
 
-function aggregateDaily(series: Float64Array, combine: (hours: Float64Array) => number): Float64Array {
+function aggregateDaily(
+  series: Float64Array,
+  combine: (hours: Float64Array) => number,
+): Float64Array {
   const days = Math.floor(series.length / HOURS_PER_DAY);
   const result = new Float64Array(days).fill(Number.NaN);
   for (let day = 0; day < days; day += 1) {
@@ -16,9 +19,12 @@ function aggregateDaily(series: Float64Array, combine: (hours: Float64Array) => 
 const sum = (hours: Float64Array): number => hours.reduce((total, value) => total + value, 0);
 
 export const dailySum = (series: Float64Array): Float64Array => aggregateDaily(series, sum);
-export const dailyMean = (series: Float64Array): Float64Array => aggregateDaily(series, (hours) => sum(hours) / hours.length);
-export const dailyMax = (series: Float64Array): Float64Array => aggregateDaily(series, (hours) => Math.max(...hours));
-export const dailyMin = (series: Float64Array): Float64Array => aggregateDaily(series, (hours) => Math.min(...hours));
+export const dailyMean = (series: Float64Array): Float64Array =>
+  aggregateDaily(series, (hours) => sum(hours) / hours.length);
+export const dailyMax = (series: Float64Array): Float64Array =>
+  aggregateDaily(series, (hours) => Math.max(...hours));
+export const dailyMin = (series: Float64Array): Float64Array =>
+  aggregateDaily(series, (hours) => Math.min(...hours));
 
 /** Nombre de jours entre une observation quotidienne et sa publication, pour un délai horaire donné. */
 export function dailyAvailabilityDelay(observationDelayHours: number): number {

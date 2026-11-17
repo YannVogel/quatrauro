@@ -15,7 +15,10 @@ import type { RainSettings } from './simulateRain.ts';
 import { simulateReliability } from './simulateReliability.ts';
 import type { ReliabilitySeries, ReliabilitySettings } from './simulateReliability.ts';
 
-export type ReliabilityRun = { readonly data: CityData; readonly byLead: ReadonlyMap<number, ReliabilitySeries> };
+export type ReliabilityRun = {
+  readonly data: CityData;
+  readonly byLead: ReadonlyMap<number, ReliabilitySeries>;
+};
 
 export function runReliability(
   data: CityData,
@@ -32,8 +35,16 @@ export function runReliability(
     leadsToEvaluate(models).map((lead) => {
       const leadBlend = blend.get(lead);
       const leadRain = rain.get(lead);
-      if (leadBlend === undefined || leadRain === undefined) throw new Error(`Échéance J+${lead} non simulée`);
-      return [lead, { temperature: leadBlend.blend, spread: leadBlend.spread, rainProbability: leadRain.probability }] as const;
+      if (leadBlend === undefined || leadRain === undefined)
+        throw new Error(`Échéance J+${lead} non simulée`);
+      return [
+        lead,
+        {
+          temperature: leadBlend.blend,
+          spread: leadBlend.spread,
+          rainProbability: leadRain.probability,
+        },
+      ] as const;
     }),
   );
   return {
@@ -54,7 +65,8 @@ export function runReliability(
 export function daysOf(run: ReliabilityRun, range: DateRange): number[] {
   const { from, to } = positionsOf(run.data.axis, range);
   const days: number[] = [];
-  for (let day = Math.max(from / HOURS_PER_DAY, 0); day < to / HOURS_PER_DAY; day += 1) days.push(day);
+  for (let day = Math.max(from / HOURS_PER_DAY, 0); day < to / HOURS_PER_DAY; day += 1)
+    days.push(day);
   return days;
 }
 

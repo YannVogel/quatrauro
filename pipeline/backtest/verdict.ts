@@ -32,13 +32,18 @@ export function judgeTemperature(evaluations: readonly LeadEvaluation[]): Temper
   const leadsWithGain = evaluations
     .filter((evaluation) => gainOverBestPrevious(evaluation) >= TEMPERATURE_MIN_GAIN)
     .map((evaluation) => evaluation.lead);
-  return { leadsWithGain, leadsEvaluated, passed: leadsWithGain.length > leadsEvaluated.length / 2 };
+  return {
+    leadsWithGain,
+    leadsEvaluated,
+    passed: leadsWithGain.length > leadsEvaluated.length / 2,
+  };
 }
 
 export type RainScores = { readonly accuracy: number; readonly csi: number };
 
 export function isRainDegraded(blend: RainScores, bestPrevious: RainScores): boolean {
   return (
-    blend.accuracy < bestPrevious.accuracy - RAIN_MAX_ACCURACY_LOSS || blend.csi < bestPrevious.csi - RAIN_MAX_CSI_LOSS
+    blend.accuracy < bestPrevious.accuracy - RAIN_MAX_ACCURACY_LOSS ||
+    blend.csi < bestPrevious.csi - RAIN_MAX_CSI_LOSS
   );
 }

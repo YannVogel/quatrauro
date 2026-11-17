@@ -35,7 +35,11 @@ export type LeadEvaluation = {
 
 export type Baselines = { readonly simpleMean: Float64Array; readonly bestPrevious: Float64Array };
 
-export function buildInput(data: CityData, variable: VariableId, models: readonly Model[]): SimulationInput {
+export function buildInput(
+  data: CityData,
+  variable: VariableId,
+  models: readonly Model[],
+): SimulationInput {
   return {
     axis: data.axis,
     observation: data.observations[variable],
@@ -45,8 +49,14 @@ export function buildInput(data: CityData, variable: VariableId, models: readonl
 }
 
 /** Positions de l'axe couvertes par un intervalle de dates, borne de fin comprise. */
-export function positionsOf(axis: HourAxis, range: DateRange): { readonly from: number; readonly to: number } {
-  return { from: hourOfDate(range.from) - axis.startHour, to: hourOfDate(range.to) + 24 - axis.startHour };
+export function positionsOf(
+  axis: HourAxis,
+  range: DateRange,
+): { readonly from: number; readonly to: number } {
+  return {
+    from: hourOfDate(range.from) - axis.startHour,
+    to: hourOfDate(range.to) + 24 - axis.startHour,
+  };
 }
 
 export function leadsToEvaluate(models: readonly Model[]): number[] {
@@ -58,11 +68,17 @@ export function leadsToEvaluate(models: readonly Model[]): number[] {
   return leads;
 }
 
-export function computeBaselines(input: SimulationInput, leads: readonly number[]): Map<number, Baselines> {
+export function computeBaselines(
+  input: SimulationInput,
+  leads: readonly number[],
+): Map<number, Baselines> {
   return new Map(
     leads.map((lead) => [
       lead,
-      { simpleMean: simpleMean(input, lead), bestPrevious: bestModelOnPreviousWindow(input, lead, BEST_MODEL_WINDOW) },
+      {
+        simpleMean: simpleMean(input, lead),
+        bestPrevious: bestModelOnPreviousWindow(input, lead, BEST_MODEL_WINDOW),
+      },
     ]),
   );
 }
@@ -76,10 +92,15 @@ export function evaluateLead(
   range: DateRange,
 ): LeadEvaluation {
   const expected = models
-    .map((model, index) => ({ model, raw: input.forecasts[index]?.[lead - 1], corrected: simulation.corrected[index] }))
+    .map((model, index) => ({
+      model,
+      raw: input.forecasts[index]?.[lead - 1],
+      corrected: simulation.corrected[index],
+    }))
     .filter((entry) => entry.model.historyLeadDays >= lead);
   const rawSeries = expected.map((entry) => {
-    if (entry.raw === undefined) throw new Error(`Série absente pour ${entry.model.id} à J+${lead}`);
+    if (entry.raw === undefined)
+      throw new Error(`Série absente pour ${entry.model.id} à J+${lead}`);
     return entry.raw;
   });
   const { from, to } = positionsOf(input.axis, range);
@@ -91,11 +112,15 @@ export function evaluateLead(
   );
   const score = (series: Float64Array): Score => scoreSeries(series, input.observation, positions);
 
-  const raw = Object.fromEntries(expected.map((entry, index) => [entry.model.id, score(rawSeries[index] ?? new Float64Array())]));
+  const raw = Object.fromEntries(
+    expected.map((entry, index) => [entry.model.id, score(rawSeries[index] ?? new Float64Array())]),
+  );
   const corrected = Object.fromEntries(
     expected.map((entry) => [entry.model.id, score(entry.corrected ?? new Float64Array())]),
   );
-  const [bestModel, bestScore] = Object.entries(raw).reduce((best, current) => (current[1].mae < best[1].mae ? current : best));
+  const [bestModel, bestScore] = Object.entries(raw).reduce((best, current) =>
+    current[1].mae < best[1].mae ? current : best,
+  );
 
   return {
     lead,
@@ -124,7 +149,8 @@ export function evaluateContinuous(
   return leads.map((lead) => {
     const leadSimulation = simulation.get(lead);
     const leadBaselines = baselines.get(lead);
-    if (leadSimulation === undefined || leadBaselines === undefined) throw new Error(`Échéance J+${lead} non simulée`);
+    if (leadSimulation === undefined || leadBaselines === undefined)
+      throw new Error(`Échéance J+${lead} non simulée`);
     return evaluateLead(input, models, lead, leadSimulation, leadBaselines, range);
   });
 }

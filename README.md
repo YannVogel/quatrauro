@@ -4,7 +4,7 @@ App météo personnelle pour Toulon et Nice. Elle croise plusieurs modèles de p
 
 Le nom vient du provençal « quatre auro », les quatre vents.
 
-> **État** : cadrage et études préalables. Le repo contient la documentation, les décisions d'architecture, les maquettes et le backtest qui a validé la méthode ([rapport](docs/features/backtest.md)) ; l'app et le pipeline arrivent avec la suite du milestone M0.
+> **État** : socle. Le projet Expo compile et affiche un écran provisoire, et le backtest a validé la méthode ([rapport](docs/features/backtest.md)). Le pipeline et les écrans arrivent avec les milestones M1 et M2.
 
 ## Comment ça marche
 
@@ -25,18 +25,40 @@ Le nom vient du provençal « quatre auro », les quatre vents.
 | [docs/design/claude-design/](docs/design/claude-design/) | Maquettes |
 | [docs/features/](docs/features/) | Fiches des fonctionnalités, au fil du développement : [sources de données](docs/features/donnees.md), [backtest du mélange](docs/features/backtest.md) |
 
-## Installation et commandes
+## Installation
 
-Le projet Expo arrive avec M0-04 : cette section décrira alors l'installation, les variables d'environnement, les commandes et les builds.
-
-En attendant, le backtest du mélange tourne seul, avec Node 24 et sans aucune dépendance à installer :
+Il faut Node 24 (la version est dans `.nvmrc`) et, pour lancer l'app, un émulateur Android avec le SDK Android et un JDK 17.
 
 ```bash
-node --test "pipeline/backtest/__tests__/*.test.ts"   # tests
-node pipeline/backtest/run.ts                         # rejoue le mélange sur l'historique
+nvm use            # ou toute autre façon d'obtenir Node 24
+npm install
 ```
 
-Le premier passage télécharge environ 60 Mo de prévisions et d'observations dans `pipeline/backtest/.cache/` (ignoré par git). Aucune clé n'est nécessaire.
+Aucune variable d'environnement n'est nécessaire à ce stade, et aucune clé : `.env.example` documente les variables au fur et à mesure qu'elles apparaissent. Les valeurs locales vont dans `.env.local`, ignoré par git.
+
+## Commandes
+
+| Commande | Effet |
+|---|---|
+| `npm start` | Lance le serveur de développement Expo |
+| `npm run android` | Compile l'app et l'installe sur l'émulateur Android (ou un téléphone branché) |
+| `npm run typecheck` | Vérifie les types (`tsc --noEmit`) |
+| `npm run lint` | ESLint, puis Prettier en vérification |
+| `npm run format` | Remet le code en forme avec Prettier |
+| `npm test` | Lance tous les tests (app, `shared/`, `pipeline/`) avec Jest |
+| `npm run backtest` | Rejoue le mélange sur l'historique et réécrit le [tableau des résultats](docs/features/backtest-resultats.md) |
+
+### Lancer l'app sur un émulateur
+
+```bash
+npm run android
+```
+
+La première compilation prend plusieurs minutes : elle génère le dossier `android/` (ignoré par git, voir « Continuous Native Generation » dans la documentation d'Expo) puis construit l'app. Les fois suivantes, `npm start` suffit tant que le code natif ne change pas.
+
+### Backtest
+
+Le premier passage télécharge environ 60 Mo de prévisions et d'observations dans `pipeline/backtest/.cache/` (ignoré par git). Aucune clé n'est nécessaire. Le rapport est dans [docs/features/backtest.md](docs/features/backtest.md).
 
 ## Données et attributions
 
