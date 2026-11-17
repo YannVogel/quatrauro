@@ -5,12 +5,11 @@ import { HOURS_PER_DAY, emptySeries, utcHourAt } from './data/hours.ts';
 import type { HourAxis } from './data/hours.ts';
 import { correctForecast, updateBias } from '../../shared/blend/bias.ts';
 import { blendValues } from './logic/blend.ts';
-import { EMPTY_DECAYED_MEAN, readDecayedMean } from '../../shared/blend/decayedMean.ts';
+import { EMPTY_DECAYED_MEAN } from '../../shared/blend/decayedMean.ts';
 import type { DecayedMean } from '../../shared/blend/decayedMean.ts';
 import { hourBlockOf } from '../../shared/blend/grouping.ts';
-import { updateError } from './logic/error.ts';
 import type { BlendParams } from './logic/params.ts';
-import { computeWeights } from './logic/weights.ts';
+import { computeWeights, readError, updateError } from '../../shared/blend/weights.ts';
 import { replay } from './replay.ts';
 
 export type SimulationInput = {
@@ -94,11 +93,13 @@ export function simulateBlend(
         const corrected = correctForecast(forecast, state.bias, params.minSamples);
         series[position] = corrected;
         values.push(corrected);
-        errors.push(readDecayedMean(state.error, params.minSamples));
+        errors.push(readError(state.error, params.minSamples));
       });
       const weights = computeWeights(errors, {
         exponent: params.weightExponent,
         errorFloor: params.errorFloor,
+        minWeight: params.minWeight,
+        maxWeight: params.maxWeight,
       });
       const blend = blendValues(values, weights);
       if (blend === null) return;
