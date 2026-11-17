@@ -9,7 +9,8 @@ L'écran qu'on ouvre le matin. Il répond d'un coup d'œil : quel temps maintena
 | `src/features/forecast/home.ts` | Fonction pure : ce que l'accueil affiche, tiré d'une prévision prête |
 | `src/features/forecast/components/HomeHero.tsx` | Le bloc d'état |
 | `…/UpcomingHours.tsx`, `…/WeekCard.tsx`, `…/LinkRow.tsx` | Prochaines heures, semaine, accès aux autres écrans |
-| `src/lib/currentCity.tsx` | La ville que l'app montre, partagée par tous les écrans |
+| `src/lib/currentCity.tsx` | La ville que l'app montre, partagée par tous les écrans et mémorisée |
+| `src/lib/preferences.ts` | Petits réglages gardés sur l'appareil |
 
 ## Ce que montre l'écran
 
@@ -64,6 +65,14 @@ Dans tous les cas, le sélecteur de ville et les accès restent utilisables.
 
 Pas de barre d'onglets : les accès secondaires sont deux lignes dans une carte, sous la semaine. Les écrans de destination qui ne sont pas encore écrits affichent « Cet écran arrive bientôt » (`PendingScreen`), avec un retour.
 
+## Ville courante
+
+- **Le sélecteur est alimenté par `shared/cities.ts`** : aucune ville n'est nommée dans un écran. Ajouter une ville à la configuration la fait apparaître dans le sélecteur, la fait précharger et afficher, sans autre changement de code (testé en ajoutant une ville fictive).
+- **Le changement est immédiat** : les prévisions de toutes les villes sont déjà en cache ([lecture des données](lecture-des-donnees.md)).
+- **La dernière ville consultée est gardée sur l'appareil** (`src/lib/preferences.ts`, AsyncStorage) : l'app rouvre dessus. Rien n'est affiché pendant les quelques millisecondes où ce réglage est lu, pour ne pas ouvrir sur une ville et sauter à une autre.
+- **La toute première fois**, ou si la ville mémorisée a été retirée de la configuration : la première ville de la liste.
+- **Avec plus de villes que la largeur n'en montre**, la rangée du sélecteur défile sur le côté (visible dans le catalogue, avec quatre villes). Au-delà de quelques villes, il faudra autre chose qu'une rangée : ce n'est pas construit.
+
 ## Taille de l'écran et de la police
 
 Le bloc d'état, les cinq vignettes et la semaine tiennent sans défilement sur un téléphone d'environ 900 dp de haut. Sur un écran plus petit (vérifié sur un Pixel 3a, 807 dp) ou avec une police agrandie, l'écran défile ; les accès sont alors sous le pli. Les colonnes de la semaine suivent la taille de police du téléphone (vérifié à 130 %).
@@ -78,4 +87,5 @@ Le bloc d'état, les cinq vignettes et la semaine tiennent sans défilement sur 
 ## Tests
 
 - `__tests__/app.test.tsx` : l'app entière sur de **vrais fichiers publiés**, horloge figée. Beau temps (mercredi 9 h 30), pluie (mardi 17 h 20), données partielles, navigation vers les quatre écrans, bascule de ville, bandeau, heure qui passe écran ouvert, états vides, catalogue.
+- `__tests__/added-city.test.tsx` : une ville ajoutée à la configuration apparaît, se charge, s'affiche et se mémorise.
 - `src/features/forecast/__tests__/home.test.ts` : le contenu de l'accueil (heures de Paris, seuil du risque de pluie, échelle, noms des jours, modèles d'accord).

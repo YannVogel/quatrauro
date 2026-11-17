@@ -33,6 +33,7 @@ import { CONDITIONS } from '@shared/conditions';
 import {
   fakeChart,
   fakeCities,
+  fakeManyCities,
   fakeHero,
   fakeHours,
   fakeMeters,
@@ -107,6 +108,7 @@ function CatalogContent({ onToggleTheme }: { readonly onToggleTheme: () => void 
   const theme = useTheme();
   const styles = useStyles();
   const [cityId, setCityId] = useState(fakeCities[0]?.id ?? '');
+  const [crowdedCityId, setCrowdedCityId] = useState(fakeManyCities[0]?.id ?? '');
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -142,6 +144,17 @@ function CatalogContent({ onToggleTheme }: { readonly onToggleTheme: () => void 
               </Text>
               <ConditionBadge condition="clear" />
             </View>
+          </HeroBlock>
+        </Section>
+
+        <Section title={catalog.notes.manyCities}>
+          <HeroBlock>
+            <CitySwitch
+              options={fakeManyCities}
+              selectedId={crowdedCityId}
+              onSelect={setCrowdedCityId}
+              accessibilityLabel={catalog.city}
+            />
           </HeroBlock>
         </Section>
 
