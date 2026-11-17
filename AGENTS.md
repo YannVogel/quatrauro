@@ -74,6 +74,7 @@ docs/
   QUATRAURO_PROJECT_BRIEF.md  adr/  design/  features/
 .github/workflows/ci.yml    # intégration continue
 app.config.ts               # identité de l'app et configuration native
+eas.json                    # profils de build (development, preview) et canal de mise à jour
 ```
 
 Ce qui s'y ajoutera, là et pas ailleurs :
@@ -119,7 +120,9 @@ Le projet est sur **Expo SDK 58** (React Native 0.88, React 19.3, TypeScript 6) 
 
 - Dans ce SDK, `renderRouter` et les helpers de `expo-router/testing-library` sont asynchrones : toujours les attendre (`await`).
 
-- Les dossiers `ios/` et `android/` sont générés (Continuous Native Generation) et ignorés par git : configurer le natif dans `app.config.ts`.
+- Les dossiers `ios/` et `android/` sont générés (Continuous Native Generation) et ignorés par git : configurer le natif dans `app.config.ts`. Après l'ajout d'une dépendance native ou d'un plugin, régénérer avec `npx expo prebuild --clean --platform android` avant `npm run android`.
+- `app.config.ts` importe d'autres fichiers TypeScript grâce à `tsx/cjs` (première ligne du fichier) : ne pas la retirer.
+- Builds et mises à jour : profils `development` et `preview` dans `eas.json`, canal `preview`, procédure dans le README. L'identifiant du projet Expo (`EAS_PROJECT_ID`, dans `app.config.ts`) est renseigné par Yann après `eas init`.
 - Android est la seule cible de la v1. Ne rien écrire de spécifique à iOS, et ne rien écrire qui l'empêche.
 
 ## Règles d'exploitation

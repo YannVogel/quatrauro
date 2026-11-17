@@ -7,6 +7,21 @@ import { FONT_FAMILY } from './src/ui/theme';
 
 const APP_ID = 'com.parallaxworks.quatrauro';
 
+/**
+ * Identifiant du projet chez Expo, donné par `eas init` (étape de Yann, voir le README).
+ * Ce n'est pas un secret. Tant qu'il est absent, les mises à jour EAS sont désactivées.
+ */
+const EAS_PROJECT_ID: string | null = null;
+
+/** Réglages qui dépendent du projet Expo : mises à jour JavaScript sans réinstaller l'app. */
+function easConfig(projectId: string | null): Pick<ExpoConfig, 'updates' | 'extra'> {
+  if (projectId === null) return { updates: { enabled: false } };
+  return {
+    updates: { url: `https://u.expo.dev/${projectId}` },
+    extra: { eas: { projectId } },
+  };
+}
+
 const OUTFIT = 'node_modules/@expo-google-fonts/outfit';
 /** Graisses d'Outfit embarquées dans l'app (docs/design/riviera.md). */
 const OUTFIT_FONTS = [
@@ -25,6 +40,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   orientation: 'portrait',
   // Les deux thèmes sont livrés : l'app suit le réglage du système.
   userInterfaceStyle: 'automatic',
+  // Une mise à jour JavaScript ne s'applique qu'aux builds de la même version de l'app.
+  runtimeVersion: { policy: 'appVersion' },
+  ...easConfig(EAS_PROJECT_ID),
   icon: './assets/icon.png',
   android: {
     package: APP_ID,

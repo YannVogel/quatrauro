@@ -56,6 +56,58 @@ npm run android
 
 La première compilation prend plusieurs minutes : elle génère le dossier `android/` (ignoré par git, voir « Continuous Native Generation » dans la documentation d'Expo) puis construit l'app. Les fois suivantes, `npm start` suffit tant que le code natif ne change pas.
 
+## Builds et mises à jour
+
+L'app s'installe par un APK, sans passer par le Play Store. Les builds se font avec EAS (les services d'Expo), les mises à jour du JavaScript avec EAS Update. La configuration est dans [`eas.json`](eas.json) et [`app.config.ts`](app.config.ts).
+
+| Profil | Ce qu'il produit | Quand s'en servir |
+|---|---|---|
+| `development` | Un client de développement (APK) qui charge le code depuis `npm start` | Pour développer sur un vrai téléphone |
+| `preview` | L'app elle-même, en APK, abonnée au canal de mises à jour `preview` | Pour l'usage quotidien |
+
+Il n'y a pas de profil `production` : l'app ne va pas sur les stores.
+
+> **Rien de tout cela ne se lance sans une demande explicite de Yann** : ni build, ni mise à jour (AGENTS.md, « Règles d'exploitation »).
+
+### Une seule fois : relier le repo au compte Expo
+
+```bash
+npm install --global eas-cli
+eas login            # compte Expo de Parallax Works
+eas init             # crée le projet chez Expo et affiche son identifiant
+```
+
+Reporter l'identifiant affiché dans la constante `EAS_PROJECT_ID` d'`app.config.ts` (ce n'est pas un secret) et committer. Tant qu'elle vaut `null`, les mises à jour EAS sont désactivées dans l'app.
+
+### Construire et installer l'APK
+
+```bash
+eas build --profile preview --platform android
+```
+
+Le build tourne sur les serveurs d'Expo (une quinzaine de minutes). À la fin, EAS affiche un lien et un QR code : l'ouvrir sur le téléphone, télécharger l'APK et l'installer (Android demande d'autoriser l'installation depuis cette source).
+
+### Publier une mise à jour du JavaScript
+
+Quand seuls le JavaScript ou les images ont changé, pas besoin de reconstruire :
+
+```bash
+eas update --channel preview --message "Ce qui change"
+```
+
+L'app installée télécharge la mise à jour à son prochain lancement et l'applique au lancement suivant : la fermer complètement et la rouvrir deux fois.
+
+Une mise à jour ne s'applique qu'aux builds de la **même version** de l'app (`version` dans `app.config.ts`). Il faut reconstruire l'APK, et non publier une mise à jour, dès que le code natif change : nouvelle dépendance native, nouveau plugin dans `app.config.ts`, nouvelle version d'Expo, changement d'icône ou de police.
+
+### Client de développement
+
+```bash
+eas build --profile development --platform android
+npm start            # puis ouvrir l'app installée sur le téléphone
+```
+
+Sur un émulateur, `npm run android` suffit et ne passe pas par EAS.
+
 ### Catalogue des composants
 
 En développement, l'écran d'accueil propose un lien « Ouvrir le catalogue des composants ». Le catalogue montre chaque composant du design system et chaque condition météo, avec leurs cas limites, et a sa propre bascule entre thème clair et thème sombre. Ses données sont fictives. Il n'existe pas dans l'app distribuée.
