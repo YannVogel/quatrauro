@@ -221,10 +221,10 @@ Ajouter UKMO change l'erreur du mélange de +0,4 % à +1,1 % à Toulon et de −
 ## Relancer le backtest
 
 ```bash
-node --test "pipeline/backtest/__tests__/*.test.ts"   # tests unitaires
-node pipeline/backtest/run.ts                         # télécharge si besoin, calcule, réécrit backtest-resultats.md
+npm test             # tous les tests, dont ceux du backtest et de la logique du mélange
+npm run backtest     # télécharge si besoin, calcule, réécrit backtest-resultats.md
 ```
 
-Node 24 exécute le TypeScript directement : le spike n'a aucune dépendance. Le premier passage télécharge environ 60 Mo (72 requêtes à Open-Meteo, soit environ 1 500 appels au sens de ses quotas, et deux fichiers de Météo-France) dans `pipeline/backtest/.cache/`, ignoré par git. Les passages suivants relisent ce cache et durent un peu plus d'une minute.
+Le backtest s'exécute directement avec Node 24, sans compilation. Le premier passage télécharge environ 60 Mo (72 requêtes à Open-Meteo, soit environ 1 500 appels au sens de ses quotas, et deux fichiers de Météo-France) dans `pipeline/backtest/.cache/`, ignoré par git. Les passages suivants relisent ce cache et durent un peu plus d'une minute.
 
 Le code est rangé pour la suite : `pipeline/backtest/logic/` contient les fonctions pures du mélange (biais, poids, mélange, pluie, fiabilité), sans dépendance à Node, à reprendre telles quelles dans `shared/` en M1. Le reste du dossier est l'outillage du backtest : lecture des données, rejeu sans fuite, mesures, rapport.

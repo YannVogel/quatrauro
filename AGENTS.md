@@ -2,7 +2,7 @@
 
 Quatrauro est une app météo personnelle (Expo / React Native, Android) pour Toulon et Nice. Elle croise plusieurs modèles de prévision, corrige leurs erreurs locales à partir des observations et affiche un indice de fiabilité. Il n'y a pas de serveur : un pipeline TypeScript tourne dans GitHub Actions et publie des JSON statiques que l'app lit. Le cadrage de référence est [docs/QUATRAURO_PROJECT_BRIEF.md](docs/QUATRAURO_PROJECT_BRIEF.md) ; les décisions prises depuis vivent dans les issues GitHub (sections « ⚠️ Point tranché ») et dans [docs/adr/](docs/adr/). En cas de conflit avec le brief, l'issue prime. L'architecture (couches, flux des données, mélange, hors ligne) est décrite dans [ARCHITECTURE.md](ARCHITECTURE.md).
 
-> **État du repo** : cadrage et spikes. La documentation, les ADR, les maquettes Riviera et le backtest du mélange (`pipeline/backtest/`, sans dépendance) sont en place ; le feu vert de M0-03 est acquis ([rapport](docs/features/backtest.md)). Le projet Expo arrive avec M0-04 ; les sections « Structure » et « Commandes » décrivent la cible et sont à mettre à jour dès que le code existe (M0-05).
+> **État du repo** : socle en place. Le projet Expo (SDK 58) compile, se teste et affiche un écran provisoire ; le backtest du mélange a donné son feu vert ([rapport](docs/features/backtest.md)). Le pipeline, le design system et les écrans restent à écrire. La section « Structure » décrit encore la cible : elle est mise à jour par M0-05.
 
 ## Ordre de travail
 
@@ -20,7 +20,7 @@ Quatrauro est une app météo personnelle (Expo / React Native, Android) pour To
 - **Docs de fonctionnalité** : chaque fonctionnalité notable a sa fiche dans `docs/features/<fonctionnalite>.md` (comportement, données, écrans, cas limites), mise à jour dans le même commit et listée dans l'index [docs/features/README.md](docs/features/README.md).
 - **Workflow** : une issue → une branche → une PR (`Closes #n`), CI verte avant le merge. Yann relit et merge. Sur demande de Yann, les issues d'un milestone peuvent être regroupées dans une seule PR, avec un commit par issue.
 - **Secrets** : aucune clé secrète dans l'app ni dans le repo (qui est public). Une éventuelle clé d'API d'observations vit dans les secrets GitHub Actions et dans `.env.local` (ignoré) ; un `.env.example` documente les variables.
-- **Chaînes UI** : toutes dans `src/i18n/fr.ts`, aucune chaîne en dur dans les composants.
+- **Chaînes UI** : toutes dans `src/i18n/fr.ts`, lues par `strings` (`@/i18n`) ; aucune chaîne en dur dans les composants.
 - **Accessibilité de base** : cibles tactiles d'au moins 48 dp ; contrastes WCAG AA dans les deux thèmes ; `accessibilityLabel` sur les boutons-icônes et sur les graphiques ; une information n'est jamais portée par la seule couleur.
 - **Design system** : les écrans s'appuient sur les composants et les tokens de `@/ui` (`src/ui/theme.ts`). Aucune couleur en dur ailleurs (règle ESLint, testée). Chaque token existe en clair et en sombre.
 - **Direction graphique** : « Riviera » ([ADR 0001](docs/adr/0001-direction-graphique-riviera.md)). Sa spécification, [docs/design/riviera.md](docs/design/riviera.md), fait foi pour les tokens, les composants et les écrans ; les maquettes sont dans `docs/design/claude-design/`, à ne pas modifier à la main. Pas de dégradé, pas d'ombre floue, pas d'emoji : aplats, grands rayons, icônes au trait.
@@ -40,8 +40,9 @@ Quatrauro est une app météo personnelle (Expo / React Native, Android) pour To
 - La logique pure (correction de biais, poids, mélange, indice de fiabilité, condition, résumés) vit dans `shared/`, sans dépendance à React Native ni à Node, et se teste avec des données et des dates fixes. Le pipeline et l'app l'importent depuis là.
 - **Tout le calcul se fait dans le pipeline.** L'app n'effectue aucun mélange : elle valide le JSON reçu (schémas Zod de `shared/`) et l'affiche.
 - Le contrat des fichiers publiés est versionné (`schemaVersion`). Un changement incompatible incrémente la version ; l'app refuse proprement une version inconnue.
-- Les heures se manipulent dans le fuseau `Europe/Paris`, avec `date-fns` (locale `fr`, semaine commençant le lundi) et les helpers de `src/lib/dates.ts`. Les fichiers publiés portent des instants en UTC. Les tests figent l'horloge et écrivent leurs instants en UTC, pour ne pas dépendre du fuseau de la machine. Attention aux changements d'heure dans les agrégats journaliers.
-- Le backtest (`pipeline/backtest/`) rejoue exactement le code de `shared/` : jamais une copie de la logique. Il ne doit jamais utiliser une information postérieure à l'instant simulé. Tant que `shared/` n'existe pas, la logique pure vit dans `pipeline/backtest/logic/` ; M1 la déplace telle quelle.
+- Les heures se manipulent dans le fuseau `Europe/Paris` : le décalage vient de `shared/parisTime.ts` (règle européenne de changement d'heure, sans `Intl` : [ADR 0005](docs/adr/0005-heure-de-paris-sans-base-de-fuseaux.md)), la mise en forme de `src/lib/dates.ts` (`date-fns`, locale `fr`, semaine commençant le lundi). Ne jamais lire le fuseau du téléphone ni appeler `Intl` pour situer une heure. Les fichiers publiés portent des instants en UTC. Les tests figent l'horloge et écrivent leurs instants en UTC, pour ne pas dépendre du fuseau de la machine. Attention aux changements d'heure dans les agrégats journaliers.
+- Le backtest (`pipeline/backtest/`) rejoue exactement le code de `shared/` : jamais une copie de la logique. Il ne doit jamais utiliser une information postérieure à l'instant simulé. En attendant M1, la logique pure du mélange vit dans `pipeline/backtest/logic/` ; M1 la déplace telle quelle dans `shared/`.
+- Le backtest s'exécute directement avec Node (`node pipeline/backtest/run.ts`), sans compilation : ses fichiers s'importent avec l'extension `.ts` et n'utilisent que la syntaxe TypeScript effaçable (pas d'`enum`, pas de propriétés de constructeur).
 - `docs/features/backtest-resultats.md` est généré par le backtest : ne pas le modifier à la main.
 
 ## Structure
@@ -68,28 +69,23 @@ docs/
 - Les routes vivent dans `app/` à la racine. Ne jamais créer `src/app/`.
 - Les données archivées et publiées vivent sur la branche `data`, jamais sur `main`. Aucun workflow ne doit committer sur `main`.
 - Alias : `@/` → `src/`, `@shared/` → `shared/`.
+- ESLint fait respecter deux frontières : `app/` et `src/` n'importent aucun module de Node ; `shared/` n'importe ni Node, ni React, ni React Native, ni Expo, ni `@/`.
+- Les tests ne vivent jamais dans `app/` (tout fichier y est une route) : `__tests__/` à la racine pour l'app entière, `__tests__/` à côté du code ailleurs.
 
 ## Commandes
 
-Aujourd'hui, seul le backtest existe. Il tourne avec Node 24, qui exécute le TypeScript directement :
-
-```bash
-node --test "pipeline/backtest/__tests__/*.test.ts"   # tests du backtest et de la logique du mélange
-node pipeline/backtest/run.ts                         # rejoue le mélange et réécrit docs/features/backtest-resultats.md
-```
-
-Cible, à confirmer en M0-04 :
-
 ```bash
 npm start                   # serveur de développement Expo
-npx expo run:android        # compile et installe le dev client sur l'émulateur Android
+npm run android             # compile et installe l'app sur l'émulateur Android (expo run:android)
 npm run typecheck           # tsc --noEmit
-npm run lint                # ESLint + Prettier
-npm test                    # tests de l'app, de shared/ et du pipeline
-npm run backtest            # rejoue le mélange sur l'historique et produit le rapport
-npm run pipeline            # un passage complet du pipeline, en local, sans publier
+npm run lint                # ESLint (expo lint) puis Prettier en vérification
+npm run format              # Prettier en écriture
+npm test                    # Jest : tests de l'app, de shared/ et de pipeline/
+npm run backtest            # rejoue le mélange sur l'historique et réécrit docs/features/backtest-resultats.md
 npx expo install <paquet>   # toujours pour ajouter une dépendance de l'app (version compatible SDK)
 ```
+
+À venir : `npm run pipeline` (un passage complet du pipeline, en local, sans publier), avec M1.
 
 Lancer `typecheck`, `lint` et `test` avant de déclarer une tâche terminée. La CI rejoue ces trois commandes sur chaque PR et doit être verte avant le merge.
 
