@@ -68,6 +68,8 @@ export const MODELS = [
   },
 ] as const satisfies readonly Model[];
 
-export type ModelId = (typeof MODELS)[number]['id'];
+/** Un modèle de la configuration : son identifiant est connu du contrat. */
+export type ConfiguredModel = (typeof MODELS)[number];
+export type ModelId = ConfiguredModel['id'];
 
 export const MODEL_IDS = MODELS.map((model) => model.id) as [ModelId, ...ModelId[]];

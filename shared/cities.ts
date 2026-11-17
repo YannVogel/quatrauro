@@ -58,7 +58,9 @@ export const CITIES = [
   },
 ] as const satisfies readonly City[];
 
-export type CityId = (typeof CITIES)[number]['id'];
+/** Une ville de la configuration : son identifiant est connu du contrat. */
+export type ConfiguredCity = (typeof CITIES)[number];
+export type CityId = ConfiguredCity['id'];
 
 export const CITY_IDS = CITIES.map((city) => city.id) as [CityId, ...CityId[]];
 

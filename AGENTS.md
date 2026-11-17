@@ -75,6 +75,10 @@ shared/                     # ne dépend de rien : ni Node, ni React Native, ni 
   blend/                                    # logique pure du mélange : biais, poids, mélange d'une heure, pluie, agrégats, indice de fiabilité, condition, résumé
 pipeline/
   __fixtures__/             # réponses réelles d'Open-Meteo et de Météo-France, et données dérivées du backtest, pour les tests
+  collect/                  # collecte : http.ts (délai, tentatives), forecasts.ts et openMeteoForecast.ts (prévisions)
+    testing/                # faux réseau et lecture des données d'essai, pour les tests de la collecte
+  openMeteoNames.ts         # nom et unité de chaque grandeur chez Open-Meteo
+  instant.ts                # mise en forme d'un instant UTC
   backtest/                 # backtest du mélange : rejoue shared/blend/ sur l'historique
 assets/                     # icônes provisoires du modèle Expo ; assets/icon/ : variantes proposées (docs/design/icone.md)
 scripts/brand/              # export en PNG de la variante d'icône choisie (npm run brand:export)
@@ -91,7 +95,7 @@ Ce qui s'y ajoutera, là et pas ailleurs :
 src/features/<feature>/     # forecast (accueil, détail d'un jour), models, reliability, about
   components/ hooks/ api/ __tests__/ index.ts
 src/lib/                    # env.ts, queryClient.ts, data.ts (lecture des JSON publiés)
-pipeline/                   # collect/ (prévisions, observations), archive/, verify/, blend/, publish/
+pipeline/                   # collect/ (observations), archive/, verify/, blend/, publish/
 ```
 
 - Les dépendances sont unidirectionnelles : `app/` → `features/` → `ui/` + `lib/` + `shared/` ; `pipeline/` → `shared/`. `shared/` n'importe rien du reste.

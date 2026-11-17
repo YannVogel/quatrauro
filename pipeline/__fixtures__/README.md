@@ -13,11 +13,13 @@ Données sous licence [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/),
 | `open-meteo/forecast-toulon.json` | `GET https://api.open-meteo.com/v1/forecast?latitude=43.1257&longitude=5.9304&hourly=temperature_2m,apparent_temperature,relative_humidity_2m,precipitation,wind_speed_10m,wind_gusts_10m,wind_direction_10m,cloud_cover,weather_code&models=meteofrance_arome_france,meteofrance_arpege_europe,ecmwf_ifs,dwd_icon_seamless,ncep_gfs_global&forecast_days=7&timezone=GMT` |
 | `open-meteo/forecast-nice.json` | La même, avec `latitude=43.6973&longitude=7.2702` |
 | `open-meteo/forecast-error-no-data.json` | Réponse d'erreur (HTTP 400) : `GET https://api.open-meteo.com/v1/forecast?latitude=43.1257&longitude=5.9304&hourly=temperature_2m&models=dwd_icon_d2&forecast_days=1&timezone=GMT` (Toulon est hors du domaine d'ICON-D2) |
+| `open-meteo/forecast-toulon-model-out-of-domain.json` | Enregistrée le 17/11/2026 vers 20 h 40 UTC : `GET https://api.open-meteo.com/v1/forecast?latitude=43.1257&longitude=5.9304&hourly=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,wind_gusts_10m,wind_direction_10m,cloud_cover,weather_code&models=meteofrance_arome_france,dwd_icon_d2&forecast_days=1&timezone=GMT&temperature_unit=celsius&wind_speed_unit=kmh&precipitation_unit=mm`. Deux modèles demandés, un seul couvre Toulon : la réponse (HTTP 200) ne contient que les séries d'AROME, **sans suffixe** |
 | `open-meteo/previous-runs-toulon.json` | `GET https://previous-runs-api.open-meteo.com/v1/forecast?latitude=43.1257&longitude=5.9304&hourly=temperature_2m,temperature_2m_previous_day1,temperature_2m_previous_day2,temperature_2m_previous_day3,precipitation,precipitation_previous_day1,precipitation_previous_day2,precipitation_previous_day3&models=meteofrance_arome_france,ecmwf_ifs&start_date=2026-11-15&end_date=2026-11-16&timezone=GMT` |
 
 À savoir pour les tests :
 
 - Les séries d'une réponse multi-modèles sont suffixées par l'identifiant du modèle (`temperature_2m_ecmwf_ifs`).
+- Quand un seul des modèles demandés répond, les séries ne sont **pas** suffixées et rien ne dit à qui elles sont (`forecast-toulon-model-out-of-domain.json`).
 - Les heures hors de portée d'un modèle valent `null` : AROME s'arrête au bout de 51 h, ARPEGE au bout de 102 h.
 - Dans `previous-runs-toulon.json`, AROME n'a que `_previous_day1` : les décalages 2 et 3 sont entièrement `null`.
 

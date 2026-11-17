@@ -3,6 +3,7 @@
 // variables avec les deux sources et la période rejouée.
 
 import type { Model } from '../../shared/models.ts';
+import { OPEN_METEO_NAMES } from '../openMeteoNames.ts';
 
 /** Candidat écarté par l'ADR 0002 faute d'historique complet ; évalué à part par le backtest. */
 export const CANDIDATE_MODEL: Model = {
@@ -40,7 +41,7 @@ export const VARIABLES: readonly Variable[] = [
     id: 'temperature',
     label: 'Température',
     unit: '°C',
-    openMeteoName: 'temperature_2m',
+    openMeteoName: OPEN_METEO_NAMES.temperature,
     observationField: 'T',
     toUnit: identity,
   },
@@ -48,7 +49,7 @@ export const VARIABLES: readonly Variable[] = [
     id: 'humidity',
     label: 'Humidité',
     unit: '%',
-    openMeteoName: 'relative_humidity_2m',
+    openMeteoName: OPEN_METEO_NAMES.humidity,
     observationField: 'U',
     toUnit: identity,
   },
@@ -56,7 +57,7 @@ export const VARIABLES: readonly Variable[] = [
     id: 'windSpeed',
     label: 'Vent moyen',
     unit: 'km/h',
-    openMeteoName: 'wind_speed_10m',
+    openMeteoName: OPEN_METEO_NAMES.windSpeed,
     observationField: 'FF',
     toUnit: metresPerSecondToKmh,
   },
@@ -64,7 +65,7 @@ export const VARIABLES: readonly Variable[] = [
     id: 'windGusts',
     label: 'Rafales',
     unit: 'km/h',
-    openMeteoName: 'wind_gusts_10m',
+    openMeteoName: OPEN_METEO_NAMES.windGusts,
     observationField: 'FXI',
     toUnit: metresPerSecondToKmh,
   },
@@ -72,7 +73,7 @@ export const VARIABLES: readonly Variable[] = [
     id: 'cloudCover',
     label: 'Nébulosité',
     unit: '%',
-    openMeteoName: 'cloud_cover',
+    openMeteoName: OPEN_METEO_NAMES.cloudCover,
     observationField: 'N',
     toUnit: oktasToPercent,
   },
@@ -80,7 +81,7 @@ export const VARIABLES: readonly Variable[] = [
     id: 'precipitation',
     label: 'Précipitations',
     unit: 'mm',
-    openMeteoName: 'precipitation',
+    openMeteoName: OPEN_METEO_NAMES.precipitation,
     observationField: 'RR1',
     toUnit: identity,
   },
