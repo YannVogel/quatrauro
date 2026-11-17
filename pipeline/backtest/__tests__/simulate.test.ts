@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 
 import { bestModelOnPreviousWindow, simpleMean } from '../baselines.ts';
 import { createHourAxis, emptySeries } from '../data/hours.ts';
-import type { BlendParams } from '../logic/params.ts';
+import type { BlendParams } from '../params.ts';
 import { commonPositions, scoreSeries } from '../score.ts';
 import { simulateBlend } from '../simulate.ts';
 import type { SimulationInput } from '../simulate.ts';

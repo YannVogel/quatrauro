@@ -8,7 +8,9 @@ import { HOURS_PER_DAY } from './data/hours.ts';
 import { dailySum } from './daily.ts';
 import { buildInput, leadsToEvaluate, positionsOf } from './evaluate.ts';
 import type { DateRange } from './evaluate.ts';
-import type { BlendParams } from './logic/params.ts';
+import type { BlendParams } from './params.ts';
+import { calibrationBins } from './rainScores.ts';
+import type { CalibrationBin } from './rainScores.ts';
 import { simulateBlend } from './simulate.ts';
 import { simulateDailyRain } from './simulateRain.ts';
 import type { RainSettings } from './simulateRain.ts';
@@ -43,6 +45,7 @@ export function runReliability(
           temperature: leadBlend.blend,
           spread: leadBlend.spread,
           rainProbability: leadRain.probability,
+          modelCount: models.filter((model) => model.historyLeadDays >= lead).length,
         },
       ] as const;
     }),
@@ -100,4 +103,21 @@ export function quantile(values: readonly number[], fraction: number): number {
   if (values.length === 0) return Number.NaN;
   const sorted = [...values].sort((a, b) => a - b);
   return sorted[Math.floor(fraction * (sorted.length - 1))] ?? Number.NaN;
+}
+
+const INDEX_BOUNDS = [0, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1] as const;
+/** Écart maximal toléré entre l'indice annoncé et la fréquence observée, dans une classe assez fournie. */
+export const CALIBRATION_TOLERANCE = 0.1;
+export const CALIBRATION_MIN_COUNT = 50;
+
+/** Par classe d'indice annoncé, la part des prévisions tenues ; et le critère de calibration. */
+export function calibrationOf(
+  announced: readonly number[],
+  outcomes: readonly boolean[],
+): { readonly bins: readonly CalibrationBin[]; readonly calibrated: boolean } {
+  const bins = calibrationBins(announced, outcomes, INDEX_BOUNDS);
+  const calibrated = bins
+    .filter((bin) => bin.count >= CALIBRATION_MIN_COUNT)
+    .every((bin) => Math.abs(bin.announced - bin.observed) <= CALIBRATION_TOLERANCE);
+  return { bins, calibrated };
 }

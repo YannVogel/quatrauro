@@ -7,6 +7,7 @@ import path from 'node:path';
 
 import { CITIES } from '../../shared/cities.ts';
 import { MODELS } from '../../shared/models.ts';
+import { CALIBRATION_FIXTURE_PATH, buildCalibrationFixture } from './calibrationFixture.ts';
 import { CANDIDATE_MODEL, PERIOD, VARIABLES } from './config.ts';
 import { loadCityData } from './data/dataset.ts';
 import { formatNumber } from './markdown.ts';
@@ -27,6 +28,7 @@ const reportFile = path.join(
   'features',
   'backtest-resultats.md',
 );
+const repoRoot = path.join(import.meta.dirname, '..', '..');
 const log = (message: string): void => console.log(message);
 
 const cities = [];
@@ -97,3 +99,12 @@ const report = [
 await writeFile(reportFile, report.replace(/\n{3,}/g, '\n\n'));
 log(verdict);
 log(`Rapport écrit : ${path.relative(process.cwd(), reportFile)}`);
+
+const fixture = buildCalibrationFixture(
+  reliability.runs,
+  reliability.settings,
+  { start: PERIOD.start, end: PERIOD.end },
+  RANGES.validation,
+);
+await writeFile(path.join(repoRoot, CALIBRATION_FIXTURE_PATH), `${JSON.stringify(fixture)}\n`);
+log(`Jeu de calibration écrit : ${CALIBRATION_FIXTURE_PATH}`);

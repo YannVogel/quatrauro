@@ -8,8 +8,8 @@ Cette page décrit la cible et se met à jour à chaque issue structurante (voir
 
 | Bloc | État |
 |---|---|
-| `shared/` | La configuration unique (villes, modèles, paramètres du mélange), le contrat des fichiers publiés ([fiche](docs/features/contrat-de-donnees.md)), les séries internes et le décalage de l'heure de Paris ([ADR 0005](docs/adr/0005-heure-de-paris-sans-base-de-fuseaux.md)). La logique du mélange y arrive, issue par issue, depuis `pipeline/backtest/logic/` |
-| `pipeline/` | Le backtest seulement (`pipeline/backtest/`), qui porte pour l'instant la logique pure du mélange dans `backtest/logic/`. Collecte, archive, vérification et publication arrivent avec M1 |
+| `shared/` | La configuration unique (villes, modèles, paramètres du mélange), le contrat des fichiers publiés ([fiche](docs/features/contrat-de-donnees.md)), les séries internes et le décalage de l'heure de Paris ([ADR 0005](docs/adr/0005-heure-de-paris-sans-base-de-fuseaux.md)). La logique pure du mélange (`shared/blend/` : biais, poids, mélange, pluie, agrégats, indice de fiabilité) y est aussi, rejouée telle quelle par le backtest |
+| `pipeline/` | Le backtest seulement (`pipeline/backtest/`), qui rejoue la logique de `shared/blend/` sur l'historique. Collecte, archive, vérification et publication arrivent avec M1 |
 | `app/` + `src/` | Le projet Expo et un écran provisoire. Le design system, la lecture des données et les écrans arrivent avec la suite de M0, puis M2 à M4 |
 
 Décisions arrêtées : sources de données ([ADR 0002](docs/adr/0002-sources-de-donnees-meteo.md)), méthode de mélange et paramètres ([ADR 0003](docs/adr/0003-methode-de-melange.md)), heure de Paris (ADR 0005). Encore ouverte : l'exploitation du pipeline dans GitHub Actions ([ADR 0004](docs/adr/0004-pipeline-github-actions.md), au statut « proposée »).
@@ -65,7 +65,7 @@ La méthode est décrite dans le brief (§ 5.4 à § 5.6) et arrêtée par l'[AD
 
 ## Backtest
 
-`pipeline/backtest/` rejoue le mélange sur l'historique : chaque prévision ne voit que les observations publiées au moment où elle a été émise (`replay.ts`), applique la logique pure du mélange (`logic/`, appelée à rejoindre `shared/`), et le résultat est comparé aux observations. Le rapport du premier passage est dans [docs/features/backtest.md](docs/features/backtest.md). Il sert deux fois : au départ pour décider si le projet vaut le coup et fixer les paramètres (M0-03), puis à chaque changement de la logique du mélange, pour vérifier qu'on n'a rien dégradé.
+`pipeline/backtest/` rejoue le mélange sur l'historique : chaque prévision ne voit que les observations publiées au moment où elle a été émise (`replay.ts`), applique la logique pure du mélange (`shared/blend/`), et le résultat est comparé aux observations. Le rapport du premier passage est dans [docs/features/backtest.md](docs/features/backtest.md). Il sert deux fois : au départ pour décider si le projet vaut le coup et fixer les paramètres (M0-03), puis à chaque changement de la logique du mélange, pour vérifier qu'on n'a rien dégradé.
 
 ## Données de la branche `data`
 

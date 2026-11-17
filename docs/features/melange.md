@@ -128,3 +128,42 @@ L'accord entre modèles est rangé en cinq classes : aucun, une minorité, la mo
 - Une variable n'a d'agrégat que si elle couvre au moins **75 %** des heures du jour (`minDayCoverage`). En dessous, il vaut `null` : le minimum d'une demi-journée n'est pas le minimum du jour.
 - La couverture se juge variable par variable : un jour peut avoir un maximum de température et pas de rafales.
 
+## Indice de fiabilité (`reliability.ts`)
+
+L'indice d'un jour répond à une question : **dans une situation semblable, combien de fois la prévision a-t-elle été tenue ?** Ce n'est pas une note calculée par une formule, c'est une fréquence relevée dans le passé.
+
+**Prévision tenue** : le minimum et le maximum de température du jour sont à moins de **2 °C** de l'observé (`temperatureTolerance`), et l'annonce de pluie (oui ou non) est juste.
+
+**Situation semblable** : trois critères, qui portent l'échéance, l'écart entre modèles et l'erreur passée.
+
+| Critère | Classes | Réglage |
+|---|---|---|
+| Tranche d'échéance | J+1, J+2, J+3, J+4-5, J+6-7 : une table par tranche, tenue par l'appelant | `leadGrouping` |
+| Désaccord entre modèles (écart-type moyen de la température sur la journée) | faible < 0,6 °C ≤ moyen < 0,9 °C ≤ fort | `spreadThresholds` |
+| Signal de pluie | net, ou incertain entre 20 % et 80 % de probabilité | `uncertainRain` |
+
+- `updateReliability(table, situation, held, options)` ajoute un jour vérifié à la table de sa tranche.
+- `reliabilityIndex(table, situation, options)` rend l'indice, de 0 à 1.
+- `reliabilityLabel(index, thresholds)` rend le libellé : **Sûr** à partir de 80 %, **Probable** à partir de 60 %, **Incertain** en dessous (`labels`).
+- `countAgreeingModels(values, combined, tolerance)` compte les modèles « d'accord » : ceux dont la valeur est à moins de **1 °C** de la valeur combinée (`agreementTolerance.temperature`).
+- `dayReliability(table, day, settings)` réunit les trois : c'est ce que le pipeline publie pour un jour (`reliability`, `reliabilityLabel`, `modelsAgreeing`, `modelsTotal`).
+
+### Garde-fous
+
+| Cas | Comportement |
+|---|---|
+| Moins de 30 jours vérifiés dans la tranche (`minSamples`) | Indice `null`, libellé `null` : l'app affiche « indisponible » |
+| Situation peu rencontrée | Son taux est tiré vers le taux de la tranche, avec le poids de 10 jours fictifs (`priorStrength`) |
+| Un niveau de désaccord plus fort a été, par hasard, mieux tenu | Les taux sont rendus décroissants : à signal de pluie égal, l'indice ne monte jamais quand le désaccord augmente |
+| Un seul modèle couvre le jour | L'indice est plafonné à **50 %** (`singleModelCap`), donc « Incertain » : un écart nul entre un modèle et lui-même ne prouve rien |
+| Pas de valeur combinée | Le nombre de modèles d'accord vaut `null` |
+
+Le plafond ne joue pas dans le backtest, où trois modèles au moins couvrent chaque échéance. Il protège le cas d'une panne : si un seul modèle répond un jour, la prévision sort quand même, mais sans se dire sûre.
+
+### Calibration
+
+Un indice n'a de sens que s'il tient parole : les jours annoncés à 70 % doivent être tenus environ sept fois sur dix. Le critère, fixé par le [rapport du backtest](backtest.md), est un écart d'au plus **10 points** entre l'indice annoncé et la part des prévisions tenues, dans chaque classe d'au moins 50 jours, sur la période de validation. Il est rempli (écart maximal : 9,6 points, dans la classe 30-40 %) ; les tableaux sont dans [backtest-resultats.md](backtest-resultats.md).
+
+Ce critère est rejoué à chaque passage de la CI par `pipeline/backtest/__tests__/calibration.test.ts`, sans retélécharger l'historique : `npm run backtest` écrit la situation de chaque jour (désaccord, probabilité de pluie, prévision tenue ou non) dans `pipeline/__fixtures__/backtest/reliability-days.json`, et le test rejoue l'indice dessus, sans fuite d'information. Si un réglage qui définit « prévision tenue » change dans `blendConfig.ts`, le test échoue tant que le backtest n'a pas été relancé.
+
+À savoir : le backtest juge les jours en UTC, le pipeline les jugera en jours civils de Paris. L'écart est d'une ou deux heures par jour ; la calibration sera remesurée sur les jours de Paris quand la vérification (M1-09) aura accumulé assez de jours.

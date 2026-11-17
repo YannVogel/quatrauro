@@ -60,6 +60,10 @@ export const BLEND_CONFIG = {
     priorStrength: 10,
     /** En dessous de ce nombre de jours vérifiés, l'indice est indisponible. */
     minSamples: 30,
+    /** Plafond de l'indice quand un seul modèle couvre le jour : une chance sur deux, « Incertain ». */
+    singleModelCap: 0.5,
+    /** Un modèle est « d'accord » si sa valeur est à moins de tant de la valeur combinée (°C). */
+    agreementTolerance: { temperature: 1 },
     /** Seuils des libellés : « Sûr » à partir de `sure`, « Probable » à partir de `likely`. */
     labels: { sure: 0.8, likely: 0.6 },
   },
