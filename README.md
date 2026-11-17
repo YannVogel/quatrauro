@@ -31,6 +31,10 @@ Le nom vient du provençal « quatre auro », les quatre vents.
 
 ## Données et attributions
 
-Prévisions : [Open-Meteo](https://open-meteo.com/) (licence CC BY 4.0, accès gratuit réservé à un usage non commercial), à partir des modèles de Météo-France, de l'ECMWF et du DWD. Les sources définitives et leurs mentions sont fixées par l'[ADR 0002](docs/adr/0002-sources-de-donnees-meteo.md).
+Prévisions : [Open-Meteo](https://open-meteo.com/) (licence CC BY 4.0, accès gratuit réservé à un usage non commercial), à partir des modèles de Météo-France (AROME, ARPEGE), de l'ECMWF (IFS), du DWD (ICON) et de la NOAA (GFS).
+
+Observations : Météo-France, données climatologiques horaires des stations de Toulon et de Nice (Licence Ouverte 2.0).
+
+Le détail des sources est dans [docs/features/donnees.md](docs/features/donnees.md), la décision dans l'[ADR 0002](docs/adr/0002-sources-de-donnees-meteo.md).
 
 Quatrauro est un outil personnel, sans usage commercial.

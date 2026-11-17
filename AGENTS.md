@@ -28,7 +28,7 @@ Quatrauro est une app météo personnelle (Expo / React Native, Android) pour To
 ## Données météo
 
 - **Ne jamais inventer une valeur.** Une donnée absente est `null` et s'affiche « indisponible ». Une prévision ancienne s'affiche avec son heure et un avertissement, jamais comme si elle était fraîche. Les chiffres des maquettes sont fictifs : ne pas les recopier comme données d'essai « réalistes » sans le dire.
-- **Sources** : les modèles sont lus via Open-Meteo, les observations via les données publiques de Météo-France, sous réserve de l'[ADR 0002](docs/adr/0002-sources-de-donnees-meteo.md). Ne pas ajouter une source sans ADR.
+- **Sources** : les modèles sont lus via Open-Meteo, les observations dans les fichiers horaires publics de Météo-France ([ADR 0002](docs/adr/0002-sources-de-donnees-meteo.md), détail dans [docs/features/donnees.md](docs/features/donnees.md)). Aucune des deux sources ne demande de clé. Ne pas ajouter une source sans ADR.
 - **Usage non commercial** : l'accès gratuit d'Open-Meteo impose un usage non commercial et une attribution. Rester sobre sur les appels : le pipeline interroge l'API, jamais l'app.
 - **Attributions** : Open-Meteo et les fournisseurs des modèles et des observations restent cités dans l'écran « À propos des données ».
 - **Configuration unique** : les villes (`shared/cities.ts`), les modèles (`shared/models.ts`) et les paramètres du mélange (`shared/blendConfig.ts`) sont chacun dans un seul fichier. Aucune ville, aucun modèle, aucun paramètre en dur ailleurs. Ajouter une ville ne doit demander qu'une entrée de configuration.

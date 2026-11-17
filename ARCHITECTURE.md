@@ -4,12 +4,12 @@ Ce document décrit comment les données circulent, des modèles météo jusqu'�
 
 ## État
 
-Cadrage seulement : rien de ce qui suit n'est encore codé. Cette page décrit la cible et se met à jour à chaque issue structurante (voir AGENTS.md, « Documentation »). Les points encore ouverts sont portés par les ADR 0002 à 0004, au statut « proposée ».
+Cadrage seulement : rien de ce qui suit n'est encore codé. Cette page décrit la cible et se met à jour à chaque issue structurante (voir AGENTS.md, « Documentation »). Les sources de données sont arrêtées par l'ADR 0002 ; les points encore ouverts sont portés par les ADR 0003 et 0004, au statut « proposée ».
 
 ## Vue d'ensemble
 
 ```
- Open-Meteo (AROME, ARPEGE, IFS, ICON…)      Observations des stations
+ Open-Meteo (AROME, ARPEGE, IFS, ICON, GFS)  Observations des stations
               │                                        │
               ▼                                        ▼
       ┌──────────────────────── pipeline/ (GitHub Actions, cron) ───────────────────────┐
