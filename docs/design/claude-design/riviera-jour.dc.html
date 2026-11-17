@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Météo — Détail du jeudi</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+[data-theme="light"]{--bg:#EAF4FF;--hero:#3A4F7A;--card:#FFFFFF;--fg:#0B1B3A;--mu:#4A5B7C;--track:#DCE8F7;--bar:#1463FF;--sun:#FFC93C;--pale:#DCE8F7}
+[data-theme="dark"]{--bg:#071226;--hero:#2A3A5E;--card:#0F1E3D;--fg:#EAF1FF;--mu:#A9B8D6;--track:#1C2E55;--bar:#7FB0FF;--sun:#FFC93C;--pale:#DCE8F7}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:inherit;text-decoration:none}a:hover{color:inherit}
+</style>
+</helmet>
+<div data-theme="{{theme}}" style="width: 390px; height: 844px; box-sizing: border-box; padding: 16px; display: flex; flex-direction: column; gap: 12px; background: var(--bg); color: var(--fg); font-family: 'Outfit', system-ui, sans-serif">
+
+<div style="display: flex; justify-content: space-between; align-items: center">
+<a href="riviera-accueil.dc.html" aria-label="Retour à la semaine" style="width: 44px; height: 44px; border-radius: 22px; background: var(--card); display: flex; align-items: center; justify-content: center">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M15 5l-7 7 7 7"></path></svg>
+</a>
+<div style="display: flex; flex-direction: column; align-items: center">
+<div style="font-size: 18px; font-weight: 600">Jeudi 19 novembre</div>
+<div style="font-size: 13px; color: var(--mu)">Toulon</div>
+</div>
+<button aria-label="Basculer entre thème clair et sombre" onClick="{{toggle}}" style="width: 44px; height: 44px; border: 0; border-radius: 22px; background: var(--card); display: flex; align-items: center; justify-content: center">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="stroke: currentColor; stroke-width: 1.8"><circle cx="12" cy="12" r="9"></circle><path d="M12 3a9 9 0 0 1 0 18z" style="fill: currentColor"></path></svg>
+</button>
+</div>
+
+<div style="background: var(--hero); color: #FFFFFF; border-radius: 28px; padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<div style="display: flex; align-items: baseline; gap: 10px">
+<div style="font-size: 80px; font-weight: 700; line-height: 0.95; letter-spacing: -0.04em">15°</div>
+<div style="font-size: 26px; font-weight: 500">11°</div>
+</div>
+<div style="font-size: 22px; font-weight: 600">Pluie dès 15 h</div>
+</div>
+<div style="width: 92px; height: 92px; border-radius: 46px; background: var(--pale); display: flex; align-items: center; justify-content: center; color: #0B1B3A">
+<svg width="50" height="50" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round"><path d="M7 15h10a4 4 0 0 0 .5-8A6 6 0 0 0 5.9 8.5 3.5 3.5 0 0 0 7 15zM8 18v3M12 18v3M16 18v3"></path></svg>
+</div>
+</div>
+<div style="display: flex; align-items: center; gap: 10px">
+<div style="background: var(--sun); color: #0B1B3A; border-radius: 16px; padding: 6px 14px; font-size: 14px; font-weight: 600">Fiabilité 75 %</div>
+<div style="font-size: 14px">Matinée sèche, soirée arrosée</div>
+</div>
+</div>
+
+<div style="background: var(--card); border-radius: 28px; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: baseline">
+<div style="font-size: 16px; font-weight: 600">Heure par heure</div>
+<div style="font-size: 13px; color: var(--mu)">barre = risque de pluie</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 5px"><div style="font-size: 15px; font-weight: 600">11°</div><div style="height: 60px; width: 14px; background: var(--track); border-radius: 7px; display: flex; align-items: flex-end"><div style="width: 14px; height: 6%; background: var(--bar); border-radius: 7px"></div></div><div style="font-size: 12px; color: var(--mu)">0 h</div></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 5px"><div style="font-size: 15px; font-weight: 600">11°</div><div style="height: 60px; width: 14px; background: var(--track); border-radius: 7px; display: flex; align-items: flex-end"><div style="width: 14px; height: 6%; background: var(--bar); border-radius: 7px"></div></div><div style="font-size: 12px; color: var(--mu)">3 h</div></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 5px"><div style="font-size: 15px; font-weight: 600">11°</div><div style="height: 60px; width: 14px; background: var(--track); border-radius: 7px; display: flex; align-items: flex-end"><div style="width: 14px; height: 10%; background: var(--bar); border-radius: 7px"></div></div><div style="font-size: 12px; color: var(--mu)">6 h</div></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 5px"><div style="font-size: 15px; font-weight: 600">12°</div><div style="height: 60px; width: 14px; background: var(--track); border-radius: 7px; display: flex; align-items: flex-end"><div style="width: 14px; height: 10%; background: var(--bar); border-radius: 7px"></div></div><div style="font-size: 12px; color: var(--mu)">9 h</div></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 5px"><div style="font-size: 15px; font-weight: 600">14°</div><div style="height: 60px; width: 14px; background: var(--track); border-radius: 7px; display: flex; align-items: flex-end"><div style="width: 14px; height: 25%; background: var(--bar); border-radius: 7px"></div></div><div style="font-size: 12px; color: var(--mu)">12 h</div></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 5px"><div style="font-size: 15px; font-weight: 600">15°</div><div style="height: 60px; width: 14px; background: var(--track); border-radius: 7px; display: flex; align-items: flex-end"><div style="width: 14px; height: 80%; background: var(--bar); border-radius: 7px"></div></div><div style="font-size: 12px; color: var(--mu)">15 h</div></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 5px"><div style="font-size: 15px; font-weight: 600">13°</div><div style="height: 60px; width: 14px; background: var(--track); border-radius: 7px; display: flex; align-items: flex-end"><div style="width: 14px; height: 85%; background: var(--bar); border-radius: 7px"></div></div><div style="font-size: 12px; color: var(--mu)">18 h</div></div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 5px"><div style="font-size: 15px; font-weight: 600">12°</div><div style="height: 60px; width: 14px; background: var(--track); border-radius: 7px; display: flex; align-items: flex-end"><div style="width: 14px; height: 70%; background: var(--bar); border-radius: 7px"></div></div><div style="font-size: 12px; color: var(--mu)">21 h</div></div>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+<div style="background: var(--card); border-radius: 18px; padding: 10px 0; display: flex; flex-direction: column; align-items: center; gap: 2px"><div style="font-size: 13px; color: var(--mu)">Vent</div><div style="font-size: 18px; font-weight: 600">35 km/h</div></div>
+<div style="background: var(--card); border-radius: 18px; padding: 10px 0; display: flex; flex-direction: column; align-items: center; gap: 2px"><div style="font-size: 13px; color: var(--mu)">Cumul</div><div style="font-size: 18px; font-weight: 600">12 mm</div></div>
+<div style="background: var(--card); border-radius: 18px; padding: 10px 0; display: flex; flex-direction: column; align-items: center; gap: 2px"><div style="font-size: 13px; color: var(--mu)">Humidité</div><div style="font-size: 18px; font-weight: 600">82 %</div></div>
+<div style="background: var(--card); border-radius: 18px; padding: 10px 0; display: flex; flex-direction: column; align-items: center; gap: 2px"><div style="font-size: 13px; color: var(--mu)">Ressenti</div><div style="font-size: 18px; font-weight: 600">13°</div></div>
+</div>
+
+<div style="background: var(--card); border-radius: 28px; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; justify-content: space-between; align-items: baseline">
+<div style="font-size: 16px; font-weight: 600">Début de la pluie selon les modèles</div>
+</div>
+<div style="display: grid; grid-template-columns: 62px 1fr 36px; column-gap: 10px; row-gap: 8px; align-items: center; font-size: 14px">
+<div style="font-weight: 600">AROME</div><div style="height: 10px; background: var(--track); border-radius: 5px"><div style="margin-left: 25%; height: 10px; background: var(--bar); border-radius: 5px"></div></div><div style="text-align: right; color: var(--mu)">14 h</div>
+<div style="font-weight: 600">ARPEGE</div><div style="height: 10px; background: var(--track); border-radius: 5px"><div style="margin-left: 37.5%; height: 10px; background: var(--bar); border-radius: 5px"></div></div><div style="text-align: right; color: var(--mu)">15 h</div>
+<div style="font-weight: 600">IFS</div><div style="height: 10px; background: var(--track); border-radius: 5px"><div style="margin-left: 37.5%; height: 10px; background: var(--bar); border-radius: 5px"></div></div><div style="text-align: right; color: var(--mu)">15 h</div>
+<div style="font-weight: 600">ICON</div><div style="height: 10px; background: var(--track); border-radius: 5px"><div style="margin-left: 50%; height: 10px; background: var(--bar); border-radius: 5px"></div></div><div style="text-align: right; color: var(--mu)">16 h</div>
+<div></div><div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--mu)"><div>12 h</div><div>16 h</div><div>20 h</div></div><div></div>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"dark":{"editor":"boolean","default":false},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+componentDidUpdate(prev) {
+if (prev.dark !== this.props.dark && this.state && this.state.dark != null) this.setState({ dark: null });
+}
+renderVals() {
+const s = this.state ? this.state.dark : null;
+const dark = s == null ? (this.props.dark ?? false) : s;
+return { theme: dark ? 'dark' : 'light', toggle: () => this.setState({ dark: !dark }) };
+}
+}
+</script>
+</body>
+</html>
