@@ -2,7 +2,7 @@
 
 Quatrauro est une app météo personnelle (Expo / React Native, Android) pour Toulon et Nice. Elle croise plusieurs modèles de prévision, corrige leurs erreurs locales à partir des observations et affiche un indice de fiabilité. Il n'y a pas de serveur : un pipeline TypeScript tourne dans GitHub Actions et publie des JSON statiques que l'app lit. Le cadrage de référence est [docs/QUATRAURO_PROJECT_BRIEF.md](docs/QUATRAURO_PROJECT_BRIEF.md) ; les décisions prises depuis vivent dans les issues GitHub (sections « ⚠️ Point tranché ») et dans [docs/adr/](docs/adr/). En cas de conflit avec le brief, l'issue prime. L'architecture (couches, flux des données, mélange, hors ligne) est décrite dans [ARCHITECTURE.md](ARCHITECTURE.md).
 
-> **État du repo** (à tenir à jour à chaque milestone) : **socle, design system et pipeline en place.** Le projet Expo compile, se teste et affiche un écran provisoire ; le design system Riviera et son catalogue sont là ; la CI tourne sur chaque PR ; les deux spikes sont terminés (ADR 0002 et 0003) et le backtest a donné son feu vert ([rapport](docs/features/backtest.md)). Le pipeline sait faire un passage complet en local (`npm run pipeline`) et s'amorcer sur l'historique (`npm run pipeline:bootstrap`). Restent à écrire : le workflow planifié, livré désactivé (M1-12), et les écrans (M2 à M4).
+> **État du repo** (à tenir à jour à chaque milestone) : **socle, design system et pipeline en place.** Le projet Expo compile, se teste et affiche un écran provisoire ; le design system Riviera et son catalogue sont là ; la CI tourne sur chaque PR ; les deux spikes sont terminés (ADR 0002 et 0003) et le backtest a donné son feu vert ([rapport](docs/features/backtest.md)). Le pipeline sait faire un passage complet en local (`npm run pipeline`) et s'amorcer sur l'historique (`npm run pipeline:bootstrap`). Le workflow planifié existe mais il est **désactivé** : l'activer est un geste de Yann (README, « Exploitation du pipeline »). Restent à écrire : les écrans (M2 à M4).
 
 ## Ordre de travail
 
@@ -96,6 +96,7 @@ scripts/brand/              # export en PNG de la variante d'icône choisie (npm
 docs/
   QUATRAURO_PROJECT_BRIEF.md  adr/  design/  features/
 .github/workflows/ci.yml    # intégration continue
+.github/workflows/pipeline.yml  # passage planifié du pipeline, livré désactivé (ADR 0004) : seul workflow qui écrit sur data
 app.config.ts               # identité de l'app et configuration native
 eas.json                    # profils de build (development, preview) et canal de mise à jour
 ```

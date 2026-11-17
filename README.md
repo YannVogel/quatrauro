@@ -127,6 +127,57 @@ Avant d'ouvrir une PR, lancer les trois commandes en local : ce sont exactement 
 
 Le premier passage télécharge environ 60 Mo de prévisions et d'observations dans `pipeline/backtest/.cache/` (ignoré par git). Aucune clé n'est nécessaire. Le rapport est dans [docs/features/backtest.md](docs/features/backtest.md).
 
+## Exploitation du pipeline
+
+Le pipeline tourne dans GitHub Actions (`.github/workflows/pipeline.yml`) et publie sur la branche `data`. **Il est livré désactivé** : tant que sa planification est en commentaire, il ne tourne que si on le lance à la main. Les décisions (fréquence, adresse de lecture, rétention) sont dans l'[ADR 0004](docs/adr/0004-pipeline-github-actions.md) ; ce que fait un passage, dans [docs/features/pipeline.md](docs/features/pipeline.md).
+
+### Une seule fois : mettre en route
+
+Dans l'ordre. Chaque étape est un geste de Yann ; aucune n'est faite par un agent sans demande explicite.
+
+1. **Créer la branche `data`**, vide, sans l'historique du code :
+
+   ```bash
+   git switch --orphan data
+   git commit --allow-empty --message "data: branche vide"
+   git push --set-upstream origin data
+   git switch main
+   ```
+
+2. **Amorcer** l'état sur l'historique, dans un checkout de `data` à côté du repo ([détail](docs/features/amorcage.md)) :
+
+   ```bash
+   git worktree add ../quatrauro-data data
+   npm run pipeline:bootstrap -- --data-dir=../quatrauro-data
+   git -C ../quatrauro-data add --all
+   git -C ../quatrauro-data commit --message "data: amorçage par l'historique"
+   git -C ../quatrauro-data push
+   ```
+
+3. **Lancer un premier passage à la main** : onglet Actions → Pipeline → Run workflow, sur `main`. Il doit finir en vert et ajouter un commit sur `data`.
+   - S'il échoue à l'étape « Committer le résultat sur data » avec un refus d'écriture (403), autoriser le jeton : Settings → Actions → General → Workflow permissions → « Read and write permissions ».
+4. **Vérifier** que les fichiers se lisent : `https://raw.githubusercontent.com/YannVogel/quatrauro/data/forecast/toulon.json`.
+5. **Activer la planification** : dans `.github/workflows/pipeline.yml`, décommenter les deux lignes `schedule:` et `- cron:`, puis merger. Le test `__tests__/pipeline-workflow.test.ts` vérifie que le workflow est désactivé : adapter son premier cas dans la même PR.
+
+### Au quotidien
+
+| Besoin | Geste |
+|---|---|
+| Lancer un passage à la main | Actions → Pipeline → Run workflow, sur `main` |
+| Lire le journal d'un passage | Actions → Pipeline → le passage → étape « Lancer un passage » : modèles utilisés et absents, mesures nouvelles, heures apprises, durée |
+| Comprendre un échec | La dernière ligne du journal : `Passage en échec, rien n'a été écrit : <raison>`. La branche `data` n'a pas bougé |
+| Relancer après une panne | Rien à réparer : relancer le passage (bouton « Re-run jobs », ou attendre le suivant). Un passage relancé ne duplique rien |
+| Essayer en local sans rien publier | `npm run pipeline -- --dry-run`, ou `npm run pipeline` qui écrit dans `.data/` (ignoré par git) |
+| La planification a été désactivée par GitHub (60 jours sans activité dans le repo) | Actions → Pipeline → « Enable workflow » |
+| Suspendre le pipeline | Actions → Pipeline → menu « … » → « Disable workflow » |
+
+À savoir :
+
+- Un passage planifié peut avoir du retard, ou sauter, quand GitHub est chargé. L'app affiche toujours l'heure de sa prévision.
+- GitHub envoie un courriel à chaque passage en échec à la personne qui a activé la planification (réglable dans ses notifications GitHub, rubrique Actions).
+- Si le pipeline reste arrêté plus d'un jour, les heures non prévues entre-temps ne seront jamais apprises : rien n'est inventé pour combler le trou.
+- La taille de la branche `data` est à mesurer après un mois de passages (ADR 0004).
+
 ## Données et attributions
 
 Prévisions : [Open-Meteo](https://open-meteo.com/) (licence CC BY 4.0, accès gratuit réservé à un usage non commercial), à partir des modèles de Météo-France (AROME, ARPEGE), de l'ECMWF (IFS), du DWD (ICON) et de la NOAA (GFS).

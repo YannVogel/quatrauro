@@ -1,0 +1,72 @@
+# Pipeline de prévision : un passage complet (collecte, archive, vérification, mélange,
+# publication), dont le résultat est committé sur la branche `data`.
+#
+# LIVRÉ DÉSACTIVÉ. La planification ci-dessous est en commentaire : tant qu'elle l'est, ce
+# workflow ne tourne que si quelqu'un le lance à la main (Actions → Pipeline → Run workflow).
+# L'activer est un geste de Yann, après l'amorçage : la marche à suivre est dans le README,
+# section « Exploitation du pipeline ». Décisions et sources : docs/adr/0004-pipeline-github-actions.md.
+#
+# Seul ce workflow écrit sur `data`. Aucun workflow n'écrit sur `main`.
+name: Pipeline
+
+on:
+  workflow_dispatch:
+  # Quatre passages par jour, en UTC, à la minute 17 : GitHub retarde ou abandonne plus
+  # volontiers les déclenchements du début de chaque heure.
+  # schedule:
+  #   - cron: '17 1,7,13,19 * * *'
+
+# Un seul passage à la fois : un passage qui arrive pendant qu'un autre tourne attend son tour.
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+
+# Le jeton n'a que le droit d'écrire le contenu du repo, pour pousser sur `data`.
+permissions:
+  contents: write
+
+jobs:
+  pass:
+    name: Passage du pipeline
+    # Le code du pipeline est toujours celui de `main`, même si le workflow est lancé d'une autre branche.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Récupérer le code (main)
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Récupérer les données (branche data)
+        uses: actions/checkout@v7
+        with:
+          ref: data
+          path: data
+
+      - name: Installer Node (version de .nvmrc)
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      # En cas d'échec, la commande rend un code d'erreur et n'a rien écrit : les étapes
+      # suivantes ne tournent pas, et `data` reste telle qu'elle était.
+      - name: Lancer un passage
+        run: npm run pipeline -- --data-dir=data
+
+      - name: Committer le résultat sur data
+        working-directory: data
+        run: |
+          git add --all
+          if git diff --cached --quiet; then
+            echo "Rien de nouveau à publier."
+            exit 0
+          fi
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit --message "data: passage du $(date --utc +%Y-%m-%dT%H:%M:%SZ)"
+          git push origin HEAD:data
