@@ -14,4 +14,5 @@ Chaque fonctionnalité notable a sa fiche ici : comportement, données, écrans,
 | [pipeline.md](pipeline.md) | Un passage complet : la commande, les étapes, tout ou rien, ce que contient la prévision publiée, le journal |
 | [lecture-des-donnees.md](lecture-des-donnees.md) | Lecture des fichiers publiés dans l'app : adresse, validation, cache sur l'appareil, hors ligne, ce que rendent les hooks |
 | [fraicheur-et-etats.md](fraicheur-et-etats.md) | Heure de mise à jour, prévision ancienne, heures et jours à venir, états de chargement et état vide |
+| [accueil.md](accueil.md) | Accueil d'une ville : ce qu'il montre, ses règles, ses états, la navigation, l'accessibilité |
 | [donnees.md](donnees.md) | Sources de données : modèles, points de prévision, variables, historique, observations, attributions |

@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
+import { CurrentCityProvider } from '@/lib/currentCity';
 import { QueryProvider } from '@/lib/queryClient';
 import { ThemeProvider, useTheme } from '@/ui';
 
@@ -22,9 +23,11 @@ function Screens() {
 export default function RootLayout() {
   return (
     <QueryProvider>
-      <ThemeProvider>
-        <Screens />
-      </ThemeProvider>
+      <CurrentCityProvider>
+        <ThemeProvider>
+          <Screens />
+        </ThemeProvider>
+      </CurrentCityProvider>
     </QueryProvider>
   );
 }

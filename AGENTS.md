@@ -57,10 +57,12 @@ Ce qui existe aujourd'hui :
 ```
 app/                        # routes Expo Router (uniquement des écrans et des layouts)
   _layout.tsx  index.tsx  dev/catalog.tsx
+  day/[date].tsx  models.tsx  reliability.tsx  about.tsx   # provisoires tant que leur écran n'est pas écrit
 __tests__/                  # tests qui rendent l'app entière (renderRouter sur app/)
 src/
-  features/forecast/        # components/ (écran provisoire, bandeau, état vide), hooks/ (useForecast, useVerification),
-                            # freshness.ts (ce qu'un écran a le droit de montrer à un instant donné), index.ts
+  features/forecast/        # components/ (accueil et ses pièces, bandeau, état vide), hooks/ (useForecast, useVerification),
+                            # freshness.ts (ce qu'un écran a le droit de montrer à un instant donné),
+                            # home.ts (contenu de l'accueil), index.ts
   features/catalog/         # catalogue des composants (développement seulement) et ses données fictives
   ui/                       # theme.ts (tokens), ThemeProvider, Text, Icon, icons.ts, conditions.ts, contrast.ts
     components/             # les composants Riviera (HeroBlock, Card, DayRow, HourlyChart…), exportés par @/ui
@@ -68,6 +70,7 @@ src/
   lib/                      # dates.ts (mise en forme à l'heure de Paris), format.ts (nombres à la française)
                             # env.ts (adresse des fichiers publiés), data.ts (lecture et validation), queryClient.tsx (cache)
                             # config.ts (réglages de l'app), now.ts (l'instant présent, pour ne rien montrer de passé)
+                            # currentCity.tsx (la ville que l'app montre)
                             # __fixtures__/published/ : vrais fichiers publiés, pour les tests ; testing/ : faux réseau
   i18n/                     # fr.ts : toutes les chaînes UI ; index.ts : accès typé (`strings`)
 shared/                     # ne dépend de rien : ni Node, ni React Native, ni le reste du repo
@@ -148,6 +151,8 @@ Le projet est sur **Expo SDK 58** (React Native 0.88, React 19.3, TypeScript 6) 
 
 - Dans ce SDK, `renderRouter` et les helpers de `expo-router/testing-library` sont asynchrones : toujours les attendre (`await`).
 - `renderRouter` installe de fausses minuteries, qui remplacent `Date` : `jest.setup.ts` charge les modules de dates avant, sinon les heures sortent décalées du fuseau de la machine. Ce fichier simule aussi le stockage de l'appareil et fait échouer tout appel réseau qu'un test n'a pas prévu.
+- **Écrans** : un écran (`XxxScreen`) lit les hooks et distribue ; ce qu'il affiche est calculé par une fonction pure à côté (`home.ts` pour l'accueil), testée sans rendu ; ses pièces sont de petits composants qui ne reçoivent que des props.
+- **Largeurs fixes et police agrandie** : une colonne de largeur fixe qui contient du texte multiplie sa largeur par `fontScale` (`useWindowDimensions`), sinon le texte passe à la ligne dès que l'utilisateur agrandit la police.
 - **Le temps qui passe** : un écran ne lit jamais `new Date()` lui-même. Il prend l'instant de `useNow()` (`src/lib/now.ts`) et le passe aux fonctions pures de `freshness.ts`, qui ne montrent ni heure passée ni prévision ancienne sans le dire. Pour figer l'horloge dans un test de l'app : `jest.useFakeTimers({ now })` avant `renderRouter`.
 - **Réseau dans l'app** : un seul endroit, `src/lib/data.ts`, et seulement vers les fichiers publiés (testé). Les tests servent ces fichiers avec `servePublished` (`src/lib/testing/published.ts`).
 
