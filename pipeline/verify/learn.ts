@@ -231,19 +231,26 @@ export type Learning = {
   readonly hoursWithoutObservation: number;
 };
 
+export type LearningInput = {
+  readonly cells: CellIndex;
+  readonly observations: ObservationIndex;
+  /** Dernière heure à apprendre (comprise), en millisecondes. */
+  readonly until: number;
+};
+
 /**
  * Apprend toutes les heures jusqu'à `until` (comprise) qui ne l'ont pas encore été, puis juge
  * les jours civils de Paris devenus complets. L'état reçu n'est pas modifié.
  */
-export function learn(
-  state: CityState,
-  input: {
-    readonly cells: CellIndex;
-    readonly observations: ObservationIndex;
-    readonly until: number;
-  },
-): Learning {
-  const next = structuredClone(state);
+export function learn(state: CityState, input: LearningInput): Learning {
+  return advanceLearning(structuredClone(state), input);
+}
+
+/**
+ * Comme `learn`, mais **modifie l'état reçu** : réservé à l'amorçage, qui rejoue des milliers
+ * d'heures à la suite et ne peut pas recopier l'état à chacune.
+ */
+export function advanceLearning(next: CityState, input: LearningInput): Learning {
   const { cells, observations } = input;
   const start =
     next.learnedThrough === null ? cells.earliest : Date.parse(next.learnedThrough) + HOUR_MS;

@@ -34,7 +34,7 @@ export type ForecastIndex = {
   /** Heures de validité couvertes par au moins un modèle, dans l'ordre, en millisecondes. */
   readonly times: readonly number[];
   /** Ce que prévoit chaque modèle disponible à cette heure. */
-  readonly modelsAt: (time: number) => readonly { modelId: ModelId; values: Values }[];
+  readonly modelsAt: (time: number) => readonly ModelValues[];
   /** Code météo de chaque modèle à cette heure. */
   readonly weatherCodesAt: (time: number) => readonly (number | null)[];
 };
@@ -92,8 +92,20 @@ export function blendAt(
   time: number,
   lead: number,
 ): BlendedHour | null {
+  return blendModels(index.modelsAt(time), state, time, lead);
+}
+
+/** Ce qu'un modèle prévoit pour une heure. */
+export type ModelValues = { readonly modelId: ModelId; readonly values: Values };
+
+/** Mélange d'une heure à une échéance, à partir de ce que chaque modèle disponible prévoit pour elle. */
+export function blendModels(
+  available: readonly ModelValues[],
+  state: CityState,
+  time: number,
+  lead: number,
+): BlendedHour | null {
   const bucket = bucketOf(lead);
-  const available = index.modelsAt(time);
   if (bucket === null || available.length === 0) return null;
   const utcHour = new Date(time).getUTCHours();
 

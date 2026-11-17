@@ -16,6 +16,7 @@ pipeline/__fixtures__/
 
 # Données téléchargées et rapport généré par le backtest
 pipeline/backtest/.cache/
+.data/
 docs/features/backtest-resultats.md
 
 # Documentation : la mise en page des tableaux markdown est laissée à ses auteurs

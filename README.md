@@ -48,6 +48,7 @@ Aucune variable d'environnement n'est nécessaire à ce stade, et aucune clé : 
 | `npm run format` | Remet le code en forme avec Prettier |
 | `npm test` | Lance tous les tests (app, `shared/`, `pipeline/`) avec Jest |
 | `npm run backtest` | Rejoue le mélange sur l'historique et réécrit le [tableau des résultats](docs/features/backtest-resultats.md) |
+| `npm run pipeline:bootstrap` | Construit l'état de départ du pipeline à partir de l'historique. Une seule fois, à la main : voir [l'amorçage](docs/features/amorcage.md) |
 
 ### Lancer l'app sur un émulateur
 

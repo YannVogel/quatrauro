@@ -35,3 +35,6 @@ pipeline/backtest/.cache/
 
 # macOS
 .DS_Store
+
+# Dossier de données local du pipeline (en production : la branche `data`)
+.data/
