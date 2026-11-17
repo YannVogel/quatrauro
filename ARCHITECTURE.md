@@ -8,7 +8,7 @@ Cette page décrit la cible et se met à jour à chaque issue structurante (voir
 
 | Bloc | État |
 |---|---|
-| `shared/` | La configuration unique (villes, modèles, paramètres du mélange), le contrat des fichiers publiés ([fiche](docs/features/contrat-de-donnees.md)), les séries internes et le décalage de l'heure de Paris ([ADR 0005](docs/adr/0005-heure-de-paris-sans-base-de-fuseaux.md)). La logique pure du mélange (`shared/blend/` : biais, poids, mélange, pluie, agrégats, indice de fiabilité) y est aussi, rejouée telle quelle par le backtest |
+| `shared/` | La configuration unique (villes, modèles, paramètres du mélange), le contrat des fichiers publiés ([fiche](docs/features/contrat-de-donnees.md)), les séries internes et le décalage de l'heure de Paris ([ADR 0005](docs/adr/0005-heure-de-paris-sans-base-de-fuseaux.md)). La logique pure du mélange (`shared/blend/` : biais, poids, mélange, pluie, agrégats, indice de fiabilité, condition et résumé du jour) y est aussi, rejouée telle quelle par le backtest |
 | `pipeline/` | Le backtest seulement (`pipeline/backtest/`), qui rejoue la logique de `shared/blend/` sur l'historique. Collecte, archive, vérification et publication arrivent avec M1 |
 | `app/` + `src/` | Le projet Expo et un écran provisoire. Le design system, la lecture des données et les écrans arrivent avec la suite de M0, puis M2 à M4 |
 

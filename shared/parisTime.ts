@@ -32,6 +32,11 @@ function parisWallClock(instant: Date): Date {
   return new Date(instant.getTime() + parisOffsetMinutes(instant) * MINUTE_MS);
 }
 
+/** Heure qu'il est à Paris à cet instant, de 0 à 23. */
+export function parisHour(instant: Date): number {
+  return parisWallClock(instant).getUTCHours();
+}
+
 /** Jour civil de Paris d'un instant, au format `AAAA-MM-JJ`. */
 export function parisDateKey(instant: Date): string {
   return parisWallClock(instant).toISOString().slice(0, 10);

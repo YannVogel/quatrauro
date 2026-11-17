@@ -57,8 +57,9 @@ Ce que l'app affiche : sept jours, heure par heure et jour par jour.
       "apparentMin": 7,
       "apparentMax": 15,
       "condition": "clear",
-      // Phrase courte produite par des règles, ou null s'il n'y a rien à dire.
-      "summary": "Grand soleil",
+      // Phrase courte produite par des règles (« Pluie dès 15 h »), ou null s'il n'y a rien
+      // à ajouter à la condition, comme ici.
+      "summary": null,
       "precipitation": 0,
       "precipitationProbability": 3,
       "windSpeedMax": 22,

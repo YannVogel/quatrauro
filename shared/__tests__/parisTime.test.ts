@@ -1,6 +1,7 @@
 import {
   parisDateKey,
   parisDayLengthHours,
+  parisHour,
   parisOffsetMinutes,
   startOfParisDay,
 } from '../parisTime';
@@ -84,5 +85,18 @@ describe('jours civils de Paris', () => {
   it('refuse un jour mal écrit ou inexistant', () => {
     expect(() => startOfParisDay('17/11/2026')).toThrow();
     expect(() => startOfParisDay('2026-02-30')).toThrow();
+  });
+});
+
+describe('heure de Paris', () => {
+  it('suit le décalage de la saison', () => {
+    expect(parisHour(at('2026-07-14T13:00:00Z'))).toBe(15);
+    expect(parisHour(at('2026-12-10T14:00:00Z'))).toBe(15);
+    expect(parisHour(at('2026-12-10T23:30:00Z'))).toBe(0);
+  });
+
+  it('passe de 1 h à 3 h la nuit du passage à l’heure d’été', () => {
+    expect(parisHour(at('2026-03-29T00:00:00Z'))).toBe(1);
+    expect(parisHour(at('2026-03-29T01:00:00Z'))).toBe(3);
   });
 });
