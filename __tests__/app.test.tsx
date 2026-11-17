@@ -1,9 +1,14 @@
-import { fireEvent } from '@testing-library/react-native';
+import { fireEvent, waitFor } from '@testing-library/react-native';
 import { renderRouter, screen } from 'expo-router/testing-library';
 
 import { strings } from '@/i18n';
+import { queryClient } from '@/lib/queryClient';
+import { allPublished, offline, servePublished } from '@/lib/testing/published';
 
 describe("l'app", () => {
+  // Le réseau n'est pas simulé ici : les chargements échouent, et le cache est vidé après chaque cas.
+  afterEach(() => queryClient.clear());
+
   it("s'ouvre sur l'écran provisoire, qui affiche le nom de l'app", async () => {
     await renderRouter('./app');
 
@@ -39,5 +44,30 @@ describe("l'app", () => {
       expect(screen).toHavePathname('/');
       expect(screen.queryByText(strings.catalog.title)).toBeNull();
     });
+  });
+});
+
+describe('données reçues', () => {
+  afterEach(() => queryClient.clear());
+
+  it('disent de quand date la prévision de chaque ville, à l’heure de Paris', async () => {
+    servePublished(allPublished);
+    await renderRouter('./app');
+
+    // Fichiers calculés le 17 novembre 2026 à 21 h 27 UTC : 22 h 27 à Paris.
+    const computed = strings.home.data.computedAt('le mardi 17 novembre à 22 h 27');
+    await waitFor(() => expect(screen.getAllByText(computed)).toHaveLength(2));
+    expect(screen.queryByText(strings.home.data.none)).toBeNull();
+  });
+
+  it('disent qu’il n’y a rien quand rien n’a pu être reçu', async () => {
+    offline();
+    await renderRouter('./app');
+
+    // Le client de l'app retente une fois, après une seconde, avant de renoncer.
+    await waitFor(() => expect(screen.getAllByText(strings.home.data.none)).toHaveLength(2), {
+      timeout: 5000,
+    });
+    expect(screen.getAllByText(strings.home.data.refreshFailed)).toHaveLength(2);
   });
 });

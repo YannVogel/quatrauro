@@ -12,4 +12,5 @@ Chaque fonctionnalité notable a sa fiche ici : comportement, données, écrans,
 | [archive-et-verification.md](archive-et-verification.md) | Archive des prévisions et des mesures, état d'une ville, apprentissage heure par heure et jour par jour, scores publiés, idempotence |
 | [amorcage.md](amorcage.md) | Amorçage par l'historique : la commande, ce qu'elle rejoue et écrit, les chiffres mesurés sur l'historique réel, les limites |
 | [pipeline.md](pipeline.md) | Un passage complet : la commande, les étapes, tout ou rien, ce que contient la prévision publiée, le journal |
+| [lecture-des-donnees.md](lecture-des-donnees.md) | Lecture des fichiers publiés dans l'app : adresse, validation, cache sur l'appareil, hors ligne, ce que rendent les hooks |
 | [donnees.md](donnees.md) | Sources de données : modèles, points de prévision, variables, historique, observations, attributions |

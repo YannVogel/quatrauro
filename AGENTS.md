@@ -59,12 +59,14 @@ app/                        # routes Expo Router (uniquement des écrans et des 
   _layout.tsx  index.tsx  dev/catalog.tsx
 __tests__/                  # tests qui rendent l'app entière (renderRouter sur app/)
 src/
-  features/forecast/        # components/HomeScreen.tsx (écran provisoire), index.ts
+  features/forecast/        # components/ (écran provisoire), hooks/ (useForecast, useVerification), index.ts
   features/catalog/         # catalogue des composants (développement seulement) et ses données fictives
   ui/                       # theme.ts (tokens), ThemeProvider, Text, Icon, icons.ts, conditions.ts, contrast.ts
     components/             # les composants Riviera (HeroBlock, Card, DayRow, HourlyChart…), exportés par @/ui
     testing/                # renderWithTheme, pour les tests de composants
   lib/                      # dates.ts (mise en forme à l'heure de Paris), format.ts (nombres à la française)
+                            # env.ts (adresse des fichiers publiés), data.ts (lecture et validation), queryClient.tsx (cache)
+                            # __fixtures__/published/ : vrais fichiers publiés, pour les tests ; testing/ : faux réseau
   i18n/                     # fr.ts : toutes les chaînes UI ; index.ts : accès typé (`strings`)
 shared/                     # ne dépend de rien : ni Node, ni React Native, ni le reste du repo
   cities.ts  models.ts  blendConfig.ts      # la configuration unique
@@ -106,7 +108,6 @@ Ce qui s'y ajoutera, là et pas ailleurs :
 ```
 src/features/<feature>/     # forecast (accueil, détail d'un jour), models, reliability, about
   components/ hooks/ api/ __tests__/ index.ts
-src/lib/                    # env.ts, queryClient.ts, data.ts (lecture des JSON publiés)
 ```
 
 - Les dépendances sont unidirectionnelles : `app/` → `features/` → `ui/` + `lib/` + `shared/` ; `pipeline/` → `shared/`. `shared/` n'importe rien du reste.
@@ -144,6 +145,8 @@ Expo publie des changements cassants à chaque SDK. Avant d'écrire du code qui 
 Le projet est sur **Expo SDK 58** (React Native 0.88, React 19.3, TypeScript 6) : documentation versionnée sur https://docs.expo.dev/versions/v58.0.0/. Chaque page de la documentation se lit aussi en markdown en ajoutant `.md` à son adresse.
 
 - Dans ce SDK, `renderRouter` et les helpers de `expo-router/testing-library` sont asynchrones : toujours les attendre (`await`).
+- `renderRouter` installe de fausses minuteries, qui remplacent `Date` : `jest.setup.ts` charge les modules de dates avant, sinon les heures sortent décalées du fuseau de la machine. Ce fichier simule aussi le stockage de l'appareil et fait échouer tout appel réseau qu'un test n'a pas prévu.
+- **Réseau dans l'app** : un seul endroit, `src/lib/data.ts`, et seulement vers les fichiers publiés (testé). Les tests servent ces fichiers avec `servePublished` (`src/lib/testing/published.ts`).
 
 - Les dossiers `ios/` et `android/` sont générés (Continuous Native Generation) et ignorés par git : configurer le natif dans `app.config.ts`. Après l'ajout d'une dépendance native ou d'un plugin, régénérer avec `npx expo prebuild --clean --platform android` avant `npm run android`.
 - `app.config.ts` importe d'autres fichiers TypeScript grâce à `tsx/cjs` (première ligne du fichier) : ne pas la retirer.
