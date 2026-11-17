@@ -20,7 +20,9 @@ Quatrauro est une app météo personnelle (Expo / React Native, Android) pour To
 - **Docs de fonctionnalité** : chaque fonctionnalité notable a sa fiche dans `docs/features/<fonctionnalite>.md` (comportement, données, écrans, cas limites), mise à jour dans le même commit et listée dans l'index [docs/features/README.md](docs/features/README.md).
 - **Workflow** : une issue → une branche → une PR (`Closes #n`), CI verte avant le merge. Yann relit et merge. Sur demande de Yann, les issues d'un milestone peuvent être regroupées dans une seule PR, avec un commit par issue.
 - **Secrets** : aucune clé secrète dans l'app ni dans le repo (qui est public). Une éventuelle clé d'API d'observations vit dans les secrets GitHub Actions et dans `.env.local` (ignoré) ; un `.env.example` documente les variables.
-- **Chaînes UI** : toutes dans `src/i18n/fr.ts`, lues par `strings` (`@/i18n`) ; aucune chaîne en dur dans les composants.
+- **Chaînes UI** : toutes dans `src/i18n/fr.ts`, lues par `strings` (`@/i18n`) ; aucune chaîne en dur dans les composants. Ce que disent les lecteurs d'écran est dans `strings.spoken`.
+- **Nombres** : toujours mis en forme par `src/lib/format.ts` (virgule décimale, espace insécable avant `%` et les unités, `°` collé, vrai signe moins). Une valeur absente s'écrit « — » et se lit « indisponible ».
+- **Composants** : un composant de `@/ui` reçoit ses données par ses props et ne lit rien lui-même ; il accepte `null` pour toute valeur météo. Un composant graphique (barre, graphique, icône qui informe) a un `accessibilityLabel` qui dit sa valeur.
 - **Accessibilité de base** : cibles tactiles d'au moins 48 dp ; contrastes WCAG AA dans les deux thèmes ; `accessibilityLabel` sur les boutons-icônes et sur les graphiques ; une information n'est jamais portée par la seule couleur.
 - **Design system** : les écrans s'appuient sur les composants et les tokens de `@/ui` (`src/ui/theme.ts`). Aucune couleur en dur ailleurs (règle ESLint, testée). Chaque token existe en clair et en sombre. Le texte passe toujours par le composant `Text` de `@/ui` (variante et couleur du thème), les styles par `makeStyles`, le thème par `useTheme()`. Tout nouveau couple texte/fond s'ajoute à `CONTRAST_PAIRS`, que le test des contrastes parcourt.
 - **Icônes et conditions** : la liste des conditions météo est dans `shared/conditions.ts` (source unique) ; leur icône et leurs couleurs dans `src/ui/conditions.ts`. Les icônes s'affichent par le composant `Icon` et le registre `src/ui/icons.ts` : ne jamais importer `lucide-react-native` ailleurs.
@@ -57,7 +59,9 @@ __tests__/                  # tests qui rendent l'app entière (renderRouter sur
 src/
   features/forecast/        # components/HomeScreen.tsx (écran provisoire), index.ts
   ui/                       # theme.ts (tokens), ThemeProvider, Text, Icon, icons.ts, conditions.ts, contrast.ts
-  lib/                      # dates.ts (mise en forme à l'heure de Paris)
+    components/             # les composants Riviera (HeroBlock, Card, DayRow, HourlyChart…), exportés par @/ui
+    testing/                # renderWithTheme, pour les tests de composants
+  lib/                      # dates.ts (mise en forme à l'heure de Paris), format.ts (nombres à la française)
   i18n/                     # fr.ts : toutes les chaînes UI ; index.ts : accès typé (`strings`)
 shared/                     # parisTime.ts (décalage de Paris sur UTC), conditions.ts (liste des conditions)
 pipeline/
@@ -75,7 +79,6 @@ Ce qui s'y ajoutera, là et pas ailleurs :
 ```
 src/features/<feature>/     # forecast (accueil, détail d'un jour), models, reliability, about
   components/ hooks/ api/ __tests__/ index.ts
-src/ui/                     # composants Riviera
 src/lib/                    # env.ts, queryClient.ts, data.ts (lecture des JSON publiés)
 shared/                     # schémas Zod, cities.ts, models.ts, blendConfig.ts, logique pure du mélange
 pipeline/                   # collect/ (prévisions, observations), archive/, verify/, blend/, publish/
