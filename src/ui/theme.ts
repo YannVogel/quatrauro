@@ -212,4 +212,6 @@ export const CONTRAST_PAIRS: readonly ContrastPair[] = [
   ]),
   { text: 'onSun', background: 'sun' },
   { text: 'onSun', background: 'pale' },
+  // Ville sélectionnée dans le sélecteur : texte sombre sur fond blanc.
+  { text: 'onSun', background: 'onHero' },
 ];

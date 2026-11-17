@@ -10,6 +10,22 @@ export const fr = {
   home: {
     placeholder: 'Les prévisions de Toulon et de Nice arrivent bientôt.',
   },
+  common: {
+    /** Signe affiché à la place d'une valeur absente. */
+    missing: '—',
+    /** Ce que lit un lecteur d'écran à la place d'une valeur absente. */
+    unavailable: 'indisponible',
+  },
+  /** Ce que disent les composants aux lecteurs d'écran. Les nombres arrivent déjà mis en forme. */
+  spoken: {
+    degrees: (value: string) => `${value} ${value === '0' || value === '1' ? 'degré' : 'degrés'}`,
+    temperatureRange: (min: string, max: string) => `de ${min} à ${max} degrés`,
+    hour: (hour: string) => `${hour} heures`,
+    rainRisk: (percent: string) => `risque de pluie ${percent}`,
+    reliability: (percent: string) => `fiabilité ${percent}`,
+    weight: (percent: string) => `poids ${percent}`,
+    proportion: (percent: string) => percent,
+  },
   /** Nom de chaque condition, lu par les lecteurs d'écran à la place de son icône. */
   conditions: {
     clear: 'Ciel dégagé',
