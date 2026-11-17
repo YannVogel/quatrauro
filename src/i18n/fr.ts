@@ -9,6 +9,34 @@ export const fr = {
   },
   home: {
     placeholder: 'Les prévisions de Toulon et de Nice arrivent bientôt.',
+    openCatalog: 'Ouvrir le catalogue des composants',
+  },
+  /** Écran de développement : il n'existe pas dans l'app distribuée. */
+  catalog: {
+    title: 'Catalogue',
+    subtitle: 'Données fictives',
+    back: 'Retour',
+    toggleTheme: 'Basculer entre thème clair et sombre',
+    city: 'Ville',
+    day: 'de jour',
+    night: 'de nuit',
+    sections: {
+      controls: 'Sélecteur et boutons',
+      conditions: 'Conditions et blocs d’état',
+      hours: 'Vignettes horaires',
+      week: 'Lignes de jour',
+      chart: 'Graphique horaire',
+      stats: 'Vignettes',
+      models: 'Modèles',
+      meters: 'Barres de proportion',
+      typography: 'Typographie',
+    },
+    notes: {
+      missing: 'Valeurs absentes',
+      fewColumns: 'Trois colonnes',
+    },
+    stats: { wind: 'Vent', rain: 'Cumul', humidity: 'Humidité', feelsLike: 'Ressenti' },
+    reliability: (percent: string) => `Fiabilité ${percent}`,
   },
   common: {
     /** Signe affiché à la place d'une valeur absente. */

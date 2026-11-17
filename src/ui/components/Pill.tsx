@@ -21,7 +21,7 @@ export function Pill({ label, detail }: PillProps) {
         </Text>
       </View>
       {detail === undefined ? null : (
-        <Text variant="label" color="onHero" style={styles.detail}>
+        <Text variant="caption" color="onHero" style={styles.detail}>
           {detail}
         </Text>
       )}
