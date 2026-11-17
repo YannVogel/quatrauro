@@ -14,7 +14,11 @@ export type HourlySeries = {
 };
 
 /** Prévision d'un modèle pour une ville. */
-export type ModelForecast = HourlySeries & { readonly modelId: ModelId };
+export type ModelForecast = HourlySeries & {
+  readonly modelId: ModelId;
+  /** Code météo de l'OMM, heure par heure : il ne se mélange pas, il sert à reconnaître l'orage. */
+  readonly weatherCode: readonly (number | null)[];
+};
 
 /** Ce qu'un passage de la collecte a obtenu pour une ville. */
 export type CityForecasts = {
