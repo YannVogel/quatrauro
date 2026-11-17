@@ -8,6 +8,14 @@ const NODE_ONLY = ['node:*', 'fs', 'fs/*', 'path', 'zlib', 'readline', 'child_pr
 /** `shared/` ne dépend de rien d'autre que lui-même. */
 const OUTSIDE_SHARED = ['react', 'react-native', 'react-native/*', 'expo', 'expo-*', '@/*'];
 
+const NODE_PATTERN = { group: NODE_ONLY, message: "L'app ne dépend pas de Node." };
+/** Seul fichier qui importe la bibliothèque d'icônes. */
+const ICON_REGISTRY = 'src/ui/icons.ts';
+const ICON_LIBRARY = {
+  name: 'lucide-react-native',
+  message: 'Les icônes passent par le composant Icon et le registre src/ui/icons.ts.',
+};
+
 const COLOR_MESSAGE = 'Aucune couleur en dur : lire le thème (src/ui/theme.ts).';
 const COLOR_PROPERTY = '(?:color|\\w+Color|fill|stroke)';
 const NAMED_COLOR =
@@ -35,12 +43,14 @@ module.exports = defineConfig([
   eslintPluginPrettierRecommended,
   {
     files: ['app/**', 'src/**'],
+    ignores: [ICON_REGISTRY],
     rules: {
-      'no-restricted-imports': [
-        'error',
-        { patterns: [{ group: NODE_ONLY, message: "L'app ne dépend pas de Node." }] },
-      ],
+      'no-restricted-imports': ['error', { patterns: [NODE_PATTERN], paths: [ICON_LIBRARY] }],
     },
+  },
+  {
+    files: [ICON_REGISTRY],
+    rules: { 'no-restricted-imports': ['error', { patterns: [NODE_PATTERN] }] },
   },
   {
     files: ['app/**', 'src/**', 'app.config.ts'],

@@ -77,6 +77,15 @@ describe('règles ESLint de frontière', () => {
     expect(messages.some((message) => message.includes("L'app ne dépend pas de Node"))).toBe(true);
   });
 
+  it("réserve la bibliothèque d'icônes au registre src/ui/icons.ts", () => {
+    const code = "import { Sun } from 'lucide-react-native';\nexport const icon = Sun;\n";
+    const isIconMessage = (message: string): boolean => message.includes('Les icônes passent par');
+    expect(lint(code, 'src/features/forecast/components/Exemple.tsx').some(isIconMessage)).toBe(
+      true,
+    );
+    expect(lint(code, 'src/ui/icons.ts').some(isIconMessage)).toBe(false);
+  });
+
   it('interdit à shared/ de dépendre de React Native ou de Node', () => {
     const code =
       "import { View } from 'react-native';\nimport path from 'node:path';\nexport const x = [View, path];\n";

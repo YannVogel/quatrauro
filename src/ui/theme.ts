@@ -19,8 +19,16 @@ const lightColors = {
   bar: '#1463FF',
   /** Bloc d'état par beau temps, et bloc des écrans « Les modèles » et « Fiabilité ». */
   heroClear: '#1463FF',
-  /** Bloc d'état sous la pluie. */
+  /** Bloc d'état sous la pluie ou les averses. */
   heroRain: '#3A4F7A',
+  /** Bloc d'état par temps couvert ou sous la neige. */
+  heroCloudy: '#4C6A9C',
+  /** Bloc d'état sous l'orage. */
+  heroStorm: '#2E2A66',
+  /** Bloc d'état par vent fort. */
+  heroWind: '#0F6E8C',
+  /** Bloc d'état par ciel dégagé ou peu nuageux, la nuit. */
+  heroNight: '#14235C',
   /** Texte sur le bloc d'état. */
   onHero: '#FFFFFF',
   /** Rond du soleil, pastille mise en avant. */
@@ -45,6 +53,10 @@ const darkColors: Colors = {
   bar: '#7FB0FF',
   heroClear: '#1A4FD6',
   heroRain: '#2A3A5E',
+  heroCloudy: '#34507E',
+  heroStorm: '#262257',
+  heroWind: '#0E5A73',
+  heroNight: '#13225A',
   onHero: '#FFFFFF',
   sun: '#FFC93C',
   onSun: '#0B1B3A',
@@ -177,15 +189,27 @@ export type ContrastPair = {
   readonly large?: boolean;
 };
 
+/** Couleurs que peut prendre le bloc d'état : le texte blanc doit rester lisible sur chacune. */
+export const HERO_TOKENS = [
+  'heroClear',
+  'heroRain',
+  'heroCloudy',
+  'heroStorm',
+  'heroWind',
+  'heroNight',
+] as const satisfies readonly ColorToken[];
+
+export type HeroToken = (typeof HERO_TOKENS)[number];
+
 export const CONTRAST_PAIRS: readonly ContrastPair[] = [
   { text: 'text', background: 'background' },
   { text: 'text', background: 'card' },
   { text: 'textMuted', background: 'background' },
   { text: 'textMuted', background: 'card' },
-  { text: 'onHero', background: 'heroClear' },
-  { text: 'onHero', background: 'heroRain' },
-  { text: 'onHero', background: 'heroOverlay', over: 'heroClear' },
-  { text: 'onHero', background: 'heroOverlay', over: 'heroRain' },
+  ...HERO_TOKENS.flatMap((hero): ContrastPair[] => [
+    { text: 'onHero', background: hero },
+    { text: 'onHero', background: 'heroOverlay', over: hero },
+  ]),
   { text: 'onSun', background: 'sun' },
   { text: 'onSun', background: 'pale' },
 ];
