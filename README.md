@@ -4,7 +4,7 @@ App météo personnelle pour Toulon et Nice. Elle croise plusieurs modèles de p
 
 Le nom vient du provençal « quatre auro », les quatre vents.
 
-> **État** : cadrage. Le repo contient la documentation, les décisions d'architecture et les maquettes ; le code arrive avec le milestone M0.
+> **État** : cadrage et études préalables. Le repo contient la documentation, les décisions d'architecture, les maquettes et le backtest qui a validé la méthode ([rapport](docs/features/backtest.md)) ; l'app et le pipeline arrivent avec la suite du milestone M0.
 
 ## Comment ça marche
 
@@ -23,11 +23,20 @@ Le nom vient du provençal « quatre auro », les quatre vents.
 | [docs/adr/](docs/adr/) | Décisions d'architecture |
 | [docs/design/riviera.md](docs/design/riviera.md) | Direction graphique « Riviera » : tokens, composants, écrans |
 | [docs/design/claude-design/](docs/design/claude-design/) | Maquettes |
-| [docs/features/](docs/features/) | Fiches des fonctionnalités, au fil du développement |
+| [docs/features/](docs/features/) | Fiches des fonctionnalités, au fil du développement : [sources de données](docs/features/donnees.md), [backtest du mélange](docs/features/backtest.md) |
 
 ## Installation et commandes
 
-À venir avec M0-04 (initialisation du projet Expo). Cette section décrira l'installation, les variables d'environnement, les commandes et les builds.
+Le projet Expo arrive avec M0-04 : cette section décrira alors l'installation, les variables d'environnement, les commandes et les builds.
+
+En attendant, le backtest du mélange tourne seul, avec Node 24 et sans aucune dépendance à installer :
+
+```bash
+node --test "pipeline/backtest/__tests__/*.test.ts"   # tests
+node pipeline/backtest/run.ts                         # rejoue le mélange sur l'historique
+```
+
+Le premier passage télécharge environ 60 Mo de prévisions et d'observations dans `pipeline/backtest/.cache/` (ignoré par git). Aucune clé n'est nécessaire.
 
 ## Données et attributions
 
