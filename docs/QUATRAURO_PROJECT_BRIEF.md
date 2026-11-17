@@ -217,7 +217,7 @@ Stations Météo-France proches de Toulon et de Nice, via les données publiques
 
 ### 7.3 GitHub
 
-GitHub Actions pour le cron et la CI ; la branche `data` pour l'archive et les fichiers publiés. À vérifier dans M1-11 : précision réelle des horaires programmés, désactivation des workflows planifiés sur un repo inactif, droits d'écriture du `GITHUB_TOKEN`.
+GitHub Actions pour le cron et la CI ; la branche `data` pour l'archive et les fichiers publiés. À vérifier dans M1-12 : précision réelle des horaires programmés, désactivation des workflows planifiés sur un repo inactif, droits d'écriture du `GITHUB_TOKEN`.
 
 ### 7.4 Expo et EAS
 
@@ -301,10 +301,10 @@ Le détail de chaque issue est sur GitHub. Vue d'ensemble :
 |---|---|---|
 | M0 — Fondations | E0 Socle technique | M0-01 à M0-07 (dont les spikes sources et backtest) |
 | M0 — Fondations | E1 Design system Riviera | M0-08 à M0-12 |
-| M1 — Le mélange | E2 Logique de mélange | M1-01 à M1-05 |
-| M1 — Le mélange | E3 Pipeline | M1-06 à M1-11 |
+| M1 — Le mélange | E2 Logique de mélange | M1-01 à M1-06 |
+| M1 — Le mélange | E3 Pipeline | M1-07 à M1-12 |
 | M2 — L'app | E4 Données dans l'app | M2-01 à M2-02 |
-| M2 — L'app | E5 Écrans de prévision | M2-03 à M2-07 |
+| M2 — L'app | E5 Écrans de prévision | M2-03 à M2-06 |
 | M3 — Transparence | E6 Modèles et fiabilité | M3-01 à M3-03 |
 | M4 — Finitions | E7 Finitions | M4-01 à M4-02 |
 

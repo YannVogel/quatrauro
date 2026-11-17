@@ -27,7 +27,7 @@ La méthode est volontairement simple et explicable. Le mélange est toujours é
 
 ## Conséquences
 
-- Il faut plusieurs semaines d'historique avant que les poids aient un sens : d'où l'amorçage par l'historique (M1-09).
+- Il faut plusieurs semaines d'historique avant que les poids aient un sens : d'où l'amorçage par l'historique (M1-10).
 - La pluie se prête mal à une moyenne : son traitement (probabilité issue de l'accord entre modèles, calibration) est un point à part du spike.
 - **Feu vert** : si le backtest ne montre pas de gain net sur le meilleur modèle seul, le projet est remis en question avant d'aller plus loin.
 

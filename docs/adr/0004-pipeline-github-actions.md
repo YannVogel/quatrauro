@@ -1,8 +1,8 @@
 # ADR 0004 — Pipeline sans serveur dans GitHub Actions
 
-- **Statut** : proposée (à confirmer par l'issue M1-11)
+- **Statut** : proposée (à confirmer par l'issue M1-12)
 - **Date** : 2026-11-17
-- **Issue** : M1-11
+- **Issue** : M1-12
 
 ## Contexte
 
