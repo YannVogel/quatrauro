@@ -4,7 +4,7 @@ Ce document décrit comment les données circulent, des modèles météo jusqu'�
 
 ## État
 
-Cadrage seulement : rien de ce qui suit n'est encore codé. Cette page décrit la cible et se met à jour à chaque issue structurante (voir AGENTS.md, « Documentation »). Les sources de données sont arrêtées par l'ADR 0002 ; les points encore ouverts sont portés par les ADR 0003 et 0004, au statut « proposée ».
+Cadrage et spikes : seul le backtest est codé (`pipeline/backtest/`). Cette page décrit la cible et se met à jour à chaque issue structurante (voir AGENTS.md, « Documentation »). Les sources de données sont arrêtées par l'ADR 0002, la méthode de mélange et ses paramètres par l'ADR 0003 ; les points encore ouverts sont portés par l'ADR 0004, au statut « proposée ».
 
 ## Vue d'ensemble
 
@@ -41,7 +41,7 @@ La règle qui tient l'ensemble : **`shared/` ne fait aucune entrée-sortie**. Se
 1. **Collecte des prévisions** : pour chaque ville, une requête par lot à Open-Meteo, un modèle par série. Chaque réponse est validée puis normalisée (unités, UTC).
 2. **Collecte des observations** : dernières mesures horaires de la station de référence de chaque ville.
 3. **Archive** : prévisions et observations sont ajoutées à l'archive de la branche `data`, par ville, modèle et jour. L'archive est en ajout seul.
-4. **Vérification** : les prévisions arrivées à échéance sont appariées aux observations. On met à jour, par ville, variable, modèle et tranche d'échéance, le biais (moyenne mobile exponentielle) et l'erreur absolue moyenne, puis les poids. Cet état est stocké dans `state/`.
+4. **Vérification** : les prévisions arrivées à échéance sont appariées aux observations. On met à jour, par ville, variable, modèle, tranche d'échéance et heure de la journée, le biais et l'erreur absolue moyenne (deux moyennes à pondération exponentielle), puis les poids. Cet état est stocké dans `state/`.
 5. **Mélange** : pour chaque échéance des sept prochains jours, correction du biais de chaque modèle, moyenne pondérée, indice de fiabilité, condition et résumés.
 6. **Publication** : écriture de `forecast/<ville>.json` et `verification/<ville>.json`, validés contre les schémas avant d'être commités. Un passage en échec ne publie rien : le dernier fichier valide reste en place.
 
@@ -51,13 +51,13 @@ Le passage est idempotent : relancé deux fois sur les mêmes entrées, il produ
 
 La méthode est décrite dans le brief (§ 5.4 à § 5.6) et arrêtée par l'[ADR 0003](docs/adr/0003-methode-de-melange.md). Trois principes structurent le code :
 
-- **Granularité** : tout est indexé par ville, variable, modèle et tranche d'échéance. Rien n'est mutualisé entre les deux villes.
+- **Granularité** : tout est indexé par ville, variable, modèle, tranche d'échéance et heure UTC de la journée. Rien n'est mutualisé entre les deux villes.
 - **Paramètres nommés** : fenêtre d'historique, vitesse d'oubli, exposant des poids, découpage des tranches et seuils des libellés vivent dans `shared/blendConfig.ts`. Le backtest les fait varier ; le pipeline lit les valeurs retenues.
 - **Dégradation propre** : un modèle manquant est ignoré pour le passage, un modèle sans historique reçoit un poids neutre, une échéance couverte par un seul modèle est publiée avec une fiabilité plafonnée.
 
 ## Backtest
 
-`pipeline/backtest/` rejoue le pipeline sur l'historique : pour chaque jour passé, il ne voit que ce qui était disponible ce jour-là, applique le code de `shared/`, et compare le résultat aux observations. Il sert deux fois : au départ pour décider si le projet vaut le coup et fixer les paramètres (M0-03), puis à chaque changement de la logique du mélange, pour vérifier qu'on n'a rien dégradé.
+`pipeline/backtest/` rejoue le mélange sur l'historique : chaque prévision ne voit que les observations publiées au moment où elle a été émise (`replay.ts`), applique la logique pure du mélange (`logic/`, appelée à rejoindre `shared/`), et le résultat est comparé aux observations. Le rapport du premier passage est dans [docs/features/backtest.md](docs/features/backtest.md). Il sert deux fois : au départ pour décider si le projet vaut le coup et fixer les paramètres (M0-03), puis à chaque changement de la logique du mélange, pour vérifier qu'on n'a rien dégradé.
 
 ## Données de la branche `data`
 

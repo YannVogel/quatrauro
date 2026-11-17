@@ -1,0 +1,5 @@
+# Données téléchargées par le backtest (réponses d'Open-Meteo, fichiers de Météo-France)
+pipeline/backtest/.cache/
+
+node_modules/
+.DS_Store

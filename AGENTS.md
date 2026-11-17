@@ -2,7 +2,7 @@
 
 Quatrauro est une app météo personnelle (Expo / React Native, Android) pour Toulon et Nice. Elle croise plusieurs modèles de prévision, corrige leurs erreurs locales à partir des observations et affiche un indice de fiabilité. Il n'y a pas de serveur : un pipeline TypeScript tourne dans GitHub Actions et publie des JSON statiques que l'app lit. Le cadrage de référence est [docs/QUATRAURO_PROJECT_BRIEF.md](docs/QUATRAURO_PROJECT_BRIEF.md) ; les décisions prises depuis vivent dans les issues GitHub (sections « ⚠️ Point tranché ») et dans [docs/adr/](docs/adr/). En cas de conflit avec le brief, l'issue prime. L'architecture (couches, flux des données, mélange, hors ligne) est décrite dans [ARCHITECTURE.md](ARCHITECTURE.md).
 
-> **État du repo** : cadrage seulement. Aucun code : la documentation, les ADR et les maquettes Riviera sont en place. Le projet Expo arrive avec M0-04 ; les sections « Structure » et « Commandes » décrivent la cible et sont à mettre à jour dès que le code existe (M0-05).
+> **État du repo** : cadrage et spikes. La documentation, les ADR, les maquettes Riviera et le backtest du mélange (`pipeline/backtest/`, sans dépendance) sont en place ; le feu vert de M0-03 est acquis ([rapport](docs/features/backtest.md)). Le projet Expo arrive avec M0-04 ; les sections « Structure » et « Commandes » décrivent la cible et sont à mettre à jour dès que le code existe (M0-05).
 
 ## Ordre de travail
 
@@ -41,7 +41,8 @@ Quatrauro est une app météo personnelle (Expo / React Native, Android) pour To
 - **Tout le calcul se fait dans le pipeline.** L'app n'effectue aucun mélange : elle valide le JSON reçu (schémas Zod de `shared/`) et l'affiche.
 - Le contrat des fichiers publiés est versionné (`schemaVersion`). Un changement incompatible incrémente la version ; l'app refuse proprement une version inconnue.
 - Les heures se manipulent dans le fuseau `Europe/Paris`, avec `date-fns` (locale `fr`, semaine commençant le lundi) et les helpers de `src/lib/dates.ts`. Les fichiers publiés portent des instants en UTC. Les tests figent l'horloge et écrivent leurs instants en UTC, pour ne pas dépendre du fuseau de la machine. Attention aux changements d'heure dans les agrégats journaliers.
-- Le backtest (`pipeline/backtest/`) rejoue exactement le code de `shared/` : jamais une copie de la logique. Il ne doit jamais utiliser une information postérieure à l'instant simulé.
+- Le backtest (`pipeline/backtest/`) rejoue exactement le code de `shared/` : jamais une copie de la logique. Il ne doit jamais utiliser une information postérieure à l'instant simulé. Tant que `shared/` n'existe pas, la logique pure vit dans `pipeline/backtest/logic/` ; M1 la déplace telle quelle.
+- `docs/features/backtest-resultats.md` est généré par le backtest : ne pas le modifier à la main.
 
 ## Structure
 
@@ -69,6 +70,13 @@ docs/
 - Alias : `@/` → `src/`, `@shared/` → `shared/`.
 
 ## Commandes
+
+Aujourd'hui, seul le backtest existe. Il tourne avec Node 24, qui exécute le TypeScript directement :
+
+```bash
+node --test "pipeline/backtest/__tests__/*.test.ts"   # tests du backtest et de la logique du mélange
+node pipeline/backtest/run.ts                         # rejoue le mélange et réécrit docs/features/backtest-resultats.md
+```
 
 Cible, à confirmer en M0-04 :
 
