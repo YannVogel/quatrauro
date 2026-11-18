@@ -183,7 +183,7 @@ describe('navigation depuis l’accueil', () => {
   it('donne accès à « Fiabilité » et à « À propos des données », puis revient', async () => {
     await fireEvent.press(screen.getByRole('link', { name: home.links.reliability }));
     expect(screen).toHavePathname('/reliability');
-    await fireEvent.press(screen.getByRole('button', { name: strings.pending.back }));
+    await fireEvent.press(screen.getByRole('button', { name: strings.reliability.back }));
     expect(screen).toHavePathname('/');
 
     await fireEvent.press(screen.getByRole('link', { name: home.links.about }));
@@ -393,6 +393,127 @@ describe('écran « Les modèles »', () => {
     });
     expect(screen.getByText(models.errorsNone)).toBeOnTheScreen();
     expect(screen.queryByTestId('model-errors')).toBeNull();
+  });
+});
+
+describe('écran « Fiabilité »', () => {
+  const { reliability } = strings;
+  const verification = published.verification.toulon;
+  /** Ouvre l'écran depuis l'accueil, mercredi matin. */
+  async function openReliability(file: unknown = verification) {
+    await openAt(CLEAR_MORNING, { ...allPublished, 'verification/toulon.json': { json: file } });
+    await loaded(conditions.clear);
+    await fireEvent.press(screen.getByRole('link', { name: home.links.reliability }));
+    expect(screen).toHavePathname('/reliability');
+  }
+
+  it('donne l’erreur du mélange face au meilleur modèle seul, et la pluie', async () => {
+    await openReliability();
+    await loaded(reliability.heroCaption(31));
+    const hero = within(screen.getByTestId('reliability-hero'));
+    expect(hero.getByText('1,1°')).toBeOnTheScreen();
+    expect(hero.getByText(reliability.better('1,2°', 'ICON'))).toBeOnTheScreen();
+    expect(hero.getByText(reliability.rain(24, 30))).toBeOnTheScreen();
+    expect(screen.getByText(reliability.period('17 octobre', '16 novembre'))).toBeOnTheScreen();
+  });
+
+  it('compare le prévu et l’observé des sept derniers jours', async () => {
+    await openReliability();
+    await loaded(reliability.daysTitle);
+    const days = within(screen.getByTestId('compared-days'));
+    expect(
+      days.getByLabelText('dimanche 15, prévu 16,2 degrés, observé 16,7 degrés, écart 0,5 degrés'),
+    ).toBeOnTheScreen();
+    expect(days.getByText('Lun. 9')).toBeOnTheScreen();
+    expect(days.queryByLabelText(new RegExp(reliability.largeGap))).toBeNull();
+  });
+
+  it('donne l’erreur selon l’échéance', async () => {
+    await openReliability();
+    await loaded(reliability.leadsTitle);
+    const leads = within(screen.getByTestId('lead-errors'));
+    expect(leads.getByText(reliability.lead(1))).toBeOnTheScreen();
+    expect(leads.getByText(reliability.lead(7))).toBeOnTheScreen();
+    expect(leads.getByText('1,8°')).toBeOnTheScreen();
+  });
+
+  it('dit sans détour que le mélange fait moins bien que le meilleur modèle', async () => {
+    const worse = {
+      ...verification,
+      temperature: {
+        ...verification.temperature,
+        byLead: verification.temperature.byLead.map((score) =>
+          score.leadDays === 1 ? { ...score, blend: 1.4 } : score,
+        ),
+      },
+    };
+    await openReliability(worse);
+    await loaded(reliability.worse('1,2°', 'ICON'));
+    expect(within(screen.getByTestId('reliability-hero')).getByText('1,4°')).toBeOnTheScreen();
+    expect(screen.queryByText(/contre .* pour le meilleur modèle seul/)).toBeNull();
+  });
+
+  it('signale un écart important par une icône et par la voix, pas par la seule couleur', async () => {
+    const withGap = {
+      ...verification,
+      temperature: {
+        ...verification.temperature,
+        recentDays: verification.temperature.recentDays.map((day) =>
+          day.date === '2026-11-15' ? { ...day, observedMax: 19 } : day,
+        ),
+      },
+    };
+    await openReliability(withGap);
+    await loaded(reliability.daysTitle);
+    expect(
+      screen.getByLabelText(
+        `dimanche 15, prévu 16,2 degrés, observé 19,0 degrés, écart 2,8 degrés, ${reliability.largeGap}`,
+      ),
+    ).toBeOnTheScreen();
+  });
+
+  it('affiche « — » pour un jour sans observation', async () => {
+    const withoutObservation = {
+      ...verification,
+      temperature: {
+        ...verification.temperature,
+        recentDays: verification.temperature.recentDays.map((day) =>
+          day.date === '2026-11-15' ? { ...day, observedMax: null } : day,
+        ),
+      },
+    };
+    await openReliability(withoutObservation);
+    await loaded(reliability.daysTitle);
+    expect(
+      screen.getByLabelText(
+        'dimanche 15, prévu 16,2 degrés, observé indisponible, écart indisponible',
+      ),
+    ).toBeOnTheScreen();
+  });
+
+  it('dit qu’il manque du recul plutôt que d’afficher des scores sans valeur', async () => {
+    const empty = {
+      ...verification,
+      period: null,
+      temperature: { byLead: [], recentDays: [] },
+      rain: { count: 0, hitRate: null },
+    };
+    await openReliability(empty);
+    await loaded(reliability.insufficientTitle);
+    expect(screen.getByText(reliability.insufficient(0))).toBeOnTheScreen();
+    expect(screen.queryByTestId('reliability-hero')).toBeNull();
+    expect(screen.queryByText(/°/)).toBeNull();
+  });
+
+  it('dit que les scores n’ont pas pu être chargés', async () => {
+    await openAt(CLEAR_MORNING, {
+      'forecast/toulon.json': allPublished['forecast/toulon.json'] ?? { status: 404 },
+    });
+    await loaded(conditions.clear);
+    await fireEvent.press(screen.getByRole('link', { name: home.links.reliability }));
+    await waitFor(() => expect(screen.getByText(reliability.unavailable)).toBeOnTheScreen(), {
+      timeout: 5000,
+    });
   });
 });
 

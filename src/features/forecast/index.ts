@@ -8,4 +8,4 @@ export type { EmptyReason, ForecastView } from './freshness';
 export { useForecast } from './hooks/useForecast';
 export type { PublishedData } from './hooks/usePublishedFile';
 export { useVerification } from './hooks/useVerification';
-export { longDayOf, shortDayOf } from './home';
+export { longDayOf, shortDayOf, spokenDayOf } from './home';
