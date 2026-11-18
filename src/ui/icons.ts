@@ -14,6 +14,7 @@ import {
   CloudSnow,
   CloudSun,
   CloudSunRain,
+  ExternalLink,
   Moon,
   Sun,
   SunMoon,
@@ -36,6 +37,8 @@ export const icons = {
   back: ArrowLeft,
   /** « Ouvrir » : au bout d'une ligne qui mène à un autre écran. */
   forward: ChevronRight,
+  /** « Ouvre le navigateur » : au bout d'une ligne qui mène hors de l'app. */
+  external: ExternalLink,
   theme: SunMoon,
   /** Le choix en cours, dans un menu. */
   check: Check,

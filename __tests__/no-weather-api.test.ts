@@ -6,9 +6,13 @@ import path from 'node:path';
 
 const ROOT = process.cwd();
 const SOURCE = /\.(ts|tsx)$/;
-/** Serveurs que seul le pipeline a le droit d'interroger. */
+/**
+ * Serveurs que seul le pipeline a le droit d'interroger. Chez Open-Meteo, ce sont les hôtes
+ * d'API (`api.`, `previous-runs-api.`…) : le site lui-même reste permis, puisque sa licence
+ * demande un lien vers lui (écran « À propos des données »).
+ */
 const WEATHER_HOSTS =
-  /open-meteo\.com|meteofrance\.s3|data\.gouv\.fr\/api|portail-api\.meteofrance/;
+  /[a-z-]*api\.open-meteo\.com|meteofrance\.s3|data\.gouv\.fr\/api|portail-api\.meteofrance/;
 
 function sourcesOf(directory: string): string[] {
   return readdirSync(path.join(ROOT, directory), { withFileTypes: true }).flatMap((entry) => {
@@ -27,6 +31,19 @@ describe("l'app", () => {
       WEATHER_HOSTS.test(readFileSync(path.join(ROOT, file), 'utf8')),
     );
     expect(offenders).toEqual([]);
+  });
+
+  it('reconnaît bien les adresses d’API, et pas le lien d’attribution', () => {
+    for (const api of [
+      'https://api.open-meteo.com/v1/forecast',
+      'https://previous-runs-api.open-meteo.com/v1/forecast',
+      'https://historical-forecast-api.open-meteo.com/v1/forecast',
+      'https://customer-api.open-meteo.com/v1/forecast',
+      'https://www.data.gouv.fr/api/1/datasets/',
+    ]) {
+      expect(api).toMatch(WEATHER_HOSTS);
+    }
+    expect('https://open-meteo.com/').not.toMatch(WEATHER_HOSTS);
   });
 
   it('n’appelle le réseau qu’à un seul endroit : la lecture des fichiers publiés', () => {

@@ -63,7 +63,7 @@ Dans tous les cas, le sélecteur de ville et les accès restent utilisables.
 | « Fiabilité des prévisions » | `/reliability` |
 | « À propos des données » | `/about` |
 
-Pas de barre d'onglets : les accès secondaires sont deux lignes dans une carte, sous la semaine. Les écrans de destination qui ne sont pas encore écrits affichent « Cet écran arrive bientôt » (`PendingScreen`), avec un retour.
+Pas de barre d'onglets : les accès secondaires sont deux lignes dans une carte, sous la semaine.
 
 ## Ville courante
 
