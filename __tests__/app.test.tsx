@@ -329,9 +329,7 @@ describe('ville mémorisée', () => {
     await openAt(CLEAR_MORNING);
     await loaded(conditions.clear);
     await fireEvent.press(screen.getByRole('radio', { name: 'Nice' }));
-    await waitFor(async () =>
-      expect(await AsyncStorage.getItem('quatrauro-preference-city')).toBe('nice'),
-    );
+    expect(await AsyncStorage.getItem('quatrauro-preference-city')).toBe('nice');
 
     await closeAndReopen();
     await loaded(home.reliability(`88${NBSP}%`));

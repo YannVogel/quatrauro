@@ -6,6 +6,7 @@ import {
   CitySwitch,
   ConditionBadge,
   HeroBlock,
+  IconButton,
   Pill,
   Text,
   conditionAppearance,
@@ -25,6 +26,8 @@ type HomeHeroProps = {
   readonly updated: string | null;
   /** Ouvre « Les modèles ». */
   readonly onOpenModels: () => void;
+  /** Ouvre le menu du thème. */
+  readonly onOpenTheme: () => void;
 };
 
 /** Bloc d'état de l'accueil : la ville, la température de l'heure, la condition, la fiabilité du jour. */
@@ -35,6 +38,7 @@ export function HomeHero({
   content,
   updated,
   onOpenModels,
+  onOpenTheme,
 }: HomeHeroProps) {
   const styles = useStyles();
   const { home, conditions } = strings;
@@ -45,12 +49,22 @@ export function HomeHero({
 
   return (
     <HeroBlock tone={tone} testID="home-hero">
-      <CitySwitch
-        options={cities}
-        selectedId={cityId}
-        onSelect={onSelectCity}
-        accessibilityLabel={home.city}
-      />
+      <View style={styles.controls}>
+        <View style={styles.cities}>
+          <CitySwitch
+            options={cities}
+            selectedId={cityId}
+            onSelect={onSelectCity}
+            accessibilityLabel={home.city}
+          />
+        </View>
+        <IconButton
+          icon="theme"
+          surface="hero"
+          accessibilityLabel={strings.theme.open}
+          onPress={onOpenTheme}
+        />
+      </View>
       {content === null ? null : (
         <>
           <View style={styles.spread}>
@@ -111,6 +125,9 @@ export function HomeHero({
 
 const useStyles = makeStyles((theme) => ({
   spread: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  controls: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.item },
+  // Le sélecteur prend la place qui reste : avec beaucoup de villes, c'est lui qui défile.
+  cities: { flex: 1 },
   // Le chiffre rétrécit plutôt que de pousser le rond hors du bloc.
   temperature: { flexShrink: 1 },
   pill: { minHeight: theme.sizes.touchTarget, justifyContent: 'center' },

@@ -41,6 +41,7 @@ Chaque token existe dans les deux thèmes. Les noms sont ceux de `src/ui/theme.t
 | `onSun` | `#0B1B3A` | `#0B1B3A` | Texte et icône sur le jaune |
 | `pale` | `#DCE8F7` | `#DCE8F7` | Rond d'icône quand il n'y a pas de soleil |
 | `heroOverlay` | noir à 16 % | blanc à 16 % | Fond du sélecteur de ville et du bouton de thème dans le bloc |
+| `scrim` | bleu nuit à 50 % | noir à 60 % | Voile posé sur l'écran derrière un menu |
 
 Règles :
 
@@ -153,7 +154,7 @@ La liste fermée des conditions est dans `shared/conditions.ts` : c'est ce que l
 - **Navigation** : toucher une ligne de jour ouvre son détail ; toucher la pastille de fiabilité de l'accueil ouvre « Les modèles » ; « Fiabilité » et « À propos des données » s'ouvrent par deux lignes dans une carte, sous la semaine (tranché dans l'issue de l'accueil ; pas de barre d'onglets).
 - **Heure de mise à jour** : dans le bloc d'état de l'accueil, sous la date, pour être visible sans défilement.
 - **Détail d'un jour par beau temps** : la carte « début de la pluie selon les modèles » devient une carte de désaccord sur la variable la plus incertaine du jour (température maximale, vent), ou disparaît si les modèles sont d'accord.
-- **Réglage du thème** : Système, Clair, Sombre. Le bouton rond des maquettes bascule clair/sombre ; son comportement exact est fixé dans l'issue du thème.
+- **Réglage du thème** : Système, Clair, Sombre. Le bouton rond des maquettes ouvre un menu de ces trois choix (tranché dans l'issue du thème ; [fiche](../features/theme.md)). Le voile derrière le menu est le token `scrim`.
 - **États** : chargement, prévision ancienne, erreur, aucune donnée (issue M4-01).
 - **À propos des données**.
 

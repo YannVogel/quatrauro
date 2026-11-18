@@ -72,6 +72,7 @@ src/
                             # env.ts (adresse des fichiers publiés), data.ts (lecture et validation), queryClient.tsx (cache)
                             # config.ts (réglages de l'app), now.ts (l'instant présent, pour ne rien montrer de passé)
                             # currentCity.tsx (la ville que l'app montre), preferences.ts (réglages gardés sur l'appareil)
+                            # themePreference.tsx (réglage du thème et son menu)
                             # __fixtures__/published/ : vrais fichiers publiés, pour les tests ; testing/ : faux réseau
   i18n/                     # fr.ts : toutes les chaînes UI ; index.ts : accès typé (`strings`)
 shared/                     # ne dépend de rien : ni Node, ni React Native, ni le reste du repo
@@ -155,6 +156,7 @@ Le projet est sur **Expo SDK 58** (React Native 0.88, React 19.3, TypeScript 6) 
 - **Écrans** : un écran (`XxxScreen`) lit les hooks et distribue ; ce qu'il affiche est calculé par une fonction pure à côté (`home.ts` pour l'accueil), testée sans rendu ; ses pièces sont de petits composants qui ne reçoivent que des props.
 - **Largeurs fixes et police agrandie** : une colonne de largeur fixe qui contient du texte multiplie sa largeur par `fontScale` (`useWindowDimensions`), sinon le texte passe à la ligne dès que l'utilisateur agrandit la police.
 - **Le temps qui passe** : un écran ne lit jamais `new Date()` lui-même. Il prend l'instant de `useNow()` (`src/lib/now.ts`) et le passe aux fonctions pures de `freshness.ts`, qui ne montrent ni heure passée ni prévision ancienne sans le dire. Pour figer l'horloge dans un test de l'app : `jest.useFakeTimers({ now })` avant `renderRouter`.
+- **`waitFor` ne reçoit jamais une fonction asynchrone** dans un test de l'app entière (horloge figée) : cela dérègle les tests suivants du même fichier, qui échouent alors sans rapport apparent. Lire le stockage directement (`expect(await AsyncStorage.getItem(…))`), ou attendre un élément à l'écran.
 - **Réseau dans l'app** : un seul endroit, `src/lib/data.ts`, et seulement vers les fichiers publiés (testé). Les tests servent ces fichiers avec `servePublished` (`src/lib/testing/published.ts`).
 
 - Les dossiers `ios/` et `android/` sont générés (Continuous Native Generation) et ignorés par git : configurer le natif dans `app.config.ts`. Après l'ajout d'une dépendance native ou d'un plugin, régénérer avec `npx expo prebuild --clean --platform android` avant `npm run android`.

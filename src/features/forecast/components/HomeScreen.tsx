@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { strings } from '@/i18n';
 import { isCityId, useCurrentCity } from '@/lib/currentCity';
 import { useNow } from '@/lib/now';
+import { useThemeSetting } from '@/lib/themePreference';
 import { Card, Text, makeStyles, useTheme } from '@/ui';
 import { CITIES } from '@shared/cities';
 
@@ -28,6 +29,7 @@ export function HomeScreen() {
   const router = useRouter();
   const now = useNow();
   const { city, selectCity } = useCurrentCity();
+  const { openThemeMenu } = useThemeSetting();
   const forecast = useForecast(city.id);
   const view = forecastView(forecast, now);
   const content = view.status === 'ready' ? homeContent(view.hours, view.days) : null;
@@ -61,6 +63,7 @@ export function HomeScreen() {
               : null
           }
           onOpenModels={() => router.push('/models')}
+          onOpenTheme={openThemeMenu}
         />
 
         {view.status === 'loading' ? (

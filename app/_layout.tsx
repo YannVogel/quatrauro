@@ -3,7 +3,8 @@ import { StatusBar } from 'expo-status-bar';
 
 import { CurrentCityProvider } from '@/lib/currentCity';
 import { QueryProvider } from '@/lib/queryClient';
-import { ThemeProvider, useTheme } from '@/ui';
+import { ThemePreferenceProvider } from '@/lib/themePreference';
+import { useTheme } from '@/ui';
 
 function Screens() {
   const theme = useTheme();
@@ -24,9 +25,9 @@ export default function RootLayout() {
   return (
     <QueryProvider>
       <CurrentCityProvider>
-        <ThemeProvider>
+        <ThemePreferenceProvider>
           <Screens />
-        </ThemeProvider>
+        </ThemePreferenceProvider>
       </CurrentCityProvider>
     </QueryProvider>
   );

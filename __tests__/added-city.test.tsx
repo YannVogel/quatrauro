@@ -58,8 +58,6 @@ describe('ville ajoutée à la configuration', () => {
     await waitFor(() =>
       expect(screen.getByText(strings.home.reliability(`62${NBSP}%`))).toBeOnTheScreen(),
     );
-    await waitFor(async () =>
-      expect(await AsyncStorage.getItem('quatrauro-preference-city')).toBe('hyeres'),
-    );
+    expect(await AsyncStorage.getItem('quatrauro-preference-city')).toBe('hyeres');
   });
 });

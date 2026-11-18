@@ -22,12 +22,13 @@ import {
   ScreenHeader,
   StatTile,
   Text,
+  ThemeMenu,
   ThemeProvider,
   conditionAppearance,
   makeStyles,
   useTheme,
 } from '@/ui';
-import type { TextVariant, ThemeName } from '@/ui';
+import type { TextVariant, ThemeName, ThemePreference } from '@/ui';
 import { CONDITIONS } from '@shared/conditions';
 
 import {
@@ -109,6 +110,8 @@ function CatalogContent({ onToggleTheme }: { readonly onToggleTheme: () => void 
   const styles = useStyles();
   const [cityId, setCityId] = useState(fakeCities[0]?.id ?? '');
   const [crowdedCityId, setCrowdedCityId] = useState(fakeManyCities[0]?.id ?? '');
+  const [isThemeMenuOpen, setThemeMenuOpen] = useState(false);
+  const [themeChoice, setThemeChoice] = useState<ThemePreference>('system');
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -156,6 +159,23 @@ function CatalogContent({ onToggleTheme }: { readonly onToggleTheme: () => void 
               accessibilityLabel={catalog.city}
             />
           </HeroBlock>
+        </Section>
+
+        <Section title={catalog.notes.themeMenu}>
+          <IconButton
+            icon="theme"
+            accessibilityLabel={strings.theme.open}
+            onPress={() => setThemeMenuOpen(true)}
+          />
+          <ThemeMenu
+            visible={isThemeMenuOpen}
+            value={themeChoice}
+            onSelect={(choice) => {
+              setThemeChoice(choice);
+              setThemeMenuOpen(false);
+            }}
+            onClose={() => setThemeMenuOpen(false)}
+          />
         </Section>
 
         <Section title={catalog.sections.conditions}>

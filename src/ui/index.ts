@@ -25,3 +25,4 @@ export { Pill } from './components/Pill';
 export { RangeBar } from './components/RangeBar';
 export { ScreenHeader } from './components/ScreenHeader';
 export { StatTile } from './components/StatTile';
+export { ThemeMenu } from './components/ThemeMenu';
