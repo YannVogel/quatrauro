@@ -4,21 +4,27 @@
 
 import {
   ArrowLeft,
+  CalendarX,
   Check,
   ChevronRight,
   Cloud,
   CloudLightning,
   CloudMoon,
   CloudMoonRain,
+  CloudOff,
   CloudRain,
   CloudSnow,
   CloudSun,
   CloudSunRain,
+  Download,
   ExternalLink,
+  History,
+  Hourglass,
   Moon,
   Sun,
   SunMoon,
   TriangleAlert,
+  WifiOff,
   Wind,
 } from 'lucide-react-native';
 
@@ -44,6 +50,13 @@ export const icons = {
   check: Check,
   /** Attire l'œil sur une valeur à remarquer, sans compter sur la couleur. */
   alert: TriangleAlert,
+  /** États : pas de connexion, serveur muet, données anciennes, recul insuffisant, app à mettre à jour, jour sorti de la prévision. */
+  offline: WifiOff,
+  unavailable: CloudOff,
+  stale: History,
+  hourglass: Hourglass,
+  update: Download,
+  dayGone: CalendarX,
 } as const;
 
 export type IconName = keyof typeof icons;

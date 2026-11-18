@@ -33,8 +33,8 @@ On y arrive par la pastille de fiabilité de l'accueil. **L'app ne calcule rien*
 
 | Cas | Ce que dit sa ligne |
 |---|---|
-| Hors de portée (AROME au-delà de deux jours) | « Météo-France · ne va pas jusque-là », sans poids ni température |
-| Absent du dernier calcul (`available: false` dans le fichier) | « NOAA · absent du dernier calcul », sans poids ni température |
+| Hors de portée (AROME au-delà de deux jours) | « Ne prévoit pas aussi loin » sous le nom du modèle, à la place de la barre de poids ; « — » pour la température |
+| Absent du dernier calcul (`available: false` dans le fichier) | « Absent du dernier calcul » sous le nom du modèle, à la place de la barre de poids ; « — » pour la température |
 
 Les modèles sans poids ferment la liste. Les poids des autres somment toujours à 100 %.
 

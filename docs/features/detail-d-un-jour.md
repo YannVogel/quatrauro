@@ -16,7 +16,7 @@ L'accueil dit l'essentiel ; le détail répond à « à quelle heure, exactement
 3. **Heure par heure** : une colonne toutes les trois heures (0 h, 3 h… 21 h, heure de Paris), avec la température en chiffres et le risque de pluie en barre.
 4. **Quatre vignettes** : vent moyen le plus fort, cumul de pluie, humidité moyenne, ressenti le plus élevé.
 5. **Carte de désaccord**, quand les modèles divergent.
-6. L'heure de mise à jour, et le bandeau « Prévision ancienne » le cas échéant.
+6. L'heure de mise à jour, et le bandeau « Prévision ancienne » ou « Mise à jour impossible » le cas échéant.
 
 L'écran suit la ville courante et l'instant présent : il est disponible pour aujourd'hui et les jours à venir.
 

@@ -1,36 +1,37 @@
-import { View } from 'react-native';
-
 import { strings } from '@/i18n';
-import { Text, makeStyles } from '@/ui';
+import { StateMessage } from '@/ui';
+import type { IconName } from '@/ui';
 
 import type { EmptyReason } from '../freshness';
 
-type EmptyStateProps = { readonly reason: EmptyReason };
+type EmptyStateProps = {
+  readonly reason: EmptyReason;
+  /** Redemande la prévision. */
+  readonly onRetry: () => void;
+};
 
-/** Mettre l'app à jour est la seule issue : tirer pour réessayer n'y changerait rien. */
+const ICONS: Readonly<Record<EmptyReason, IconName>> = {
+  network: 'offline',
+  http: 'unavailable',
+  invalid: 'alert',
+  version: 'update',
+  none: 'hourglass',
+  expired: 'stale',
+};
+
+/** Mettre l'app à jour est la seule issue : réessayer n'y changerait rien. */
 const canRetry = (reason: EmptyReason): boolean => reason !== 'version';
 
 /** Ce que l'app dit quand elle n'a aucune prévision à montrer : jamais un écran blanc, jamais des zéros. */
-export function EmptyState({ reason }: EmptyStateProps) {
-  const styles = useStyles();
+export function EmptyState({ reason, onRetry }: EmptyStateProps) {
+  const { states } = strings;
   return (
-    <View style={styles.block}>
-      <Text variant="title" accessibilityRole="header" style={styles.centered}>
-        {strings.states.emptyTitle}
-      </Text>
-      <Text color="textMuted" style={styles.centered}>
-        {strings.states.empty[reason]}
-      </Text>
-      {canRetry(reason) ? (
-        <Text color="textMuted" style={styles.centered}>
-          {strings.states.retry}
-        </Text>
-      ) : null}
-    </View>
+    <StateMessage
+      testID="empty-state"
+      icon={ICONS[reason]}
+      title={states.emptyTitles[reason]}
+      detail={states.empty[reason]}
+      action={canRetry(reason) ? { label: states.retry, onPress: onRetry } : undefined}
+    />
   );
 }
-
-const useStyles = makeStyles((theme) => ({
-  block: { alignItems: 'center', gap: theme.spacing.item },
-  centered: { textAlign: 'center' },
-}));

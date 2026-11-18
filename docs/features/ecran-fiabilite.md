@@ -46,7 +46,8 @@ Un jour dont l'écart atteint **2 °C** (`LARGE_GAP_DEGREES`, la tolérance d'un
 | Jour sans observation, ou sans prévision la veille | « — » pour la valeur manquante et pour l'écart ; aucun écart n'est inventé |
 | Aucun jour de pluie comparé | Pas de pastille |
 | Aucun jour comparé | Pas de carte des sept jours |
-| Scores en cours de chargement, ou impossibles à charger | « Chargement des scores… », ou « Les scores n'ont pas pu être chargés. » |
+| Scores en cours de chargement | Des formes à la place du contenu ([états](../design/etats.md)) |
+| Scores impossibles à charger | « Scores indisponibles », et un bouton « Réessayer » |
 
 Le geste « tirer pour rafraîchir » redemande le fichier.
 

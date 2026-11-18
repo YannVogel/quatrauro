@@ -16,11 +16,14 @@ import {
   HourChip,
   HourlyChart,
   IconButton,
+  LoadingSkeleton,
   MeterBar,
   ModelRow,
+  Notice,
   Pill,
   ScreenHeader,
   StatTile,
+  StateMessage,
   Text,
   ThemeMenu,
   ThemeProvider,
@@ -39,7 +42,9 @@ import {
   fakeHours,
   fakeMeters,
   fakeModels,
+  fakeStaleHours,
   fakeStats,
+  fakeVerifiedHours,
   fakeWeek,
   fakeWeekScale,
 } from '../__fixtures__/catalog';
@@ -100,6 +105,78 @@ function ConditionBlocks() {
           </HeroBlock>
         )),
       )}
+    </>
+  );
+}
+
+/** Chaque état non nominal, avec les textes de l'app. Les boutons n'y font rien. */
+function States() {
+  const { states, freshness, models, reliability } = strings;
+  const nothing = () => undefined;
+  return (
+    <>
+      <Text color="textMuted">{catalog.states.loading}</Text>
+      <LoadingSkeleton label={states.loading} />
+
+      <Text color="textMuted">{catalog.states.refreshing}</Text>
+      <HeroBlock>
+        <Text variant="displayL" color="onHero">
+          {formatTemperature(fakeHero.temperature)}
+        </Text>
+        <Text variant="caption" color="onHero">
+          {freshness.refreshing}
+        </Text>
+      </HeroBlock>
+
+      <Text color="textMuted">{catalog.states.stale}</Text>
+      <Notice
+        icon="stale"
+        title={freshness.staleTitle}
+        detail={freshness.staleDetail(freshness.hours(fakeStaleHours))}
+      />
+
+      <Text color="textMuted">{catalog.states.errorWithCache}</Text>
+      <Notice
+        icon="offline"
+        title={states.refreshFailedTitle}
+        detail={states.refreshFailed.network}
+      />
+      <Notice icon="alert" title={states.refreshFailedTitle} detail={states.refreshFailed.http} />
+
+      <Text color="textMuted">{catalog.states.errorWithoutCache}</Text>
+      <StateMessage
+        icon="offline"
+        title={states.emptyTitles.network}
+        detail={states.empty.network}
+        action={{ label: states.retry, onPress: nothing }}
+      />
+      <StateMessage
+        icon="update"
+        title={states.emptyTitles.version}
+        detail={states.empty.version}
+      />
+
+      <Text color="textMuted">{catalog.states.insufficient}</Text>
+      <StateMessage
+        icon="hourglass"
+        title={reliability.insufficientTitle}
+        detail={reliability.insufficient(fakeVerifiedHours)}
+      />
+      <Notice icon="hourglass" title={models.errorsNoneTitle} detail={models.errorsNone} />
+
+      <Text color="textMuted">{catalog.states.absentModel}</Text>
+      <Card>
+        <View>
+          <ModelRow name="GFS" provider="NOAA" weight={null} value={null} note={models.absent} />
+          <ModelRow
+            name="AROME"
+            provider="Météo-France"
+            weight={null}
+            value={null}
+            note={models.outOfRange}
+          />
+        </View>
+      </Card>
     </>
   );
 }
@@ -254,6 +331,10 @@ function CatalogContent({ onToggleTheme }: { readonly onToggleTheme: () => void 
               </View>
             ))}
           </Card>
+        </Section>
+
+        <Section title={catalog.sections.states}>
+          <States />
         </Section>
 
         <Section title={catalog.sections.typography}>

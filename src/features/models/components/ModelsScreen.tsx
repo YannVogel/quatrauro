@@ -5,8 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
   EmptyState,
-  StaleBanner,
-  ageLabel,
+  FreshnessNotice,
   forecastView,
   useForecast,
   useVerification,
@@ -16,18 +15,28 @@ import { useCurrentCity } from '@/lib/currentCity';
 import { formatTemperature } from '@/lib/format';
 import { useNow } from '@/lib/now';
 import { useThemeSetting } from '@/lib/themePreference';
-import { Card, CitySwitch, HeroBlock, ModelRow, Pill, ScreenHeader, Text, makeStyles } from '@/ui';
+import {
+  Card,
+  CitySwitch,
+  HeroBlock,
+  LoadingSkeleton,
+  ModelRow,
+  Pill,
+  ScreenHeader,
+  Text,
+  makeStyles,
+} from '@/ui';
 
 import { defaultModelsDate, modelsContent } from '../models';
 import type { ModelLine } from '../models';
 import { ModelErrorsCard } from './ModelErrorsCard';
 
-/** « Météo-France », suivi de la raison quand le modèle n'a pas de valeur. */
-function providerOf(line: ModelLine): string {
+/** Pourquoi le modèle n'a pas de valeur ; rien à dire quand il en a une. */
+function noteOf(line: ModelLine): string | undefined {
   const { models } = strings;
-  if (line.status === 'absent') return `${line.provider} · ${models.absent}`;
-  if (line.status === 'outOfRange') return `${line.provider} · ${models.outOfRange}`;
-  return line.provider;
+  if (line.status === 'absent') return models.absent;
+  if (line.status === 'outOfRange') return models.outOfRange;
+  return undefined;
 }
 
 /** « Les modèles » : pour un jour, la prévision combinée, celle de chaque modèle, son poids et son erreur. */
@@ -37,7 +46,8 @@ export function ModelsScreen() {
   const now = useNow();
   const { city } = useCurrentCity();
   const { openThemeMenu } = useThemeSetting();
-  const view = forecastView(useForecast(city.id), now);
+  const forecast = useForecast(city.id);
+  const view = forecastView(forecast, now);
   const verification = useVerification(city.id).data;
   const [chosenDate, setChosenDate] = useState<string | null>(null);
   const { models: text } = strings;
@@ -63,12 +73,10 @@ export function ModelsScreen() {
           theme={{ accessibilityLabel: strings.theme.open, onPress: openThemeMenu }}
         />
 
-        {view.status === 'loading' ? (
-          <Text color="textMuted" style={styles.centered}>
-            {strings.states.loading}
-          </Text>
+        {view.status === 'loading' ? <LoadingSkeleton label={strings.states.loading} /> : null}
+        {view.status === 'empty' ? (
+          <EmptyState reason={view.reason} onRetry={() => void forecast.refresh()} />
         ) : null}
-        {view.status === 'empty' ? <EmptyState reason={view.reason} /> : null}
 
         {view.status === 'ready' && content !== null ? (
           <>
@@ -98,7 +106,7 @@ export function ModelsScreen() {
               )}
             </HeroBlock>
 
-            {view.isStale ? <StaleBanner age={ageLabel(view.forecast.generatedAt, now)} /> : null}
+            <FreshnessNotice view={view} now={now} />
 
             <Card>
               <View style={styles.cardHeader}>
@@ -114,7 +122,8 @@ export function ModelsScreen() {
                   <ModelRow
                     key={line.id}
                     name={line.name}
-                    provider={providerOf(line)}
+                    provider={line.provider}
+                    note={noteOf(line)}
                     weight={line.weight}
                     value={
                       line.temperature === null ? null : formatTemperature(line.temperature, 1)

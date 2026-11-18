@@ -105,3 +105,7 @@ export const fakeModels: readonly {
 ];
 
 export const fakeMeters: readonly (number | null)[] = [0, 0.35, 1, null];
+
+/** Âge d'une prévision ancienne, et heures déjà vérifiées quand le recul manque. */
+export const fakeStaleHours = 14;
+export const fakeVerifiedHours = 60;

@@ -8,7 +8,16 @@ import { useCurrentCity } from '@/lib/currentCity';
 import { formatInParis } from '@/lib/dates';
 import { formatTemperature } from '@/lib/format';
 import { useThemeSetting } from '@/lib/themePreference';
-import { HeroBlock, Pill, ScreenHeader, Text, makeStyles, useTheme } from '@/ui';
+import {
+  HeroBlock,
+  LoadingSkeleton,
+  Pill,
+  ScreenHeader,
+  StateMessage,
+  Text,
+  makeStyles,
+  useTheme,
+} from '@/ui';
 import { startOfParisDay } from '@shared/parisTime';
 
 import { reliabilityContent } from '../reliability';
@@ -63,21 +72,26 @@ export function ReliabilityScreen() {
           theme={{ accessibilityLabel: strings.theme.open, onPress: openThemeMenu }}
         />
 
-        {content === null ? (
-          <Text color="textMuted" style={styles.centered}>
-            {verification.isLoading ? text.loading : text.unavailable}
-          </Text>
+        {content === null && verification.isLoading ? (
+          <LoadingSkeleton label={text.loading} />
+        ) : null}
+        {content === null && !verification.isLoading ? (
+          <StateMessage
+            testID="scores-unavailable"
+            icon="unavailable"
+            title={text.unavailableTitle}
+            detail={text.unavailable}
+            action={{ label: strings.states.retry, onPress: () => void verification.refresh() }}
+          />
         ) : null}
 
         {content?.status === 'insufficient' ? (
-          <View style={styles.message}>
-            <Text variant="title" accessibilityRole="header" style={styles.centered}>
-              {text.insufficientTitle}
-            </Text>
-            <Text color="textMuted" style={styles.centered}>
-              {text.insufficient(content.verifiedHours)}
-            </Text>
-          </View>
+          <StateMessage
+            testID="scores-insufficient"
+            icon="hourglass"
+            title={text.insufficientTitle}
+            detail={text.insufficient(content.verifiedHours)}
+          />
         ) : null}
 
         {content?.status === 'ready' ? (
@@ -115,5 +129,4 @@ const useStyles = makeStyles((theme) => ({
   screen: { flex: 1, backgroundColor: theme.colors.background },
   content: { flexGrow: 1, gap: theme.spacing.block, padding: theme.spacing.screen },
   centered: { textAlign: 'center' },
-  message: { gap: theme.spacing.item },
 }));

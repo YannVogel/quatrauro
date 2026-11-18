@@ -60,7 +60,8 @@ export const fr = {
     spokenMaxTemperature: (model: string, degrees: string) => `${model}, ${degrees}`,
     /** Le jour demandé n'est pas, ou plus, dans la prévision. */
     goneTitle: 'Ce jour n’est plus dans la prévision',
-    gone: 'Il est passé, ou trop lointain. Revenez à l’accueil pour voir les jours à venir.',
+    gone: 'Il est passé, ou trop lointain pour être prévu.',
+    goneAction: 'Voir les jours à venir',
   },
   /** Écran « Les modèles ». */
   models: {
@@ -78,15 +79,16 @@ export const fr = {
     spreadDetail: 'entre le plus chaud et le plus frais',
     listTitle: 'Ce que prévoit chaque modèle',
     listCaption: 'Poids moyen sur la journée',
-    /** Pourquoi un modèle n'a pas de valeur, à la suite de son fournisseur. */
-    outOfRange: 'ne va pas jusque-là',
-    absent: 'absent du dernier calcul',
+    /** Pourquoi un modèle n'a pas de valeur, sous son nom. */
+    outOfRange: 'Ne prévoit pas aussi loin',
+    absent: 'Absent du dernier calcul',
     errorsTitle: 'Erreur moyenne récente',
     /** L'échéance en heures : « demain » est à plus de 24 heures, donc entre 24 et 48 h. */
     errorsPeriod: (lead: number, days: number) =>
       `prévisions faites ${(lead - 1) * 24} à ${lead * 24}\u00a0h avant, sur ${days} jours`,
     errorsBlend: 'Prévision combinée',
-    errorsNone: 'Pas encore assez de jours vérifiés pour noter les modèles.',
+    errorsNoneTitle: 'Pas encore de scores',
+    errorsNone: 'Il faut quelques jours de mesures pour noter les modèles.',
     explanation: (city: string) =>
       `Plus un modèle s’est trompé récemment à ${city}, moins il pèse. Les poids sont recalculés à chaque mise à jour, à partir des mesures de la station.`,
   },
@@ -125,7 +127,8 @@ export const fr = {
         ? 'Aucune prévision n’a encore pu être comparée à ce qui a été mesuré. Les premiers scores apparaîtront après une semaine.'
         : `Seulement ${hours} heures de prévisions ont été comparées aux mesures. Les scores apparaîtront après une semaine : avant, une moyenne ne voudrait rien dire.`,
     loading: 'Chargement des scores…',
-    unavailable: 'Les scores n’ont pas pu être chargés.',
+    unavailableTitle: 'Scores indisponibles',
+    unavailable: 'Les scores n’ont pas pu être chargés. Vérifiez votre connexion, puis réessayez.',
     period: (from: string, to: string) => `Scores du ${from} au ${to}`,
   },
   /** Écran « À propos des données ». */
@@ -193,7 +196,18 @@ export const fr = {
       stats: 'Vignettes',
       models: 'Modèles',
       meters: 'Barres de proportion',
+      states: 'États',
       typography: 'Typographie',
+    },
+    /** Les états non nominaux, dans l'ordre de la fiche docs/design/etats.md. */
+    states: {
+      loading: 'Premier chargement',
+      refreshing: 'Rafraîchissement',
+      stale: 'Prévision de plus de douze heures',
+      errorWithCache: 'Erreur, une prévision en cache',
+      errorWithoutCache: 'Erreur, aucune prévision',
+      insufficient: 'Historique insuffisant',
+      absentModel: 'Modèle absent',
     },
     notes: {
       missing: 'Valeurs absentes',
@@ -217,32 +231,46 @@ export const fr = {
     updatedOn: (day: string, time: string) => `Mis à jour ${day} à ${time}`,
     refreshing: 'Mise à jour en cours…',
     staleTitle: 'Prévision ancienne',
+    /** Le fichier a bien été relu, mais il n'y en a pas de plus récent. */
     staleDetail: (hours: string) =>
-      `Elle a été calculée il y a ${hours} et n’a pas pu être mise à jour depuis.`,
+      `Calculée il y a ${hours}. Aucune prévision plus récente n’est disponible pour le moment.`,
+    /** La mise à jour a échoué : l'âge, puis la raison. */
+    staleAfterFailure: (hours: string, reason: string) => `Calculée il y a ${hours}. ${reason}`,
     hours: (count: number) => (count === 1 ? '1 heure' : `${count} heures`),
     days: (count: number) => (count === 1 ? '1 jour' : `${count} jours`),
   },
   /** Ce que l'app dit quand elle n'a rien, ou pas mieux, à montrer. */
   states: {
     loading: 'Chargement de la prévision…',
-    emptyTitle: 'Pas encore de prévision',
-    retry: 'Tirez vers le bas pour réessayer.',
-    /** Pourquoi il n'y a rien à afficher. */
+    retry: 'Réessayer',
+    /** Pourquoi il n'y a rien à afficher : le titre dit ce qui se passe… */
+    emptyTitles: {
+      network: 'Pas de connexion',
+      http: 'Prévisions indisponibles',
+      invalid: 'Prévisions illisibles',
+      version: 'Mise à jour nécessaire',
+      none: 'Pas encore de prévision',
+      expired: 'Prévision trop ancienne',
+    },
+    /** … et le texte dit quoi faire. */
     empty: {
       network:
-        'L’app n’a pas pu joindre le serveur. Vérifiez votre connexion : la prévision apparaîtra dès qu’elle aura été reçue une première fois.',
-      http: 'Les prévisions sont momentanément indisponibles.',
-      invalid: 'Les prévisions reçues sont illisibles. Elles seront redemandées plus tard.',
+        'Vérifiez votre connexion, puis réessayez. La prévision s’affichera dès qu’elle aura été reçue une première fois.',
+      http: 'Le serveur ne répond pas pour le moment. Réessayez dans quelques minutes.',
+      invalid:
+        'Le fichier reçu n’a pas pu être lu. Plutôt que d’afficher des valeurs douteuses, l’app n’affiche rien. Réessayez plus tard.',
       version:
         'Cette version de l’app ne sait pas lire les nouvelles prévisions. Mettez l’app à jour.',
-      none: 'Aucune prévision n’a encore été reçue.',
-      expired: 'La dernière prévision reçue ne décrit plus que des jours passés.',
+      none: 'Aucune prévision n’a encore été reçue. Réessayez dans un instant.',
+      expired:
+        'La dernière prévision reçue ne décrit plus que des jours passés. Réessayez pour en recevoir une nouvelle.',
     },
-    /** Pourquoi la prévision affichée n'a pas pu être rafraîchie. */
+    /** La prévision affichée n'a pas pu être rafraîchie : elle reste, et l'app dit pourquoi. */
+    refreshFailedTitle: 'Mise à jour impossible',
     refreshFailed: {
-      network: 'Pas de connexion : la prévision affichée n’a pas pu être mise à jour.',
-      http: 'Le serveur n’a pas répondu : la prévision affichée n’a pas pu être mise à jour.',
-      invalid: 'La nouvelle prévision était illisible : l’ancienne reste affichée.',
+      network: 'Pas de connexion. La prévision affichée est la dernière reçue.',
+      http: 'Le serveur ne répond pas. La prévision affichée est la dernière reçue.',
+      invalid: 'La nouvelle prévision était illisible. L’ancienne reste affichée.',
       version: 'Mettez l’app à jour pour recevoir les nouvelles prévisions.',
     },
   },

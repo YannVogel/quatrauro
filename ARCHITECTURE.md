@@ -84,7 +84,7 @@ Le format et le découpage sont décrits dans [docs/features/archive-et-verifica
 
 - **Lecture** : `src/lib/data.ts` télécharge les deux fichiers d'une ville et les valide avec les schémas de `shared/`. Un fichier invalide ou d'une version inconnue est traité comme une erreur, jamais affiché à moitié.
 - **Cache** : TanStack Query avec persistance sur l'appareil. L'écran s'ouvre sur la dernière prévision connue, puis se rafraîchit en arrière-plan.
-- **Fraîcheur** : l'app compare `generatedAt` à l'heure courante. Au-delà du seuil, un bandeau signale une prévision ancienne.
+- **Fraîcheur** : l'app compare `generatedAt` à l'heure courante. Au-delà du seuil, un bandeau signale une prévision ancienne. Les états non nominaux (chargement, erreurs, données manquantes) sont décrits dans [docs/design/etats.md](docs/design/etats.md).
 - **Écrans** : chaque feature expose ses écrans et ses hooks par son `index.ts` ; les routes de `app/` ne contiennent pas de logique.
 - **Thème** : les tokens clair et sombre viennent de `src/ui/theme.ts` ; le choix (système, clair, sombre) est mémorisé sur l'appareil.
 
