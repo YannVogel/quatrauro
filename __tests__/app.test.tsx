@@ -59,7 +59,7 @@ describe('accueil par beau temps', () => {
       screen.getByText(home.dateAndWind('Mercredi 18 novembre', `14${NBSP}km/h`)),
     ).toBeOnTheScreen();
     expect(heroColor()).toBe(themes.light.colors.heroClear);
-    expect(screen.getByLabelText(conditions.clear)).toBeOnTheScreen();
+    expect(hero().getByText(conditions.clear)).toBeOnTheScreen();
   });
 
   it('donne la fiabilité du jour et le nombre de modèles d’accord', () => {
@@ -107,7 +107,7 @@ describe('accueil sous la pluie', () => {
 
   it('change de couleur et d’icône', () => {
     expect(heroColor()).toBe(themes.light.colors.heroRain);
-    expect(screen.getByLabelText(conditions.rain)).toBeOnTheScreen();
+    expect(hero().getByText(conditions.rain)).toBeOnTheScreen();
     expect(hero().getByText('17°')).toBeOnTheScreen();
     expect(screen.getByText(home.reliability(`74${NBSP}%`))).toBeOnTheScreen();
   });

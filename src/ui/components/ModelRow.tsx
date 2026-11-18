@@ -5,6 +5,7 @@ import { formatPercent } from '@/lib/format';
 
 import { Text } from '../Text';
 import { makeStyles } from '../ThemeProvider';
+import { useTextScale } from '../textScale';
 import { MeterBar } from './MeterBar';
 
 type ModelRowProps = {
@@ -20,9 +21,13 @@ type ModelRowProps = {
   readonly note?: string;
 };
 
+/** Largeur de la colonne du pourcentage à la taille de police normale. */
+const PERCENT_WIDTH = 44;
+
 /** Ligne d'un modèle : nom, fournisseur, poids, valeur. */
 export function ModelRow({ name, provider, weight, value, note }: ModelRowProps) {
   const styles = useStyles();
+  const { fontScale } = useTextScale();
   const { spoken, common } = strings;
   const percent = weight === null ? null : formatPercent(weight * 100);
   return (
@@ -45,8 +50,14 @@ export function ModelRow({ name, provider, weight, value, note }: ModelRowProps)
         </View>
         {note === undefined ? (
           <View style={styles.weight}>
-            <MeterBar value={weight} describe={spoken.weight} />
-            <Text variant="caption" color="textMuted" style={styles.percent}>
+            {/* La ligne dit déjà le poids : la barre se tait. */}
+            <MeterBar value={weight} decorative />
+            <Text
+              variant="caption"
+              color="textMuted"
+              numberOfLines={1}
+              style={[styles.percent, { width: PERCENT_WIDTH * fontScale }]}
+            >
               {percent ?? common.missing}
             </Text>
           </View>
@@ -71,9 +82,14 @@ const useStyles = makeStyles((theme) => ({
     paddingVertical: theme.spacing.block,
   },
   details: { flex: 1, gap: 6 },
-  heading: { flexDirection: 'row', alignItems: 'baseline', gap: theme.spacing.item },
+  heading: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'baseline',
+    columnGap: theme.spacing.item,
+  },
   provider: { flexShrink: 1 },
   weight: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.item },
-  percent: { width: 44, textAlign: 'right' },
+  percent: { textAlign: 'right' },
   value: { minWidth: 64, textAlign: 'right' },
 }));

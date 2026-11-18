@@ -5,7 +5,7 @@ type Rgba = { readonly r: number; readonly g: number; readonly b: number; readon
 const HEX_FORMAT = /^#([0-9a-f]{6})$/i;
 const RGBA_FORMAT = /^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)$/;
 
-export const WCAG_AA = { normalText: 4.5, largeText: 3 } as const;
+export const WCAG_AA = { normalText: 4.5, largeText: 3, graphics: 3 } as const;
 
 export function parseColor(color: string): Rgba {
   const hex = HEX_FORMAT.exec(color);

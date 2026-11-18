@@ -25,7 +25,7 @@ export function ScreenHeader({ title, subtitle, back, theme }: ScreenHeaderProps
     <View style={styles.header}>
       <IconButton icon="back" {...back} />
       <View style={styles.titles}>
-        <Text accessibilityRole="header" variant="heading" numberOfLines={1}>
+        <Text accessibilityRole="header" variant="heading" numberOfLines={2} style={styles.title}>
           {title}
         </Text>
         {subtitle === undefined ? null : (
@@ -46,5 +46,6 @@ export function ScreenHeader({ title, subtitle, back, theme }: ScreenHeaderProps
 const useStyles = makeStyles((theme) => ({
   header: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.item },
   titles: { flex: 1, alignItems: 'center' },
+  title: { textAlign: 'center' },
   placeholder: { width: theme.sizes.touchTarget, height: theme.sizes.touchTarget },
 }));

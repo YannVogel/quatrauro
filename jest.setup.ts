@@ -14,3 +14,11 @@ global.fetch = jest.fn(() => Promise.reject(new Error('Réseau non simulé dans 
 // ici, avec la vraie `Date`, comme dans l'app.
 jest.requireActual('@date-fns/utc');
 jest.requireActual('date-fns');
+
+// Sous Jest, React Native annonce un téléphone dont la police est agrandie à 200 %. Les tests
+// rendent l'app aux réglages par défaut ; ceux qui portent sur les grandes polices le demandent
+// (`setFontScale`, dans `src/ui/testing/`).
+const { Dimensions } = jest.requireActual<typeof import('react-native')>('react-native');
+const { TEST_PHONE } =
+  jest.requireActual<typeof import('./src/ui/testing/phone')>('./src/ui/testing/phone');
+Dimensions.set({ window: TEST_PHONE, screen: TEST_PHONE });

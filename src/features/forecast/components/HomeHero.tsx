@@ -89,11 +89,13 @@ export function HomeHero({
               {formatTemperature(content.temperature)}
             </Text>
             {content.condition === null ? null : (
-              <ConditionBadge condition={content.condition} isNight={content.isNight} />
+              // Le nom de la condition est écrit juste dessous : le rond se tait.
+              <ConditionBadge condition={content.condition} isNight={content.isNight} decorative />
             )}
           </View>
           <View>
-            <Text variant="title" color="onHero">
+            {/* Le seul titre de l'accueil : les lecteurs d'écran s'y repèrent. */}
+            <Text variant="title" color="onHero" accessibilityRole="header">
               {content.condition === null
                 ? home.conditionUnavailable
                 : conditions[content.condition]}

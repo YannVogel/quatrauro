@@ -16,9 +16,11 @@ import {
   StateMessage,
   Text,
   makeStyles,
+  useTextScale,
 } from '@/ui';
 
 import { dayContent } from '../day';
+import type { DayContent } from '../day';
 import { forecastView } from '../freshness';
 import { longDayOf } from '../home';
 import { useForecast } from '../hooks/useForecast';
@@ -33,6 +35,17 @@ const DATE_FORMAT = /^\d{4}-\d{2}-\d{2}$/;
 const shown = (value: number | null, format: (value: number) => string): string | null =>
   value === null ? null : format(value);
 
+/** Les deux dernières vignettes, sur la même rangée que les autres ou sur la suivante. */
+function HumidityAndFeelsLike({ stats }: { readonly stats: DayContent['stats'] }) {
+  const { day: text } = strings;
+  return (
+    <>
+      <StatTile label={text.stats.humidity} value={shown(stats.humidity, formatPercent)} />
+      <StatTile label={text.stats.feelsLike} value={shown(stats.feelsLike, formatTemperature)} />
+    </>
+  );
+}
+
 type DayScreenProps = {
   /** Le jour demandé par la route ; tout ce qui n'est pas `AAAA-MM-JJ` est traité comme un jour absent. */
   readonly date: string | undefined;
@@ -45,6 +58,7 @@ export function DayScreen({ date }: DayScreenProps) {
   const now = useNow();
   const { city } = useCurrentCity();
   const { openThemeMenu } = useThemeSetting();
+  const { isLargeText } = useTextScale();
   const forecast = useForecast(city.id);
   const view = forecastView(forecast, now);
   const isDate = date !== undefined && DATE_FORMAT.test(date);
@@ -94,18 +108,17 @@ export function DayScreen({ date }: DayScreenProps) {
               </View>
               <HourlyChart columns={day.columns} />
             </Card>
+            {/* Quatre vignettes côte à côte, ou deux par deux avec une très grande police. */}
             <View style={styles.tiles}>
               <StatTile label={text.stats.wind} value={shown(day.stats.wind, formatSpeed)} />
               <StatTile label={text.stats.rain} value={shown(day.stats.rain, formatMillimetres)} />
-              <StatTile
-                label={text.stats.humidity}
-                value={shown(day.stats.humidity, formatPercent)}
-              />
-              <StatTile
-                label={text.stats.feelsLike}
-                value={shown(day.stats.feelsLike, formatTemperature)}
-              />
+              {isLargeText ? null : <HumidityAndFeelsLike stats={day.stats} />}
             </View>
+            {isLargeText ? (
+              <View style={styles.tiles}>
+                <HumidityAndFeelsLike stats={day.stats} />
+              </View>
+            ) : null}
             {day.disagreement === null ? null : (
               <DisagreementCard disagreement={day.disagreement} />
             )}
@@ -125,6 +138,7 @@ const useStyles = makeStyles((theme) => ({
   centered: { textAlign: 'center' },
   cardHeader: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'baseline',
     justifyContent: 'space-between',
     gap: theme.spacing.item,

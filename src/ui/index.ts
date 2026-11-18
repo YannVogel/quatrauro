@@ -5,6 +5,7 @@ export type { TextProps } from './Text';
 export { ThemeProvider, makeStyles, useTheme } from './ThemeProvider';
 export type { ThemePreference } from './ThemeProvider';
 export { conditionAppearance } from './conditions';
+export { LARGE_TEXT_FROM, useTextScale } from './textScale';
 export type { ConditionAppearance } from './conditions';
 export type { IconName } from './icons';
 export type { ColorToken, Colors, HeroToken, TextVariant, Theme, ThemeName } from './theme';

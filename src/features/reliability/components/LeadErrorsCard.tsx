@@ -1,8 +1,8 @@
-import { View, useWindowDimensions } from 'react-native';
+import { View } from 'react-native';
 
 import { strings } from '@/i18n';
 import { formatNumber, formatTemperature } from '@/lib/format';
-import { Card, MeterBar, Text, makeStyles } from '@/ui';
+import { Card, MeterBar, Text, makeStyles, useTextScale } from '@/ui';
 
 import type { LeadError } from '../reliability';
 
@@ -15,7 +15,7 @@ const VALUE_WIDTH = 44;
 /** Erreur moyenne du mélange selon l'échéance : plus on prévoit loin, plus elle grandit. */
 export function LeadErrorsCard({ leads }: LeadErrorsCardProps) {
   const styles = useStyles();
-  const { fontScale } = useWindowDimensions();
+  const { fontScale, isLargeText } = useTextScale();
   const { reliability, spoken } = strings;
   return (
     <Card testID="lead-errors">
@@ -36,12 +36,18 @@ export function LeadErrorsCard({ leads }: LeadErrorsCardProps) {
           );
           return (
             <View key={lead.lead} accessible accessibilityLabel={spokenLabel} style={styles.row}>
-              <Text numberOfLines={1} style={{ width: LABEL_WIDTH * fontScale }}>
+              <Text
+                numberOfLines={1}
+                style={isLargeText ? styles.label : { width: LABEL_WIDTH * fontScale }}
+              >
                 {label}
               </Text>
-              <View style={styles.bar}>
-                <MeterBar value={lead.ratio} describe={() => spokenLabel} />
-              </View>
+              {/* Avec une très grande police, le chiffre suffit : la barre s'efface. */}
+              {isLargeText ? null : (
+                <View style={styles.bar}>
+                  <MeterBar value={lead.ratio} decorative />
+                </View>
+              )}
               <Text
                 variant="bodyStrong"
                 numberOfLines={1}
@@ -60,6 +66,7 @@ export function LeadErrorsCard({ leads }: LeadErrorsCardProps) {
 const useStyles = makeStyles((theme) => ({
   header: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'baseline',
     justifyContent: 'space-between',
     gap: theme.spacing.item,
@@ -67,5 +74,6 @@ const useStyles = makeStyles((theme) => ({
   rows: { gap: theme.spacing.item },
   row: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.item },
   bar: { flex: 1, flexDirection: 'row' },
+  label: { flex: 1 },
   value: { textAlign: 'right' },
 }));

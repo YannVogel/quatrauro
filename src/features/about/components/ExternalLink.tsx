@@ -47,6 +47,8 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'row',
     alignItems: 'center',
     minHeight: theme.sizes.touchTarget,
+    // Un libellé qui passe sur deux lignes ne touche pas la ligne voisine.
+    paddingVertical: theme.spacing.item,
     gap: theme.spacing.item,
   },
   label: { flex: 1 },

@@ -24,6 +24,9 @@ Le nom vient du provençal « quatre auro », les quatre vents.
 | [docs/design/riviera.md](docs/design/riviera.md) | Direction graphique « Riviera » : tokens, composants, écrans |
 | [docs/design/claude-design/](docs/design/claude-design/) | Maquettes |
 | [docs/design/icone.md](docs/design/icone.md) | Les trois variantes d'icône à départager |
+| [docs/design/etats.md](docs/design/etats.md) | États non nominaux : chargement, erreurs, données manquantes |
+| [docs/design/accessibilite.md](docs/design/accessibilite.md) | Ce qui a été vérifié en accessibilité, comment, et les écarts assumés |
+| [docs/design/captures/](docs/design/captures/) | Captures de référence de chaque écran, en clair et en sombre |
 | [docs/features/](docs/features/) | Fiches des fonctionnalités, au fil du développement : [sources de données](docs/features/donnees.md), [backtest du mélange](docs/features/backtest.md) |
 
 ## Installation

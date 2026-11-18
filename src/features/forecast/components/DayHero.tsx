@@ -33,7 +33,9 @@ export function DayHero({ day }: DayHeroProps) {
             {formatTemperature(day.min)}
           </Text>
         </View>
-        {day.condition === null ? null : <ConditionBadge condition={day.condition} size="medium" />}
+        {day.condition === null ? null : (
+          <ConditionBadge condition={day.condition} size="medium" decorative />
+        )}
       </View>
       <View>
         <Text variant="title" color="onHero">
@@ -53,8 +55,9 @@ const useStyles = makeStyles((theme) => ({
   spread: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   temperatures: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'baseline',
-    gap: theme.spacing.block,
+    columnGap: theme.spacing.block,
     flexShrink: 1,
   },
 }));
