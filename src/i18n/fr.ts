@@ -90,11 +90,48 @@ export const fr = {
     explanation: (city: string) =>
       `Plus un modèle s’est trompé récemment à ${city}, moins il pèse. Les poids sont recalculés à chaque mise à jour, à partir des mesures de la station.`,
   },
+  /** Écran « Fiabilité ». */
+  reliability: {
+    title: 'Fiabilité',
+    back: 'Retour',
+    heroCaption: (days: number) =>
+      `Erreur moyenne des prévisions faites la veille, sur ${days} jours`,
+    /** Le mélange face au meilleur modèle seul : dit tel quel, dans les trois cas. */
+    better: (error: string, model: string) =>
+      `contre ${error} pour le meilleur modèle seul (${model})`,
+    equal: (error: string, model: string) =>
+      `à égalité avec le meilleur modèle seul (${model}, ${error})`,
+    worse: (error: string, model: string) =>
+      `Sur cette période, la prévision combinée fait moins bien que ${model} seul (${error}).`,
+    noBest: 'Aucun modèle seul n’a pu être noté sur cette période.',
+    rain: (correct: number, count: number) => `Pluie : ${correct} jours sur ${count}`,
+    rainDetail: 'bien annoncés',
+    daysTitle: '7 derniers jours',
+    daysCaption: 'Température maximale prévue la veille',
+    forecast: 'Prévu',
+    observed: 'Observé',
+    gap: 'Écart',
+    spokenDay: (day: string, forecast: string, observed: string, gap: string) =>
+      `${day}, prévu ${forecast}, observé ${observed}, écart ${gap}`,
+    largeGap: 'écart important',
+    leadsTitle: 'Erreur selon l’échéance',
+    leadsCaption: 'température',
+    lead: (days: number) => (days === 1 ? '1 jour avant' : `${days} jours avant`),
+    spokenLead: (lead: string, error: string) =>
+      `prévisions faites ${lead}, erreur moyenne ${error}`,
+    insufficientTitle: 'Pas encore assez de recul',
+    insufficient: (hours: number) =>
+      hours === 0
+        ? 'Aucune prévision n’a encore pu être comparée à ce qui a été mesuré. Les premiers scores apparaîtront après une semaine.'
+        : `Seulement ${hours} heures de prévisions ont été comparées aux mesures. Les scores apparaîtront après une semaine : avant, une moyenne ne voudrait rien dire.`,
+    loading: 'Chargement des scores…',
+    unavailable: 'Les scores n’ont pas pu être chargés.',
+    period: (from: string, to: string) => `Scores du ${from} au ${to}`,
+  },
   /** Écrans qui ne sont pas encore écrits : ils disent qu'ils arrivent, et ramènent à l'accueil. */
   pending: {
     back: 'Retour',
     body: 'Cet écran arrive bientôt.',
-    reliability: 'Fiabilité',
     about: 'À propos des données',
   },
   /** Écran de développement : il n'existe pas dans l'app distribuée. */

@@ -18,4 +18,5 @@ Chaque fonctionnalité notable a sa fiche ici : comportement, données, écrans,
 | [detail-d-un-jour.md](detail-d-un-jour.md) | Détail d'un jour : bloc du jour, heure par heure, chiffres clés, carte de désaccord entre modèles |
 | [theme.md](theme.md) | Thème : Système, Clair ou Sombre, mémorisé ; le menu, les barres système, la limite de l'écran de démarrage |
 | [ecran-les-modeles.md](ecran-les-modeles.md) | Écran « Les modèles » : prévision combinée, valeur et poids de chaque modèle, erreur récente, modèle absent ou hors de portée |
+| [ecran-fiabilite.md](ecran-fiabilite.md) | Écran « Fiabilité » : erreur du mélange face au meilleur modèle, prévu contre observé, erreur selon l'échéance, historique insuffisant |
 | [donnees.md](donnees.md) | Sources de données : modèles, points de prévision, variables, historique, observations, attributions |

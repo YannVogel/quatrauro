@@ -21,3 +21,12 @@ export const MAX_TEMPERATURE_DISAGREEMENT = 2;
 
 /** Heure de Paris à laquelle l'écran « Les modèles » compare les modèles : l'après-midi. */
 export const MODELS_REFERENCE_HOUR = 15;
+
+/**
+ * En dessous de ce nombre d'heures vérifiées, l'écran « Fiabilité » n'affiche pas de score :
+ * une semaine de prévisions, c'est le minimum pour qu'une moyenne veuille dire quelque chose.
+ */
+export const MIN_VERIFIED_HOURS = 7 * 24;
+
+/** Écart, en °C, à partir duquel un jour « prévu contre observé » est signalé. C'est la tolérance d'une prévision tenue. */
+export const LARGE_GAP_DEGREES = 2;

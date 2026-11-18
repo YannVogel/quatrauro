@@ -17,6 +17,7 @@ import {
   Moon,
   Sun,
   SunMoon,
+  TriangleAlert,
   Wind,
 } from 'lucide-react-native';
 
@@ -38,6 +39,8 @@ export const icons = {
   theme: SunMoon,
   /** Le choix en cours, dans un menu. */
   check: Check,
+  /** Attire l'œil sur une valeur à remarquer, sans compter sur la couleur. */
+  alert: TriangleAlert,
 } as const;
 
 export type IconName = keyof typeof icons;
