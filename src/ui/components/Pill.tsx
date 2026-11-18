@@ -30,7 +30,8 @@ export function Pill({ label, detail }: PillProps) {
 }
 
 const useStyles = makeStyles((theme) => ({
-  row: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.item },
+  // Avec une grande police, le texte qui suit passe sous la pastille plutôt que de s'écraser.
+  row: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: theme.spacing.item },
   pill: {
     backgroundColor: theme.colors.sun,
     borderRadius: theme.radii.pill,
@@ -38,5 +39,5 @@ const useStyles = makeStyles((theme) => ({
     paddingHorizontal: 14,
   },
   // Le texte qui suit peut être long : il passe à la ligne plutôt que de pousser la pastille.
-  detail: { flexShrink: 1 },
+  detail: { flexShrink: 1, minWidth: 96 },
 }));

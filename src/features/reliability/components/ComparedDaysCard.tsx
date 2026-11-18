@@ -1,24 +1,39 @@
-import { View, useWindowDimensions } from 'react-native';
+import { View } from 'react-native';
 
 import { strings } from '@/i18n';
 import { formatNumber, formatTemperature } from '@/lib/format';
-import { Card, Icon, Text, makeStyles } from '@/ui';
+import { Card, Icon, Text, makeStyles, useTextScale } from '@/ui';
 
 import type { ComparedDay } from '../reliability';
 
 type ComparedDaysCardProps = { readonly days: readonly ComparedDay[] };
 
-/** Largeurs des colonnes de chiffres à la taille de police normale. */
-const VALUE_WIDTH = 60;
-const GAP_WIDTH = 72;
+/**
+ * Largeurs des colonnes de chiffres à la taille de police normale. Au plus juste : à 130 %, le
+ * nom du jour doit garder sa place (« Dim. 15 »).
+ */
+const VALUE_WIDTH = 52;
+const GAP_WIDTH = 60;
 
 const spokenDegrees = (value: number | null): string =>
   value === null ? strings.common.unavailable : strings.spoken.degrees(formatNumber(value, 1));
 
+/** Ce que dit la ligne d'un jour : « dimanche 15, prévu…, observé…, écart…, écart important ». */
+function spokenDay(day: ComparedDay): string {
+  const { reliability } = strings;
+  const line = reliability.spokenDay(
+    day.spokenLabel,
+    spokenDegrees(day.forecast),
+    spokenDegrees(day.observed),
+    spokenDegrees(day.gap),
+  );
+  return day.isLarge ? `${line}, ${reliability.largeGap}` : line;
+}
+
 /** Prévu la veille contre observé, jour par jour. Un écart important porte une icône, pas seulement une couleur. */
 export function ComparedDaysCard({ days }: ComparedDaysCardProps) {
   const styles = useStyles();
-  const { fontScale } = useWindowDimensions();
+  const { fontScale, isLargeText } = useTextScale();
   const { reliability } = strings;
   const value = { width: VALUE_WIDTH * fontScale };
   const gap = { width: GAP_WIDTH * fontScale };
@@ -33,62 +48,72 @@ export function ComparedDaysCard({ days }: ComparedDaysCardProps) {
           {reliability.daysCaption}
         </Text>
       </View>
-      <View>
-        <View
-          style={styles.row}
-          accessibilityElementsHidden
-          importantForAccessibility="no-hide-descendants"
-        >
-          <View style={styles.day} />
-          <Text variant="caption" color="textMuted" style={[styles.number, value]}>
-            {reliability.forecast}
-          </Text>
-          <Text variant="caption" color="textMuted" style={[styles.number, value]}>
-            {reliability.observed}
-          </Text>
-          <Text variant="caption" color="textMuted" style={[styles.number, gap]}>
-            {reliability.gap}
-          </Text>
-        </View>
-        {days.map((day) => (
-          <View
-            key={day.date}
-            accessible
-            accessibilityLabel={[
-              reliability.spokenDay(
-                day.spokenLabel,
-                spokenDegrees(day.forecast),
-                spokenDegrees(day.observed),
-                spokenDegrees(day.gap),
-              ),
-              day.isLarge ? reliability.largeGap : null,
-            ]
-              .filter((part) => part !== null)
-              .join(', ')}
-            style={styles.row}
-          >
-            <Text variant="bodyStrong" numberOfLines={1} style={styles.day}>
-              {day.label}
-            </Text>
-            <Text numberOfLines={1} style={[styles.number, value]}>
-              {formatTemperature(day.forecast, 1)}
-            </Text>
-            <Text numberOfLines={1} style={[styles.number, value]}>
-              {formatTemperature(day.observed, 1)}
-            </Text>
-            <View style={[styles.gap, gap]}>
-              {day.isLarge ? <Icon name="alert" size={16} /> : null}
-              <Text
-                variant={day.isLarge ? 'bodyStrong' : 'body'}
-                color={day.isLarge ? 'text' : 'textMuted'}
-                numberOfLines={1}
-              >
-                {formatTemperature(day.gap, 1)}
-              </Text>
+      {isLargeText ? (
+        // Trois colonnes de chiffres ne tiennent plus : chaque jour s'écrit sur ses propres lignes.
+        <View style={styles.stack}>
+          {days.map((day) => (
+            <View key={day.date} accessible accessibilityLabel={spokenDay(day)}>
+              <Text variant="bodyStrong">{day.label}</Text>
+              <View style={styles.pairs}>
+                <Text>
+                  {reliability.labelled(reliability.forecast, formatTemperature(day.forecast, 1))}
+                </Text>
+                <Text>
+                  {reliability.labelled(reliability.observed, formatTemperature(day.observed, 1))}
+                </Text>
+                <View style={styles.gap}>
+                  {day.isLarge ? <Icon name="alert" size={16} /> : null}
+                  <Text variant={day.isLarge ? 'bodyStrong' : 'body'}>
+                    {reliability.labelled(reliability.gap, formatTemperature(day.gap, 1))}
+                  </Text>
+                </View>
+              </View>
             </View>
+          ))}
+        </View>
+      ) : (
+        <View>
+          <View
+            style={styles.row}
+            accessibilityElementsHidden
+            importantForAccessibility="no-hide-descendants"
+          >
+            <View style={styles.day} />
+            <Text variant="caption" color="textMuted" style={[styles.number, value]}>
+              {reliability.forecast}
+            </Text>
+            <Text variant="caption" color="textMuted" style={[styles.number, value]}>
+              {reliability.observed}
+            </Text>
+            <Text variant="caption" color="textMuted" style={[styles.number, gap]}>
+              {reliability.gap}
+            </Text>
           </View>
-        ))}
-      </View>
+          {days.map((day) => (
+            <View key={day.date} accessible accessibilityLabel={spokenDay(day)} style={styles.row}>
+              <Text variant="bodyStrong" numberOfLines={1} style={styles.day}>
+                {day.label}
+              </Text>
+              <Text numberOfLines={1} style={[styles.number, value]}>
+                {formatTemperature(day.forecast, 1)}
+              </Text>
+              <Text numberOfLines={1} style={[styles.number, value]}>
+                {formatTemperature(day.observed, 1)}
+              </Text>
+              <View style={[styles.gap, gap]}>
+                {day.isLarge ? <Icon name="alert" size={16} /> : null}
+                <Text
+                  variant={day.isLarge ? 'bodyStrong' : 'body'}
+                  color={day.isLarge ? 'text' : 'textMuted'}
+                  numberOfLines={1}
+                >
+                  {formatTemperature(day.gap, 1)}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      )}
     </Card>
   );
 }
@@ -98,4 +123,6 @@ const useStyles = makeStyles((theme) => ({
   day: { flex: 1 },
   number: { textAlign: 'right' },
   gap: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 4 },
+  stack: { gap: theme.spacing.block },
+  pairs: { flexDirection: 'row', flexWrap: 'wrap', columnGap: theme.spacing.block },
 }));

@@ -16,12 +16,21 @@ type RangeBarProps = {
    * Sans cette prop, elle lit « de 9 à 16 degrés ».
    */
   readonly accessibilityLabel?: string;
+  /** Vrai quand la ligne qui contient la barre dit déjà sa valeur : les lecteurs d'écran l'ignorent. */
+  readonly decorative?: boolean;
 };
 
 const clamp = (ratio: number): number => Math.min(Math.max(ratio, 0), 1);
 
 /** Barre d'amplitude min–max, placée sur une échelle commune à la semaine. */
-export function RangeBar({ min, max, scaleMin, scaleMax, accessibilityLabel }: RangeBarProps) {
+export function RangeBar({
+  min,
+  max,
+  scaleMin,
+  scaleMax,
+  accessibilityLabel,
+  decorative = false,
+}: RangeBarProps) {
   const theme = useTheme();
   const styles = useStyles();
   const span = scaleMax - scaleMin;
@@ -34,7 +43,14 @@ export function RangeBar({ min, max, scaleMin, scaleMax, accessibilityLabel }: R
       ? strings.common.unavailable
       : strings.spoken.temperatureRange(formatNumber(min), formatNumber(max)));
   return (
-    <View accessible accessibilityRole="image" accessibilityLabel={label} style={styles.track}>
+    <View
+      accessible={!decorative}
+      accessibilityRole={decorative ? undefined : 'image'}
+      accessibilityLabel={decorative ? undefined : label}
+      accessibilityElementsHidden={decorative}
+      importantForAccessibility={decorative ? 'no-hide-descendants' : 'yes'}
+      style={styles.track}
+    >
       {isDrawable ? (
         <View
           testID="range-bar-fill"

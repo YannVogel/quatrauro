@@ -113,6 +113,8 @@ export const fr = {
     forecast: 'Prévu',
     observed: 'Observé',
     gap: 'Écart',
+    /** Avec une très grande police, chaque chiffre porte son intitulé : « Prévu 16,2° ». */
+    labelled: (label: string, value: string) => `${label} ${value}`,
     spokenDay: (day: string, forecast: string, observed: string, gap: string) =>
       `${day}, prévu ${forecast}, observé ${observed}, écart ${gap}`,
     largeGap: 'écart important',

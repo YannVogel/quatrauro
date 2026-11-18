@@ -1,5 +1,5 @@
 import { WCAG_AA, composite, contrastRatio, parseColor } from '../contrast';
-import { CONTRAST_PAIRS, colors, typography } from '../theme';
+import { CONTRAST_PAIRS, GRAPHIC_PAIRS, colors, typography } from '../theme';
 import type { ThemeName } from '../theme';
 
 const THEMES: readonly ThemeName[] = ['light', 'dark'];
@@ -27,6 +27,15 @@ describe('tokens de couleur', () => {
             : composite(palette[background], palette[over]);
         const ratio = contrastRatio(parseColor(palette[text]), surface);
         expect(ratio).toBeGreaterThanOrEqual(large ? WCAG_AA.largeText : WCAG_AA.normalText);
+      },
+    );
+
+    it.each(GRAPHIC_PAIRS)(
+      'la forme $shape se détache du fond $background (3:1)',
+      ({ shape, background }) => {
+        const palette = colors[theme];
+        const ratio = contrastRatio(parseColor(palette[shape]), parseColor(palette[background]));
+        expect(ratio).toBeGreaterThanOrEqual(WCAG_AA.graphics);
       },
     );
   });

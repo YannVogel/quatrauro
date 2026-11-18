@@ -164,10 +164,11 @@ describe('ScreenHeader', () => {
     expect(screen.getAllByRole('button')).toHaveLength(1);
   });
 
-  it('garde un titre long sur une ligne', async () => {
+  it('laisse deux lignes à un titre long, pas plus', async () => {
+    // « Vendredi 20 novembre » ne tient pas sur une ligne avec une grande police.
     const title = 'Un titre vraiment beaucoup trop long pour tenir sur une seule ligne';
     await renderWithTheme(<ScreenHeader title={title} back={back} />);
-    expect(screen.getByRole('header', { name: title })).toHaveProp('numberOfLines', 1);
+    expect(screen.getByRole('header', { name: title })).toHaveProp('numberOfLines', 2);
   });
 });
 

@@ -103,7 +103,7 @@ export function DisagreementCard({ disagreement }: DisagreementCardProps) {
                 max={row.bar.max}
                 scaleMin={scale.min}
                 scaleMax={scale.max}
-                accessibilityLabel={row.spoken}
+                decorative
               />
             </View>
             <Text

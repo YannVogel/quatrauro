@@ -15,6 +15,8 @@ type ConditionBadgeProps = {
   readonly isNight?: boolean;
   /** `large` à l'accueil, `medium` sur le détail d'un jour. */
   readonly size?: 'large' | 'medium';
+  /** Vrai quand le nom de la condition est écrit à côté : les lecteurs d'écran ignorent le rond. */
+  readonly decorative?: boolean;
 };
 
 /** Rond coloré qui porte l'icône de la condition : jaune quand le soleil est visible, pâle sinon. */
@@ -22,6 +24,7 @@ export function ConditionBadge({
   condition,
   isNight = false,
   size = 'large',
+  decorative = false,
 }: ConditionBadgeProps) {
   const theme = useTheme();
   const styles = useStyles();
@@ -43,7 +46,7 @@ export function ConditionBadge({
         name={appearance.icon}
         size={Math.round(diameter * ICON_RATIO)}
         color="onSun"
-        accessibilityLabel={strings.conditions[condition]}
+        accessibilityLabel={decorative ? undefined : strings.conditions[condition]}
       />
     </View>
   );

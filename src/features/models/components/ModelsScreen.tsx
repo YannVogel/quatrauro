@@ -151,7 +151,12 @@ const useStyles = makeStyles((theme) => ({
   screen: { flex: 1, backgroundColor: theme.colors.background },
   content: { flexGrow: 1, gap: theme.spacing.block, padding: theme.spacing.screen },
   centered: { textAlign: 'center' },
-  combined: { flexDirection: 'row', alignItems: 'baseline', gap: theme.spacing.block },
+  combined: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'baseline',
+    columnGap: theme.spacing.block,
+  },
   combinedLabel: { flexShrink: 1 },
   cardHeader: { gap: 2 },
 }));

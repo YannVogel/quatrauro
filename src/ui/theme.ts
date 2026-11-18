@@ -218,3 +218,18 @@ export const CONTRAST_PAIRS: readonly ContrastPair[] = [
   // Ville sélectionnée dans le sélecteur : texte sombre sur fond blanc.
   { text: 'onSun', background: 'onHero' },
 ];
+
+/**
+ * Couples forme / fond des graphiques qui portent une information : barres de poids, d'erreur et
+ * d'amplitude, icônes des conditions et des états. Un test vérifie 3:1 au moins (WCAG 1.4.11).
+ */
+export type GraphicPair = { readonly shape: ColorToken; readonly background: ColorToken };
+
+export const GRAPHIC_PAIRS: readonly GraphicPair[] = [
+  { shape: 'bar', background: 'track' },
+  { shape: 'bar', background: 'card' },
+  { shape: 'onSun', background: 'sun' },
+  { shape: 'onSun', background: 'pale' },
+  { shape: 'text', background: 'card' },
+  { shape: 'textMuted', background: 'card' },
+];
