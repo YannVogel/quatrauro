@@ -16,4 +16,5 @@ Chaque fonctionnalité notable a sa fiche ici : comportement, données, écrans,
 | [fraicheur-et-etats.md](fraicheur-et-etats.md) | Heure de mise à jour, prévision ancienne, heures et jours à venir, états de chargement et état vide |
 | [accueil.md](accueil.md) | Accueil d'une ville : ce qu'il montre, ses règles, ses états, la navigation, l'accessibilité |
 | [detail-d-un-jour.md](detail-d-un-jour.md) | Détail d'un jour : bloc du jour, heure par heure, chiffres clés, carte de désaccord entre modèles |
+| [theme.md](theme.md) | Thème : Système, Clair ou Sombre, mémorisé ; le menu, les barres système, la limite de l'écran de démarrage |
 | [donnees.md](donnees.md) | Sources de données : modèles, points de prévision, variables, historique, observations, attributions |

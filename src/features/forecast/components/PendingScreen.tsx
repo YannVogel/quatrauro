@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { strings } from '@/i18n';
+import { useThemeSetting } from '@/lib/themePreference';
 import { ScreenHeader, Text, makeStyles } from '@/ui';
 
 type PendingScreenProps = { readonly title: string };
@@ -11,12 +12,14 @@ type PendingScreenProps = { readonly title: string };
 export function PendingScreen({ title }: PendingScreenProps) {
   const styles = useStyles();
   const router = useRouter();
+  const { openThemeMenu } = useThemeSetting();
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.content}>
         <ScreenHeader
           title={title}
           back={{ accessibilityLabel: strings.pending.back, onPress: () => router.back() }}
+          theme={{ accessibilityLabel: strings.theme.open, onPress: openThemeMenu }}
         />
         <Text color="textMuted" style={styles.centered}>
           {strings.pending.body}

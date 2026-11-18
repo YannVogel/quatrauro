@@ -6,6 +6,7 @@ import { strings } from '@/i18n';
 import { useCurrentCity } from '@/lib/currentCity';
 import { formatMillimetres, formatPercent, formatSpeed, formatTemperature } from '@/lib/format';
 import { useNow } from '@/lib/now';
+import { useThemeSetting } from '@/lib/themePreference';
 import { Card, HourlyChart, ScreenHeader, StatTile, Text, makeStyles } from '@/ui';
 
 import { dayContent } from '../day';
@@ -34,6 +35,7 @@ export function DayScreen({ date }: DayScreenProps) {
   const router = useRouter();
   const now = useNow();
   const { city } = useCurrentCity();
+  const { openThemeMenu } = useThemeSetting();
   const view = forecastView(useForecast(city.id), now);
   const isDate = date !== undefined && DATE_FORMAT.test(date);
   const day = view.status === 'ready' && isDate ? dayContent(view.forecast, date, now) : null;
@@ -46,6 +48,7 @@ export function DayScreen({ date }: DayScreenProps) {
           title={day?.title ?? (isDate ? longDayOf(date) : text.goneTitle)}
           subtitle={city.name}
           back={{ accessibilityLabel: text.back, onPress: () => router.back() }}
+          theme={{ accessibilityLabel: strings.theme.open, onPress: openThemeMenu }}
         />
 
         {view.status === 'loading' ? (

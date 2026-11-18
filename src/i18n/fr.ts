@@ -28,6 +28,18 @@ export const fr = {
       catalog: 'Catalogue des composants',
     },
   },
+  /** Réglage du thème. */
+  theme: {
+    open: 'Choisir le thème',
+    title: 'Thème',
+    close: 'Fermer',
+    options: {
+      system: 'Système',
+      light: 'Clair',
+      dark: 'Sombre',
+    },
+    systemHint: 'Suit le réglage du téléphone',
+  },
   /** Détail d'un jour. */
   day: {
     back: 'Retour à l’accueil',
@@ -81,6 +93,7 @@ export const fr = {
     notes: {
       missing: 'Valeurs absentes',
       fewColumns: 'Trois colonnes',
+      themeMenu: 'Menu du thème (il ne change pas le thème de l’app)',
       manyCities: 'Quatre villes : la rangée défile',
     },
     stats: { wind: 'Vent', rain: 'Cumul', humidity: 'Humidité', feelsLike: 'Ressenti' },

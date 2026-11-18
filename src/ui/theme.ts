@@ -39,6 +39,8 @@ const lightColors = {
   pale: '#DCE8F7',
   /** Fond du sélecteur de ville et du bouton de thème dans le bloc d'état. */
   heroOverlay: 'rgba(0, 0, 0, 0.16)',
+  /** Voile posé sur l'écran derrière un menu. */
+  scrim: 'rgba(11, 27, 58, 0.5)',
 };
 
 export type ColorToken = keyof typeof lightColors;
@@ -62,6 +64,7 @@ const darkColors: Colors = {
   onSun: '#0B1B3A',
   pale: '#DCE8F7',
   heroOverlay: 'rgba(255, 255, 255, 0.16)',
+  scrim: 'rgba(0, 0, 0, 0.6)',
 };
 
 export const colors: Readonly<Record<ThemeName, Colors>> = { light: lightColors, dark: darkColors };

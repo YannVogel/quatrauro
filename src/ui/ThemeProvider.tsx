@@ -12,7 +12,7 @@ export type ThemePreference = 'system' | ThemeName;
 const ThemeContext = createContext<Theme>(themes.light);
 
 type ThemeProviderProps = {
-  /** Seule la valeur « system » est branchée dans l'app ; le réglage manuel arrive avec M2-06. */
+  /** Le réglage choisi dans l'app (`src/lib/themePreference.tsx`) ; « system » suit le téléphone. */
   readonly preference?: ThemePreference;
   readonly children: ReactNode;
 };

@@ -4,6 +4,7 @@
 
 import {
   ArrowLeft,
+  Check,
   ChevronRight,
   Cloud,
   CloudLightning,
@@ -35,6 +36,8 @@ export const icons = {
   /** « Ouvrir » : au bout d'une ligne qui mène à un autre écran. */
   forward: ChevronRight,
   theme: SunMoon,
+  /** Le choix en cours, dans un menu. */
+  check: Check,
 } as const;
 
 export type IconName = keyof typeof icons;
