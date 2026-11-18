@@ -2,7 +2,7 @@
 
 Quatrauro est une app météo personnelle (Expo / React Native, Android) pour Toulon et Nice. Elle croise plusieurs modèles de prévision, corrige leurs erreurs locales à partir des observations et affiche un indice de fiabilité. Il n'y a pas de serveur : un pipeline TypeScript tourne dans GitHub Actions et publie des JSON statiques que l'app lit. Le cadrage de référence est [docs/QUATRAURO_PROJECT_BRIEF.md](docs/QUATRAURO_PROJECT_BRIEF.md) ; les décisions prises depuis vivent dans les issues GitHub (sections « ⚠️ Point tranché ») et dans [docs/adr/](docs/adr/). En cas de conflit avec le brief, l'issue prime. L'architecture (couches, flux des données, mélange, hors ligne) est décrite dans [ARCHITECTURE.md](ARCHITECTURE.md).
 
-> **État du repo** (à tenir à jour à chaque milestone) : **socle, design system et pipeline en place.** Le projet Expo compile, se teste et affiche un écran provisoire ; le design system Riviera et son catalogue sont là ; la CI tourne sur chaque PR ; les deux spikes sont terminés (ADR 0002 et 0003) et le backtest a donné son feu vert ([rapport](docs/features/backtest.md)). Le pipeline sait faire un passage complet en local (`npm run pipeline`) et s'amorcer sur l'historique (`npm run pipeline:bootstrap`). Le workflow planifié existe mais il est **désactivé** : l'activer est un geste de Yann (README, « Exploitation du pipeline »). Restent à écrire : les écrans (M2 à M4).
+> **État du repo** (à tenir à jour à chaque milestone) : **socle, design system, pipeline et écrans en place.** L'app a ses cinq écrans (accueil, détail d'un jour, « Les modèles », « Fiabilité », « À propos des données ») ; le design system Riviera et son catalogue sont là ; la CI tourne sur chaque PR ; les deux spikes sont terminés (ADR 0002 et 0003) et le backtest a donné son feu vert ([rapport](docs/features/backtest.md)). Le pipeline sait faire un passage complet en local (`npm run pipeline`) et s'amorcer sur l'historique (`npm run pipeline:bootstrap`). Le workflow planifié existe mais il est **désactivé** : l'activer est un geste de Yann (README, « Exploitation du pipeline »). Reste la finition (M4) : états vides et erreurs, passe d'accessibilité.
 
 ## Ordre de travail
 
@@ -57,8 +57,7 @@ Ce qui existe aujourd'hui :
 ```
 app/                        # routes Expo Router (uniquement des écrans et des layouts)
   _layout.tsx  index.tsx  dev/catalog.tsx
-  day/[date].tsx  models.tsx  reliability.tsx              # détail d'un jour, « Les modèles », « Fiabilité »
-  about.tsx                                                # provisoire tant que son écran n'est pas écrit
+  day/[date].tsx  models.tsx  reliability.tsx  about.tsx   # détail d'un jour, « Les modèles », « Fiabilité », « À propos des données »
 __tests__/                  # tests qui rendent l'app entière (renderRouter sur app/)
 src/
   features/forecast/        # components/ (accueil et ses pièces, bandeau, état vide), hooks/ (useForecast, useVerification),
@@ -66,6 +65,7 @@ src/
                             # home.ts (contenu de l'accueil), day.ts (contenu du détail d'un jour), index.ts
   features/models/          # écran « Les modèles » : models.ts (contenu), components/
   features/reliability/     # écran « Fiabilité » : reliability.ts (contenu), components/
+  features/about/           # écran « À propos des données » : about.ts (contenu), links.ts (pages ouvertes dans le navigateur), components/
   features/catalog/         # catalogue des composants (développement seulement) et ses données fictives
   ui/                       # theme.ts (tokens), ThemeProvider, Text, Icon, icons.ts, conditions.ts, contrast.ts
     components/             # les composants Riviera (HeroBlock, Card, DayRow, HourlyChart…), exportés par @/ui
@@ -74,7 +74,7 @@ src/
                             # env.ts (adresse des fichiers publiés), data.ts (lecture et validation), queryClient.tsx (cache)
                             # config.ts (réglages de l'app), now.ts (l'instant présent, pour ne rien montrer de passé)
                             # currentCity.tsx (la ville que l'app montre), preferences.ts (réglages gardés sur l'appareil)
-                            # themePreference.tsx (réglage du thème et son menu)
+                            # themePreference.tsx (réglage du thème et son menu), appVersion.ts (version de l'app)
                             # __fixtures__/published/ : vrais fichiers publiés, pour les tests ; testing/ : faux réseau
   i18n/                     # fr.ts : toutes les chaînes UI ; index.ts : accès typé (`strings`)
 shared/                     # ne dépend de rien : ni Node, ni React Native, ni le reste du repo
@@ -112,11 +112,11 @@ app.config.ts               # identité de l'app et configuration native
 eas.json                    # profils de build (development, preview) et canal de mise à jour
 ```
 
-Ce qui s'y ajoutera, là et pas ailleurs :
+Une nouvelle fonctionnalité s'ajoute là, et pas ailleurs :
 
 ```
-src/features/<feature>/     # forecast (accueil, détail d'un jour), models, reliability, about
-  components/ hooks/ api/ __tests__/ index.ts
+src/features/<feature>/     # comme forecast, models, reliability, about
+  components/ hooks/ __tests__/ index.ts
 ```
 
 - Les dépendances sont unidirectionnelles : `app/` → `features/` → `ui/` + `lib/` + `shared/` ; `pipeline/` → `shared/`. `shared/` n'importe rien du reste.
@@ -159,7 +159,7 @@ Le projet est sur **Expo SDK 58** (React Native 0.88, React 19.3, TypeScript 6) 
 - **Largeurs fixes et police agrandie** : une colonne de largeur fixe qui contient du texte multiplie sa largeur par `fontScale` (`useWindowDimensions`), sinon le texte passe à la ligne dès que l'utilisateur agrandit la police.
 - **Le temps qui passe** : un écran ne lit jamais `new Date()` lui-même. Il prend l'instant de `useNow()` (`src/lib/now.ts`) et le passe aux fonctions pures de `freshness.ts`, qui ne montrent ni heure passée ni prévision ancienne sans le dire. Pour figer l'horloge dans un test de l'app : `jest.useFakeTimers({ now })` avant `renderRouter`.
 - **`waitFor` ne reçoit jamais une fonction asynchrone** dans un test de l'app entière (horloge figée) : cela dérègle les tests suivants du même fichier, qui échouent alors sans rapport apparent. Lire le stockage directement (`expect(await AsyncStorage.getItem(…))`), ou attendre un élément à l'écran.
-- **Réseau dans l'app** : un seul endroit, `src/lib/data.ts`, et seulement vers les fichiers publiés (testé). Les tests servent ces fichiers avec `servePublished` (`src/lib/testing/published.ts`).
+- **Réseau dans l'app** : un seul endroit, `src/lib/data.ts`, et seulement vers les fichiers publiés (testé). Une page à lire s'ouvre dans le navigateur (`Linking.openURL`), jamais dans l'app. Les tests servent ces fichiers avec `servePublished` (`src/lib/testing/published.ts`).
 
 - Les dossiers `ios/` et `android/` sont générés (Continuous Native Generation) et ignorés par git : configurer le natif dans `app.config.ts`. Après l'ajout d'une dépendance native ou d'un plugin, régénérer avec `npx expo prebuild --clean --platform android` avant `npm run android`.
 - `app.config.ts` importe d'autres fichiers TypeScript grâce à `tsx/cjs` (première ligne du fichier) : ne pas la retirer.

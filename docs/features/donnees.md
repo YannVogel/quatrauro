@@ -231,7 +231,7 @@ Si les fichiers de Météo-France devenaient inaccessibles, la référence de re
 
 - **Prévisions** : « Données météo par [Open-Meteo.com](https://open-meteo.com/) », licence [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), avec la mention que les données sont corrigées et combinées par Quatrauro.
 - **Modèles** : Météo-France (AROME, ARPEGE), ECMWF (IFS), Deutscher Wetterdienst (ICON), NOAA NCEP (GFS).
-- **Observations** : « Source : Météo-France », [Licence Ouverte 2.0](https://www.etalab.gouv.fr/licence-ouverte-open-licence).
+- **Observations** : « Source : Météo-France », [Licence Ouverte 2.0](https://www.data.gouv.fr/pages/legal/licences/etalab-2.0) (l'ancienne adresse, sur etalab.gouv.fr, ne mène plus à la licence depuis novembre 2026).
 
 ## Fixtures
 

@@ -128,11 +128,52 @@ export const fr = {
     unavailable: 'Les scores n’ont pas pu être chargés.',
     period: (from: string, to: string) => `Scores du ${from} au ${to}`,
   },
-  /** Écrans qui ne sont pas encore écrits : ils disent qu'ils arrivent, et ramènent à l'accueil. */
-  pending: {
-    back: 'Retour',
-    body: 'Cet écran arrive bientôt.',
-    about: 'À propos des données',
+  /** Écran « À propos des données ». */
+  about: {
+    title: 'À propos des données',
+    back: 'Retour à l’accueil',
+    principleTitle: 'Le principe',
+    principle: [
+      'Quatrauro lit les prévisions de plusieurs modèles météo et les compare, chaque jour, à ce qui a été mesuré à la station de la ville.',
+      'Il corrige l’erreur habituelle de chaque modèle à cet endroit, puis combine les modèles en donnant plus de poids à ceux qui se sont le moins trompés récemment.',
+      'L’indice de fiabilité n’est pas une note : c’est la part des jours où, dans une situation semblable, la prévision s’est vérifiée. Semblable veut dire à la même échéance, et avec le même désaccord entre les modèles.',
+      'Une prévision compte comme vérifiée quand les températures minimale et maximale sont justes à 2 °C près, et que la pluie a été bien annoncée.',
+    ],
+    sourcesTitle: 'Sources',
+    forecastsTitle: 'Prévisions',
+    /** La mention que demande Open-Meteo, à côté de ses données. */
+    openMeteoCredit: 'Données météo par Open-Meteo.com',
+    openMeteoChanges:
+      'Quatrauro corrige et combine ces données : ce que l’app affiche n’est pas la prévision d’Open-Meteo.',
+    ccBy: 'Licence CC BY 4.0',
+    modelsTitle: 'Modèles',
+    /** « Météo-France : AROME, ARPEGE ». */
+    modelSource: (provider: string, models: readonly string[]) =>
+      `${provider} : ${models.join(', ')}`,
+    observationsTitle: 'Observations',
+    /** La mention que demande la Licence Ouverte. */
+    observationsCredit: 'Source : Météo-France',
+    observationsDataset:
+      'Données climatologiques de base, au pas horaire, mises à jour chaque jour.',
+    station: (city: string, station: string, id: string) =>
+      `${city} : station ${station} (n° ${id})`,
+    stationNote:
+      'La prévision corrigée décrit le temps à la station, pas exactement au centre-ville.',
+    openLicence: 'Licence Ouverte 2.0',
+    limitsTitle: 'Limites',
+    personalTool:
+      'Quatrauro est un outil personnel, pas un service météo officiel. Ses prévisions sont indicatives.',
+    coverage: (cities: string) => `Il ne couvre que ${cities}.`,
+    notOfficial:
+      'Il ne remplace pas les vigilances de Météo-France : en cas de risque, c’est la carte de vigilance qui fait foi.',
+    vigilance: 'Carte de vigilance de Météo-France',
+    opensBrowser: 'Ouvre le navigateur',
+    linkFailed: (url: string) => `Cette page n’a pas pu être ouverte : ${url}`,
+    version: (version: string) => `Version ${version}`,
+    versionUnknown: 'Version indisponible',
+    /** « Dernier calcul pour Toulon : mardi 17 novembre à 22 h 27 ». */
+    computed: (city: string, when: string) => `Dernier calcul pour ${city} : ${when}`,
+    computedUnknown: 'Dernier calcul : indisponible',
   },
   /** Écran de développement : il n'existe pas dans l'app distribuée. */
   catalog: {
