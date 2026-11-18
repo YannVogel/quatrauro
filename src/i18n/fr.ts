@@ -62,11 +62,38 @@ export const fr = {
     goneTitle: 'Ce jour n’est plus dans la prévision',
     gone: 'Il est passé, ou trop lointain. Revenez à l’accueil pour voir les jours à venir.',
   },
+  /** Écran « Les modèles ». */
+  models: {
+    title: 'Les modèles',
+    back: 'Retour',
+    daySelector: 'Jour',
+    today: 'Aujourd’hui',
+    tomorrow: 'Demain',
+    shortToday: 'Auj.',
+    shortTomorrow: 'Dem.',
+    /** « Demain, 15 h ». */
+    moment: (day: string, hour: string) => `${day}, ${hour}`,
+    combined: 'prévision combinée',
+    spread: (degrees: string) => `Écart ${degrees}`,
+    spreadDetail: 'entre le plus chaud et le plus frais',
+    listTitle: 'Ce que prévoit chaque modèle',
+    listCaption: 'Poids moyen sur la journée',
+    /** Pourquoi un modèle n'a pas de valeur, à la suite de son fournisseur. */
+    outOfRange: 'ne va pas jusque-là',
+    absent: 'absent du dernier calcul',
+    errorsTitle: 'Erreur moyenne récente',
+    /** L'échéance en heures : « demain » est à plus de 24 heures, donc entre 24 et 48 h. */
+    errorsPeriod: (lead: number, days: number) =>
+      `prévisions faites ${(lead - 1) * 24} à ${lead * 24}\u00a0h avant, sur ${days} jours`,
+    errorsBlend: 'Prévision combinée',
+    errorsNone: 'Pas encore assez de jours vérifiés pour noter les modèles.',
+    explanation: (city: string) =>
+      `Plus un modèle s’est trompé récemment à ${city}, moins il pèse. Les poids sont recalculés à chaque mise à jour, à partir des mesures de la station.`,
+  },
   /** Écrans qui ne sont pas encore écrits : ils disent qu'ils arrivent, et ramènent à l'accueil. */
   pending: {
     back: 'Retour',
     body: 'Cet écran arrive bientôt.',
-    models: 'Les modèles',
     reliability: 'Fiabilité',
     about: 'À propos des données',
   },

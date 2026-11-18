@@ -57,13 +57,14 @@ Ce qui existe aujourd'hui :
 ```
 app/                        # routes Expo Router (uniquement des écrans et des layouts)
   _layout.tsx  index.tsx  dev/catalog.tsx
-  day/[date].tsx                                           # détail d'un jour
-  models.tsx  reliability.tsx  about.tsx                   # provisoires tant que leur écran n'est pas écrit
+  day/[date].tsx  models.tsx                               # détail d'un jour, « Les modèles »
+  reliability.tsx  about.tsx                               # provisoires tant que leur écran n'est pas écrit
 __tests__/                  # tests qui rendent l'app entière (renderRouter sur app/)
 src/
   features/forecast/        # components/ (accueil et ses pièces, bandeau, état vide), hooks/ (useForecast, useVerification),
                             # freshness.ts (ce qu'un écran a le droit de montrer à un instant donné),
                             # home.ts (contenu de l'accueil), day.ts (contenu du détail d'un jour), index.ts
+  features/models/          # écran « Les modèles » : models.ts (contenu), components/
   features/catalog/         # catalogue des composants (développement seulement) et ses données fictives
   ui/                       # theme.ts (tokens), ThemeProvider, Text, Icon, icons.ts, conditions.ts, contrast.ts
     components/             # les composants Riviera (HeroBlock, Card, DayRow, HourlyChart…), exportés par @/ui
