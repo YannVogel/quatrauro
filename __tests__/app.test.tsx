@@ -300,6 +300,102 @@ describe('détail d’un jour', () => {
   });
 });
 
+describe('écran « Les modèles »', () => {
+  const { models } = strings;
+  /** Ouvre l'écran depuis la pastille de fiabilité de l'accueil, mercredi matin. */
+  async function openModels(files: Readonly<Record<string, Reply>> = allPublished) {
+    await openAt(CLEAR_MORNING, files);
+    await loaded(conditions.clear);
+    await fireEvent.press(screen.getByRole('button', { name: new RegExp(home.openModels) }));
+    await loaded(models.combined);
+  }
+
+  it('s’ouvre depuis la pastille, sur demain après-midi', async () => {
+    await openModels();
+    expect(screen).toHavePathname('/models');
+    expect(screen.getByRole('header', { name: models.title })).toBeOnTheScreen();
+    expect(screen.getByText(`Demain, 15${NBSP}h`)).toBeOnTheScreen();
+    expect(screen.getByText('16,8°')).toBeOnTheScreen();
+    expect(screen.getByText(models.spread('1,8°'))).toBeOnTheScreen();
+    expect(screen.getByRole('radio', { name: models.shortTomorrow })).toBeChecked();
+  });
+
+  it('montre chaque modèle avec son fournisseur, son poids et sa prévision', async () => {
+    await openModels();
+    expect(screen.getByLabelText(`ICON, DWD, poids 31${NBSP}%, 17,1°`)).toBeOnTheScreen();
+    expect(screen.getByLabelText(`AROME, Météo-France, poids 17${NBSP}%, 16,9°`)).toBeOnTheScreen();
+    expect(screen.getByLabelText(`GFS, NOAA, poids 8${NBSP}%, 15,6°`)).toBeOnTheScreen();
+  });
+
+  it('donne l’erreur récente du mélange et des modèles, et explique la pondération', async () => {
+    await openModels();
+    // Les scores viennent du second fichier, qui arrive un instant après la prévision.
+    await waitFor(() => expect(screen.getByTestId('model-errors')).toBeOnTheScreen());
+    const errors = within(screen.getByTestId('model-errors'));
+    expect(errors.getByRole('header', { name: models.errorsTitle })).toBeOnTheScreen();
+    // Demain après-midi est à plus de 24 heures : ce sont les prévisions faites 24 à 48 h avant.
+    expect(
+      errors.getByText(`prévisions faites 24 à 48${NBSP}h avant, sur 31 jours`),
+    ).toBeOnTheScreen();
+    expect(errors.getByLabelText(`${models.errorsBlend}, 1,1 degrés`)).toBeOnTheScreen();
+    expect(errors.getByLabelText('ICON, 1,2 degrés')).toBeOnTheScreen();
+    expect(screen.getByText(models.explanation('Toulon'))).toBeOnTheScreen();
+  });
+
+  it('change de jour : un jour lointain n’a plus que trois modèles', async () => {
+    await openModels();
+    await fireEvent.press(screen.getByRole('radio', { name: 'Dim.' }));
+
+    expect(screen.getByText(`Dimanche 22 novembre, 15${NBSP}h`)).toBeOnTheScreen();
+    expect(
+      screen.getByLabelText(
+        `AROME, Météo-France · ${models.outOfRange}, poids indisponible, indisponible`,
+      ),
+    ).toBeOnTheScreen();
+    await waitFor(() => expect(screen.getByText(models.errorsPeriod(5, 31))).toBeOnTheScreen());
+    const weights = screen
+      .getAllByLabelText(/^[A-Z]+, .* poids \d+/)
+      .map((row) => Number(/poids (\d+)/.exec(row.props.accessibilityLabel)?.[1]));
+    expect(weights).toHaveLength(3);
+    expect(weights.reduce((sum, weight) => sum + weight, 0)).toBe(100);
+  });
+
+  it('montre et explique un modèle absent du dernier calcul', async () => {
+    const toulon = published.forecast.toulon;
+    const withoutGfs = {
+      ...toulon,
+      models: toulon.models.map((model) =>
+        model.id === 'gfs' ? { ...model, available: false } : model,
+      ),
+      hourly: toulon.hourly.map((hour) => {
+        const { gfs: _gfs, ...others } = hour.models;
+        return { ...hour, models: others };
+      }),
+      daily: toulon.daily.map((day) => {
+        const { gfs: _gfs, ...weights } = day.weights;
+        return { ...day, weights };
+      }),
+    };
+    await openModels({ ...allPublished, 'forecast/toulon.json': { json: withoutGfs } });
+    expect(
+      screen.getByLabelText(`GFS, NOAA · ${models.absent}, poids indisponible, indisponible`),
+    ).toBeOnTheScreen();
+    const weights = screen
+      .getAllByLabelText(/^[A-Z]+, .* poids \d+/)
+      .map((row) => Number(/poids (\d+)/.exec(row.props.accessibilityLabel)?.[1]));
+    expect(weights).toHaveLength(4);
+    expect(weights.reduce((sum, weight) => sum + weight, 0)).toBe(100);
+  });
+
+  it('dit qu’il n’y a pas encore de scores quand rien n’a été vérifié', async () => {
+    await openModels({
+      'forecast/toulon.json': allPublished['forecast/toulon.json'] ?? { status: 404 },
+    });
+    expect(screen.getByText(models.errorsNone)).toBeOnTheScreen();
+    expect(screen.queryByTestId('model-errors')).toBeNull();
+  });
+});
+
 describe('bascule entre les villes', () => {
   it('met tout l’accueil à jour, sans chargement', async () => {
     await openAt(CLEAR_MORNING);

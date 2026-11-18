@@ -18,3 +18,6 @@ export const DAY_CHART_STEP_HOURS = 3;
  */
 export const RAIN_START_DISAGREEMENT_HOURS = 2;
 export const MAX_TEMPERATURE_DISAGREEMENT = 2;
+
+/** Heure de Paris à laquelle l'écran « Les modèles » compare les modèles : l'après-midi. */
+export const MODELS_REFERENCE_HOUR = 15;
