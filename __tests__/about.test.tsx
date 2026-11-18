@@ -130,7 +130,7 @@ describe('écran « À propos des données »', () => {
     jest.useFakeTimers({ now: new Date(NOW) });
     await renderRouter('./app');
     // Le client de l'app retente une fois, après une seconde, avant de renoncer.
-    await waitFor(() => expect(screen.getByText(states.emptyTitle)).toBeOnTheScreen(), {
+    await waitFor(() => expect(screen.getByText(states.emptyTitles.network)).toBeOnTheScreen(), {
       timeout: 5000,
     });
     await fireEvent.press(screen.getByRole('link', { name: home.links.about }));

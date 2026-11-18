@@ -55,6 +55,26 @@ describe('catalogue des composants', () => {
     }
   });
 
+  it.each(['light', 'dark'] as const)('montre chaque état non nominal, thème %s', async (theme) => {
+    await renderCatalog(theme);
+    const { states, freshness, models, reliability, catalog } = strings;
+    for (const name of Object.values(catalog.states)) {
+      expect(screen.getByText(name)).toBeOnTheScreen();
+    }
+    expect(screen.getByRole('progressbar', { name: states.loading })).toBeOnTheScreen();
+    expect(screen.getByText(freshness.refreshing)).toBeOnTheScreen();
+    expect(screen.getByText(freshness.staleTitle)).toBeOnTheScreen();
+    expect(screen.getByText(freshness.staleDetail(freshness.hours(14)))).toBeOnTheScreen();
+    expect(screen.getAllByText(states.refreshFailedTitle)).toHaveLength(2);
+    expect(screen.getByText(states.emptyTitles.network)).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: states.retry })).toBeOnTheScreen();
+    expect(screen.getByText(states.emptyTitles.version)).toBeOnTheScreen();
+    expect(screen.getByText(reliability.insufficientTitle)).toBeOnTheScreen();
+    expect(screen.getByText(models.errorsNoneTitle)).toBeOnTheScreen();
+    expect(screen.getByText(models.absent)).toBeOnTheScreen();
+    expect(screen.getByText(models.outOfRange)).toBeOnTheScreen();
+  });
+
   it('bascule de thème sans toucher au thème du système', async () => {
     await renderCatalog('light');
     const [toggle] = screen.getAllByRole('button', { name: strings.catalog.toggleTheme });

@@ -1,8 +1,8 @@
 export { DayScreen } from './components/DayScreen';
 export { EmptyState } from './components/EmptyState';
+export { FreshnessNotice } from './components/FreshnessNotice';
 export { HomeScreen } from './components/HomeScreen';
-export { StaleBanner } from './components/StaleBanner';
-export { ageLabel, forecastView } from './freshness';
+export { forecastView } from './freshness';
 export type { EmptyReason, ForecastView } from './freshness';
 export { useForecast } from './hooks/useForecast';
 export type { PublishedData } from './hooks/usePublishedFile';

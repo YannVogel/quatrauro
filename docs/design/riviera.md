@@ -108,6 +108,11 @@ Les maquettes utilisent des cibles de 44 px ; l'app applique le minimum de 48 dp
 | `StatTile` | Vignette libellé + valeur | Détail |
 | `ModelRow` | Ligne d'un modèle : nom, fournisseur, poids, valeur | Modèles |
 | `ScreenHeader` | Retour, titre et sous-titre centrés, bouton de thème | Écrans secondaires |
+| `Notice` | Bandeau d'état : icône dans un rond pâle, titre, détail | Prévision ancienne, mise à jour échouée |
+| `StateMessage` | Carte d'état centrée : icône, titre, texte, bouton éventuel | Erreur sans prévision, historique insuffisant |
+| `ActionButton` | Bouton plein : l'action qu'un état propose | « Réessayer » |
+| `IconBadge` | Rond pâle qui porte l'icône d'un état | Bandeaux, cartes d'état |
+| `Skeleton`, `SkeletonGroup`, `LoadingSkeleton` | Formes pleines d'un chargement, et l'écran qu'elles composent | Premier chargement |
 
 Chaque composant a un `accessibilityLabel` quand il porte une information graphique (une `RangeBar` s'annonce « de 9 à 16 degrés »).
 
@@ -155,7 +160,7 @@ La liste fermée des conditions est dans `shared/conditions.ts` : c'est ce que l
 - **Heure de mise à jour** : dans le bloc d'état de l'accueil, sous la date, pour être visible sans défilement.
 - **Détail d'un jour par beau temps** : la carte « début de la pluie selon les modèles » devient une carte de désaccord sur la variable la plus incertaine du jour (température maximale, vent), ou disparaît si les modèles sont d'accord.
 - **Réglage du thème** : Système, Clair, Sombre. Le bouton rond des maquettes ouvre un menu de ces trois choix (tranché dans l'issue du thème ; [fiche](../features/theme.md)). Le voile derrière le menu est le token `scrim`.
-- **États** : chargement, prévision ancienne, erreur, aucune donnée (issue M4-01).
+- **États** : chargement, rafraîchissement, prévision ancienne, erreurs, historique insuffisant, modèle absent. Dessin et textes dans la [fiche des états](etats.md).
 - **À propos des données**.
 
 ## Contenu des maquettes

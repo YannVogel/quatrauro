@@ -7,16 +7,25 @@ import { useCurrentCity } from '@/lib/currentCity';
 import { formatMillimetres, formatPercent, formatSpeed, formatTemperature } from '@/lib/format';
 import { useNow } from '@/lib/now';
 import { useThemeSetting } from '@/lib/themePreference';
-import { Card, HourlyChart, ScreenHeader, StatTile, Text, makeStyles } from '@/ui';
+import {
+  Card,
+  HourlyChart,
+  LoadingSkeleton,
+  ScreenHeader,
+  StatTile,
+  StateMessage,
+  Text,
+  makeStyles,
+} from '@/ui';
 
 import { dayContent } from '../day';
-import { ageLabel, forecastView } from '../freshness';
+import { forecastView } from '../freshness';
 import { longDayOf } from '../home';
 import { useForecast } from '../hooks/useForecast';
 import { DayHero } from './DayHero';
 import { DisagreementCard } from './DisagreementCard';
 import { EmptyState } from './EmptyState';
-import { StaleBanner } from './StaleBanner';
+import { FreshnessNotice } from './FreshnessNotice';
 
 const DATE_FORMAT = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -36,7 +45,8 @@ export function DayScreen({ date }: DayScreenProps) {
   const now = useNow();
   const { city } = useCurrentCity();
   const { openThemeMenu } = useThemeSetting();
-  const view = forecastView(useForecast(city.id), now);
+  const forecast = useForecast(city.id);
+  const view = forecastView(forecast, now);
   const isDate = date !== undefined && DATE_FORMAT.test(date);
   const day = view.status === 'ready' && isDate ? dayContent(view.forecast, date, now) : null;
   const { day: text } = strings;
@@ -51,27 +61,28 @@ export function DayScreen({ date }: DayScreenProps) {
           theme={{ accessibilityLabel: strings.theme.open, onPress: openThemeMenu }}
         />
 
-        {view.status === 'loading' ? (
-          <Text color="textMuted" style={styles.centered}>
-            {strings.states.loading}
-          </Text>
+        {view.status === 'loading' ? <LoadingSkeleton label={strings.states.loading} /> : null}
+        {view.status === 'empty' ? (
+          <EmptyState reason={view.reason} onRetry={() => void forecast.refresh()} />
         ) : null}
-        {view.status === 'empty' ? <EmptyState reason={view.reason} /> : null}
         {view.status === 'ready' && day === null ? (
-          <View style={styles.gone}>
-            <Text variant="title" accessibilityRole="header" style={styles.centered}>
-              {text.goneTitle}
-            </Text>
-            <Text color="textMuted" style={styles.centered}>
-              {text.gone}
-            </Text>
-          </View>
+          <StateMessage
+            testID="day-gone"
+            icon="dayGone"
+            title={text.goneTitle}
+            detail={text.gone}
+            action={{
+              label: text.goneAction,
+              // Ouvert par un lien direct, l'écran n'a rien derrière lui : on va à l'accueil.
+              onPress: () => (router.canGoBack() ? router.back() : router.replace('/')),
+            }}
+          />
         ) : null}
 
         {view.status === 'ready' && day !== null ? (
           <>
             <DayHero day={day} />
-            {view.isStale ? <StaleBanner age={ageLabel(view.forecast.generatedAt, now)} /> : null}
+            <FreshnessNotice view={view} now={now} />
             <Card>
               <View style={styles.cardHeader}>
                 <Text variant="section" accessibilityRole="header">
@@ -112,7 +123,6 @@ const useStyles = makeStyles((theme) => ({
   screen: { flex: 1, backgroundColor: theme.colors.background },
   content: { flexGrow: 1, gap: theme.spacing.block, padding: theme.spacing.screen },
   centered: { textAlign: 'center' },
-  gone: { gap: theme.spacing.item },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'baseline',

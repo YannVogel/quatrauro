@@ -2,7 +2,7 @@ import { View } from 'react-native';
 
 import { strings } from '@/i18n';
 import { formatNumber, formatTemperature } from '@/lib/format';
-import { Card, Text, makeStyles } from '@/ui';
+import { Card, Notice, Text, makeStyles } from '@/ui';
 
 import type { ModelErrors } from '../models';
 
@@ -14,9 +14,12 @@ export function ModelErrorsCard({ errors }: ModelErrorsCardProps) {
   const { models, spoken, common } = strings;
   if (errors === null) {
     return (
-      <Card>
-        <Text color="textMuted">{models.errorsNone}</Text>
-      </Card>
+      <Notice
+        testID="model-errors-none"
+        icon="hourglass"
+        title={models.errorsNoneTitle}
+        detail={models.errorsNone}
+      />
     );
   }
   const rows = [

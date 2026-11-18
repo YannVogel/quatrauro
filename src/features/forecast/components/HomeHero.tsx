@@ -8,6 +8,7 @@ import {
   HeroBlock,
   IconButton,
   Pill,
+  Skeleton,
   Text,
   conditionAppearance,
   makeStyles,
@@ -22,6 +23,8 @@ type HomeHeroProps = {
   readonly onSelectCity: (cityId: string) => void;
   /** Le temps qu'il fait ; `null` tant qu'il n'y a pas de prévision à montrer. */
   readonly content: HomeHeroContent | null;
+  /** Premier chargement : des formes tiennent la place du temps qu'il fait. */
+  readonly isLoading?: boolean;
   /** « Mis à jour à 22 h 27 » : toujours visible, sans avoir à faire défiler. */
   readonly updated: string | null;
   /** Ouvre « Les modèles ». */
@@ -36,6 +39,7 @@ export function HomeHero({
   cityId,
   onSelectCity,
   content,
+  isLoading = false,
   updated,
   onOpenModels,
   onOpenTheme,
@@ -65,6 +69,13 @@ export function HomeHero({
           onPress={onOpenTheme}
         />
       </View>
+      {content === null && isLoading ? (
+        <View style={styles.loading}>
+          <Skeleton surface="hero" height={84} width="45%" />
+          <Skeleton surface="hero" height={20} width="55%" />
+          <Skeleton surface="hero" height={14} width="70%" />
+        </View>
+      ) : null}
       {content === null ? null : (
         <>
           <View style={styles.spread}>
@@ -131,4 +142,5 @@ const useStyles = makeStyles((theme) => ({
   // Le chiffre rétrécit plutôt que de pousser le rond hors du bloc.
   temperature: { flexShrink: 1 },
   pill: { minHeight: theme.sizes.touchTarget, justifyContent: 'center' },
+  loading: { gap: theme.spacing.block },
 }));

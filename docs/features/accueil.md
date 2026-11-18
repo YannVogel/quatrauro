@@ -47,7 +47,7 @@ L'heure en cours, les heures et les jours à venir viennent de `forecastView` : 
 
 | État | Ce que l'écran montre |
 |---|---|
-| Chargement | Le bloc d'état avec le seul sélecteur, et « Chargement de la prévision… » |
+| Chargement | Le bloc d'état avec le sélecteur, et des formes à la place du contenu ([états](../design/etats.md)) |
 | Rien à montrer | Le bloc d'état avec le seul sélecteur, puis l'état vide et sa raison |
 | Prévision prête | Tout ce qui précède |
 | Rafraîchissement raté | La prévision reste ; une ligne sous la semaine dit pourquoi elle n'a pas pu être mise à jour |

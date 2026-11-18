@@ -280,6 +280,9 @@ describe('détail d’un jour', () => {
     await loaded(strings.day.goneTitle);
     expect(screen.getByText(strings.day.gone)).toBeOnTheScreen();
     expect(screen.queryByTestId('day-hero')).toBeNull();
+
+    await fireEvent.press(screen.getByRole('button', { name: strings.day.goneAction }));
+    expect(screen).toHavePathname('/');
   });
 
   it('une adresse qui n’est pas un jour est traitée comme un jour absent', async () => {
@@ -348,9 +351,7 @@ describe('écran « Les modèles »', () => {
 
     expect(screen.getByText(`Dimanche 22 novembre, 15${NBSP}h`)).toBeOnTheScreen();
     expect(
-      screen.getByLabelText(
-        `AROME, Météo-France · ${models.outOfRange}, poids indisponible, indisponible`,
-      ),
+      screen.getByLabelText(`AROME, Météo-France, ${models.outOfRange}, indisponible`),
     ).toBeOnTheScreen();
     await waitFor(() => expect(screen.getByText(models.errorsPeriod(5, 31))).toBeOnTheScreen());
     const weights = screen
@@ -377,9 +378,9 @@ describe('écran « Les modèles »', () => {
       }),
     };
     await openModels({ ...allPublished, 'forecast/toulon.json': { json: withoutGfs } });
-    expect(
-      screen.getByLabelText(`GFS, NOAA · ${models.absent}, poids indisponible, indisponible`),
-    ).toBeOnTheScreen();
+    expect(screen.getByLabelText(`GFS, NOAA, ${models.absent}, indisponible`)).toBeOnTheScreen();
+    // La raison est écrite sous le nom du modèle, à la place de la barre de poids.
+    expect(screen.getByText(models.absent)).toBeOnTheScreen();
     const weights = screen
       .getAllByLabelText(/^[A-Z]+, .* poids \d+/)
       .map((row) => Number(/poids (\d+)/.exec(row.props.accessibilityLabel)?.[1]));
@@ -391,6 +392,7 @@ describe('écran « Les modèles »', () => {
     await openModels({
       'forecast/toulon.json': allPublished['forecast/toulon.json'] ?? { status: 404 },
     });
+    expect(screen.getByText(models.errorsNoneTitle)).toBeOnTheScreen();
     expect(screen.getByText(models.errorsNone)).toBeOnTheScreen();
     expect(screen.queryByTestId('model-errors')).toBeNull();
   });
@@ -514,6 +516,24 @@ describe('écran « Fiabilité »', () => {
     await waitFor(() => expect(screen.getByText(reliability.unavailable)).toBeOnTheScreen(), {
       timeout: 5000,
     });
+    expect(screen.getByText(reliability.unavailableTitle)).toBeOnTheScreen();
+    expect(screen.queryByText(/°/)).toBeNull();
+  });
+
+  it('recharge les scores quand on réessaie, une fois le réseau revenu', async () => {
+    await openAt(CLEAR_MORNING, {
+      'forecast/toulon.json': allPublished['forecast/toulon.json'] ?? { status: 404 },
+    });
+    await loaded(conditions.clear);
+    await fireEvent.press(screen.getByRole('link', { name: home.links.reliability }));
+    await waitFor(() => expect(screen.getByText(reliability.unavailableTitle)).toBeOnTheScreen(), {
+      timeout: 5000,
+    });
+
+    servePublished(allPublished);
+    await fireEvent.press(screen.getByRole('button', { name: states.retry }));
+    await loaded(reliability.heroCaption(31));
+    expect(screen.queryByText(reliability.unavailableTitle)).toBeNull();
   });
 });
 
@@ -530,7 +550,7 @@ describe('bascule entre les villes', () => {
     ).toBeOnTheScreen();
     expect(screen.getByText(home.reliability(`88${NBSP}%`))).toBeOnTheScreen();
     expect(screen.getByText('4 modèles sur 5 d’accord')).toBeOnTheScreen();
-    expect(screen.queryByText(states.loading)).toBeNull();
+    expect(screen.queryByLabelText(states.loading)).toBeNull();
   });
 });
 
@@ -605,13 +625,13 @@ describe('sans aucune prévision', () => {
     await renderRouter('./app');
 
     // Le client de l'app retente une fois, après une seconde, avant de renoncer.
-    await waitFor(() => expect(screen.getByText(states.emptyTitle)).toBeOnTheScreen(), {
+    await waitFor(() => expect(screen.getByText(states.emptyTitles.network)).toBeOnTheScreen(), {
       timeout: 5000,
     });
     expect(screen.getByText(states.empty.network)).toBeOnTheScreen();
-    expect(screen.getByText(states.retry)).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: states.retry })).toBeOnTheScreen();
     expect(screen.queryByText(/\d/)).toBeNull();
-    expect(screen.queryByText(states.loading)).toBeNull();
+    expect(screen.queryByLabelText(states.loading)).toBeNull();
     // Le sélecteur de ville et les accès restent là.
     expect(screen.getByRole('radio', { name: 'Nice' })).toBeOnTheScreen();
     expect(screen.getByText(home.links.about)).toBeOnTheScreen();
@@ -620,8 +640,10 @@ describe('sans aucune prévision', () => {
   it('annonce le chargement tant que rien n’est arrivé', async () => {
     global.fetch = jest.fn(() => new Promise<Response>(() => undefined));
     await renderRouter('./app');
-    await loaded(states.loading);
-    expect(screen.queryByText(states.emptyTitle)).toBeNull();
+    await waitFor(() => expect(screen.getByLabelText(states.loading)).toBeOnTheScreen());
+    expect(screen.queryByTestId('empty-state')).toBeNull();
+    // Des formes, pas des valeurs : aucun chiffre n'est affiché.
+    expect(screen.queryByText(/\d/)).toBeNull();
   });
 
   it('demande de mettre l’app à jour quand les fichiers sont d’une version inconnue', async () => {
@@ -634,8 +656,9 @@ describe('sans aucune prévision', () => {
     await waitFor(() => expect(screen.getByText(states.empty.version)).toBeOnTheScreen(), {
       timeout: 5000,
     });
+    expect(screen.getByText(states.emptyTitles.version)).toBeOnTheScreen();
     // Réessayer n'y changerait rien : l'app ne le propose pas.
-    expect(screen.queryByText(states.retry)).toBeNull();
+    expect(screen.queryByRole('button', { name: states.retry })).toBeNull();
   });
 });
 

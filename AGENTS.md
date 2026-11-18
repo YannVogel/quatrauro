@@ -24,6 +24,7 @@ Quatrauro est une app météo personnelle (Expo / React Native, Android) pour To
 - **Nombres** : toujours mis en forme par `src/lib/format.ts` (virgule décimale, espace insécable avant `%` et les unités, `°` collé, vrai signe moins). Une valeur absente s'écrit « — » et se lit « indisponible ».
 - **Catalogue** : tout composant de `@/ui` et toute condition météo se montrent dans le catalogue (`/dev/catalog`, lien sur l'accueil en développement), avec leurs cas limites. Un composant ajouté ou modifié s'y vérifie à l'œil, dans les deux thèmes, avant la PR. Ses données sont fictives et vivent dans `src/features/catalog/__fixtures__/`. Hors développement (`__DEV__` faux), l'écran renvoie à l'accueil.
 - **Composants** : un composant de `@/ui` reçoit ses données par ses props et ne lit rien lui-même ; il accepte `null` pour toute valeur météo. Un composant graphique (barre, graphique, icône qui informe) a un `accessibilityLabel` qui dit sa valeur.
+- **États** : un écran qui n'a pas son contenu montre l'un des états de [docs/design/etats.md](docs/design/etats.md), avec les composants prévus (`LoadingSkeleton`, `Notice`, `StateMessage`) : jamais un texte seul, jamais un blanc, jamais des zéros. Un nouvel état s'ajoute à la fiche et au catalogue.
 - **Accessibilité de base** : cibles tactiles d'au moins 48 dp ; contrastes WCAG AA dans les deux thèmes ; `accessibilityLabel` sur les boutons-icônes et sur les graphiques ; une information n'est jamais portée par la seule couleur.
 - **Design system** : les écrans s'appuient sur les composants et les tokens de `@/ui` (`src/ui/theme.ts`). Aucune couleur en dur ailleurs (règle ESLint, testée). Chaque token existe en clair et en sombre. Le texte passe toujours par le composant `Text` de `@/ui` (variante et couleur du thème), les styles par `makeStyles`, le thème par `useTheme()`. Tout nouveau couple texte/fond s'ajoute à `CONTRAST_PAIRS`, que le test des contrastes parcourt.
 - **Icônes et conditions** : la liste des conditions météo est dans `shared/conditions.ts` (source unique) ; leur icône et leurs couleurs dans `src/ui/conditions.ts`. Les icônes s'affichent par le composant `Icon` et le registre `src/ui/icons.ts` : ne jamais importer `lucide-react-native` ailleurs.
@@ -60,14 +61,14 @@ app/                        # routes Expo Router (uniquement des écrans et des 
   day/[date].tsx  models.tsx  reliability.tsx  about.tsx   # détail d'un jour, « Les modèles », « Fiabilité », « À propos des données »
 __tests__/                  # tests qui rendent l'app entière (renderRouter sur app/)
 src/
-  features/forecast/        # components/ (accueil et ses pièces, bandeau, état vide), hooks/ (useForecast, useVerification),
+  features/forecast/        # components/ (accueil et ses pièces, bandeau de fraîcheur, état vide), hooks/ (useForecast, useVerification),
                             # freshness.ts (ce qu'un écran a le droit de montrer à un instant donné),
                             # home.ts (contenu de l'accueil), day.ts (contenu du détail d'un jour), index.ts
   features/models/          # écran « Les modèles » : models.ts (contenu), components/
   features/reliability/     # écran « Fiabilité » : reliability.ts (contenu), components/
   features/about/           # écran « À propos des données » : about.ts (contenu), links.ts (pages ouvertes dans le navigateur), components/
   features/catalog/         # catalogue des composants (développement seulement) et ses données fictives
-  ui/                       # theme.ts (tokens), ThemeProvider, Text, Icon, icons.ts, conditions.ts, contrast.ts
+  ui/                       # theme.ts (tokens), ThemeProvider, Text, Icon, icons.ts, conditions.ts, contrast.ts, motion.ts
     components/             # les composants Riviera (HeroBlock, Card, DayRow, HourlyChart…), exportés par @/ui
     testing/                # renderWithTheme, pour les tests de composants
   lib/                      # dates.ts (mise en forme à l'heure de Paris), format.ts (nombres à la française)

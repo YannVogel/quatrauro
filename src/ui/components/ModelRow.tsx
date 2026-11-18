@@ -16,10 +16,12 @@ type ModelRowProps = {
   readonly weight: number | null;
   /** Valeur prévue par ce modèle, déjà mise en forme ; `null` quand il n'en donne pas. */
   readonly value: string | null;
+  /** Pourquoi le modèle n'a ni poids ni valeur : « absent du dernier calcul ». Remplace la barre. */
+  readonly note?: string;
 };
 
 /** Ligne d'un modèle : nom, fournisseur, poids, valeur. */
-export function ModelRow({ name, provider, weight, value }: ModelRowProps) {
+export function ModelRow({ name, provider, weight, value, note }: ModelRowProps) {
   const styles = useStyles();
   const { spoken, common } = strings;
   const percent = weight === null ? null : formatPercent(weight * 100);
@@ -29,7 +31,7 @@ export function ModelRow({ name, provider, weight, value }: ModelRowProps) {
       accessibilityLabel={[
         name,
         provider,
-        spoken.weight(percent ?? common.unavailable),
+        note ?? spoken.weight(percent ?? common.unavailable),
         value ?? common.unavailable,
       ].join(', ')}
       style={styles.row}
@@ -41,12 +43,18 @@ export function ModelRow({ name, provider, weight, value }: ModelRowProps) {
             {provider}
           </Text>
         </View>
-        <View style={styles.weight}>
-          <MeterBar value={weight} describe={spoken.weight} />
-          <Text variant="caption" color="textMuted" style={styles.percent}>
-            {percent ?? common.missing}
+        {note === undefined ? (
+          <View style={styles.weight}>
+            <MeterBar value={weight} describe={spoken.weight} />
+            <Text variant="caption" color="textMuted" style={styles.percent}>
+              {percent ?? common.missing}
+            </Text>
+          </View>
+        ) : (
+          <Text variant="caption" color="textMuted">
+            {note}
           </Text>
-        </View>
+        )}
       </View>
       <Text variant="value" style={styles.value}>
         {value ?? common.missing}

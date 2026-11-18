@@ -6,16 +6,16 @@ import { strings } from '@/i18n';
 import { isCityId, useCurrentCity } from '@/lib/currentCity';
 import { useNow } from '@/lib/now';
 import { useThemeSetting } from '@/lib/themePreference';
-import { Card, Text, makeStyles, useTheme } from '@/ui';
+import { Card, LoadingSkeleton, makeStyles, useTheme } from '@/ui';
 import { CITIES } from '@shared/cities';
 
-import { ageLabel, forecastView } from '../freshness';
+import { forecastView } from '../freshness';
 import { homeContent } from '../home';
 import { useForecast } from '../hooks/useForecast';
 import { EmptyState } from './EmptyState';
+import { FreshnessNotice } from './FreshnessNotice';
 import { HomeHero } from './HomeHero';
 import { LinkRow } from './LinkRow';
-import { StaleBanner } from './StaleBanner';
 import { UpcomingHours } from './UpcomingHours';
 import { WeekCard } from './WeekCard';
 
@@ -55,6 +55,7 @@ export function HomeScreen() {
             if (isCityId(cityId)) selectCity(cityId);
           }}
           content={content?.hero ?? null}
+          isLoading={view.status === 'loading'}
           updated={
             view.status === 'ready'
               ? view.isRefreshing
@@ -67,26 +68,21 @@ export function HomeScreen() {
         />
 
         {view.status === 'loading' ? (
-          <Text color="textMuted" style={styles.centered}>
-            {strings.states.loading}
-          </Text>
+          <LoadingSkeleton label={strings.states.loading} withHero={false} />
         ) : null}
-        {view.status === 'empty' ? <EmptyState reason={view.reason} /> : null}
+        {view.status === 'empty' ? (
+          <EmptyState reason={view.reason} onRetry={() => void forecast.refresh()} />
+        ) : null}
 
         {view.status === 'ready' && content !== null ? (
           <>
-            {view.isStale ? <StaleBanner age={ageLabel(view.forecast.generatedAt, now)} /> : null}
+            <FreshnessNotice view={view} now={now} />
             <UpcomingHours hours={content.hours} />
             <WeekCard
               days={content.week}
               scale={content.scale}
               onOpenDay={(date) => router.push({ pathname: '/day/[date]', params: { date } })}
             />
-            {view.refreshError === null ? null : (
-              <Text variant="caption" color="textMuted" style={styles.centered}>
-                {strings.states.refreshFailed[view.refreshError]}
-              </Text>
-            )}
           </>
         ) : null}
 
@@ -113,5 +109,4 @@ export function HomeScreen() {
 const useStyles = makeStyles((theme) => ({
   screen: { flex: 1, backgroundColor: theme.colors.background },
   content: { flexGrow: 1, gap: theme.spacing.block, padding: theme.spacing.screen },
-  centered: { textAlign: 'center' },
 }));
