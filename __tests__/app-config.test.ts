@@ -62,7 +62,15 @@ describe('builds et mises à jour', () => {
     expect(easJson.build.preview.channel).toBe('preview');
   });
 
-  it("n'a pas de profil de production : l'app ne va pas sur les stores", () => {
-    expect(Object.keys(easJson.build).sort()).toEqual(['development', 'preview']);
+  it('construit pour Google Play un AAB numéroté par EAS, sur son propre canal', () => {
+    expect(easJson.build.production).toEqual({
+      channel: 'production',
+      autoIncrement: true,
+      android: { buildType: 'app-bundle' },
+    });
+  });
+
+  it("n'a pas d'autre profil que ces trois-là", () => {
+    expect(Object.keys(easJson.build).sort()).toEqual(['development', 'preview', 'production']);
   });
 });
