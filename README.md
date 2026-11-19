@@ -64,14 +64,13 @@ La première compilation prend plusieurs minutes : elle génère le dossier `and
 
 ## Builds et mises à jour
 
-L'app s'installe par un APK, sans passer par le Play Store. Les builds se font avec EAS (les services d'Expo), les mises à jour du JavaScript avec EAS Update. La configuration est dans [`eas.json`](eas.json) et [`app.config.ts`](app.config.ts).
+Au quotidien, l'app s'installe par un APK, sans passer par le Play Store. Elle a aussi sa fiche dans la Google Play Console (compte Parallax Works), où se dépose un AAB. Les builds se font avec EAS (les services d'Expo), les mises à jour du JavaScript avec EAS Update. La configuration est dans [`eas.json`](eas.json) et [`app.config.ts`](app.config.ts).
 
 | Profil | Ce qu'il produit | Quand s'en servir |
 |---|---|---|
 | `development` | Un client de développement (APK) qui charge le code depuis `npm start` | Pour développer sur un vrai téléphone |
 | `preview` | L'app elle-même, en APK, abonnée au canal de mises à jour `preview` | Pour l'usage quotidien |
-
-Il n'y a pas de profil `production` : l'app ne va pas sur les stores.
+| `production` | L'app en AAB, abonnée au canal de mises à jour `production` | Pour déposer une version dans la Google Play Console |
 
 > **Rien de tout cela ne se lance sans une demande explicite de Yann** : ni build, ni mise à jour (AGENTS.md, « Règles d'exploitation »).
 
@@ -93,6 +92,19 @@ eas build --profile preview --platform android
 
 Le build tourne sur les serveurs d'Expo (une quinzaine de minutes). À la fin, EAS affiche un lien et un QR code : l'ouvrir sur le téléphone, télécharger l'APK et l'installer (Android demande d'autoriser l'installation depuis cette source).
 
+### Construire l'AAB pour Google Play
+
+```bash
+eas build --profile production --platform android
+```
+
+Le fichier `.aab` produit se dépose à la main dans la Play Console, sur la piste voulue (tests internes pour commencer). Deux numéros identifient une version :
+
+- `version` dans `app.config.ts` est le numéro montré aux utilisateurs. Il se choisit avant chaque build destiné à Play, jamais en silence.
+- le `versionCode` d'Android est tenu par EAS (`appVersionSource: remote`) et augmente tout seul à chaque build `production` : Play refuse un numéro déjà déposé.
+
+Au premier build, EAS propose de créer la clé de signature et la garde ; pour Play, c'est la clé d'importation (« Signature d'application Play »).
+
 ### Publier une mise à jour du JavaScript
 
 Quand seuls le JavaScript ou les images ont changé, pas besoin de reconstruire :
@@ -100,6 +112,8 @@ Quand seuls le JavaScript ou les images ont changé, pas besoin de reconstruire 
 ```bash
 eas update --channel preview --message "Ce qui change"
 ```
+
+Les builds déposés sur Play suivent le canal `production`, pas `preview` : une mise à jour publiée sur l'un n'atteint pas l'autre.
 
 L'app installée télécharge la mise à jour à son prochain lancement et l'applique au lancement suivant : la fermer complètement et la rouvrir deux fois.
 

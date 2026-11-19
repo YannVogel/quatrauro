@@ -110,7 +110,7 @@ docs/
 .github/workflows/ci.yml    # intégration continue
 .github/workflows/pipeline.yml  # passage planifié du pipeline, livré désactivé (ADR 0004) : seul workflow qui écrit sur data
 app.config.ts               # identité de l'app et configuration native
-eas.json                    # profils de build (development, preview) et canal de mise à jour
+eas.json                    # profils de build (development, preview, production) et canaux de mise à jour
 ```
 
 Une nouvelle fonctionnalité s'ajoute là, et pas ailleurs :
@@ -164,7 +164,7 @@ Le projet est sur **Expo SDK 58** (React Native 0.88, React 19.3, TypeScript 6) 
 
 - Les dossiers `ios/` et `android/` sont générés (Continuous Native Generation) et ignorés par git : configurer le natif dans `app.config.ts`. Après l'ajout d'une dépendance native ou d'un plugin, régénérer avec `npx expo prebuild --clean --platform android` avant `npm run android`.
 - `app.config.ts` importe d'autres fichiers TypeScript grâce à `tsx/cjs` (première ligne du fichier) : ne pas la retirer.
-- Builds et mises à jour : profils `development` et `preview` dans `eas.json`, canal `preview`, procédure dans le README. L'identifiant du projet Expo (`EAS_PROJECT_ID`, dans `app.config.ts`) est renseigné par Yann après `eas init`.
+- Builds et mises à jour : profils `development` et `preview` (APK, canal `preview`) et `production` (AAB pour la Google Play Console, canal `production`) dans `eas.json`, procédure dans le README. L'identifiant du projet Expo (`EAS_PROJECT_ID`, dans `app.config.ts`) est renseigné par Yann après `eas init`.
 - Android est la seule cible de la v1. Ne rien écrire de spécifique à iOS, et ne rien écrire qui l'empêche.
 
 ## Règles d'exploitation
