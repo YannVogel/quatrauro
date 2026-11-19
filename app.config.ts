@@ -8,10 +8,10 @@ import { FONT_FAMILY } from './src/ui/theme';
 const APP_ID = 'com.parallaxworks.quatrauro';
 
 /**
- * Identifiant du projet chez Expo, donné par `eas init` (étape de Yann, voir le README).
- * Ce n'est pas un secret. Tant qu'il est absent, les mises à jour EAS sont désactivées.
+ * Identifiant du projet chez Expo (`@yannvogel/quatrauro`), donné par `eas init` (voir le README).
+ * Ce n'est pas un secret. S'il est absent, les mises à jour EAS sont désactivées.
  */
-const EAS_PROJECT_ID: string | null = null;
+const EAS_PROJECT_ID: string | null = '1a2abfd4-463f-411f-9bf5-e6244a22a070';
 
 /** Réglages qui dépendent du projet Expo : mises à jour JavaScript sans réinstaller l'app. */
 function easConfig(projectId: string | null): Pick<ExpoConfig, 'updates' | 'extra'> {

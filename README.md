@@ -76,13 +76,14 @@ Au quotidien, l'app s'installe par un APK, sans passer par le Play Store. Elle a
 
 ### Une seule fois : relier le repo au compte Expo
 
+C'est fait : le repo est relié au projet Expo `@yannvogel/quatrauro`, dont l'identifiant est dans la constante `EAS_PROJECT_ID` d'`app.config.ts` (ce n'est pas un secret). Sur une nouvelle machine, il reste à installer l'outil et à se connecter :
+
 ```bash
 npm install --global eas-cli
-eas login            # compte Expo de Parallax Works
-eas init             # crée le projet chez Expo et affiche son identifiant
+eas login            # compte Expo propriétaire du projet
 ```
 
-Reporter l'identifiant affiché dans la constante `EAS_PROJECT_ID` d'`app.config.ts` (ce n'est pas un secret) et committer. Tant qu'elle vaut `null`, les mises à jour EAS sont désactivées dans l'app.
+Si `EAS_PROJECT_ID` vaut `null`, les mises à jour EAS sont désactivées dans l'app ; `eas init` crée alors un projet et affiche l'identifiant à y reporter.
 
 ### Construire et installer l'APK
 
