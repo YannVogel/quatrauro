@@ -78,7 +78,7 @@ forecast/<ville>.json                                    # ce que lit l'app
 verification/<ville>.json                                # scores affichés par « Fiabilité »
 ```
 
-Le format et le découpage sont décrits dans [docs/features/archive-et-verification.md](docs/features/archive-et-verification.md) ; la fréquence des passages, l'adresse de lecture et la politique de rétention sont arrêtées par l'[ADR 0004](docs/adr/0004-pipeline-github-actions.md). Seul le workflow du pipeline (`.github/workflows/pipeline.yml`, livré désactivé) écrit sur cette branche.
+Le format et le découpage sont décrits dans [docs/features/archive-et-verification.md](docs/features/archive-et-verification.md) ; la fréquence des passages, l'adresse de lecture et la politique de rétention sont arrêtées par l'[ADR 0004](docs/adr/0004-pipeline-github-actions.md). Seul le workflow du pipeline (`.github/workflows/pipeline.yml`, quatre passages par jour) écrit sur cette branche.
 
 ## App
 

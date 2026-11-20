@@ -160,9 +160,11 @@ Le premier passage télécharge environ 60 Mo de prévisions et d'observations d
 
 ## Exploitation du pipeline
 
-Le pipeline tourne dans GitHub Actions (`.github/workflows/pipeline.yml`) et publie sur la branche `data`. **Il est livré désactivé** : tant que sa planification est en commentaire, il ne tourne que si on le lance à la main. Les décisions (fréquence, adresse de lecture, rétention) sont dans l'[ADR 0004](docs/adr/0004-pipeline-github-actions.md) ; ce que fait un passage, dans [docs/features/pipeline.md](docs/features/pipeline.md).
+Le pipeline tourne dans GitHub Actions (`.github/workflows/pipeline.yml`) et publie sur la branche `data`. **Il est en service depuis le 20 novembre 2026** : quatre passages par jour, à 1 h 17, 7 h 17, 13 h 17 et 19 h 17 UTC, et il se lance aussi à la main. Les décisions (fréquence, adresse de lecture, rétention) sont dans l'[ADR 0004](docs/adr/0004-pipeline-github-actions.md) ; ce que fait un passage, dans [docs/features/pipeline.md](docs/features/pipeline.md).
 
 ### Une seule fois : mettre en route
+
+**Fait le 20 novembre 2026**, à la demande de Yann. La marche suivie reste ici pour mémoire : elle ne se rejoue pas sur une branche `data` qui existe (l'amorçage refuse d'écraser un état, et réécrire `data` est une action destructive).
 
 Dans l'ordre. Chaque étape est un geste de Yann ; aucune n'est faite par un agent sans demande explicite.
 
@@ -188,7 +190,7 @@ Dans l'ordre. Chaque étape est un geste de Yann ; aucune n'est faite par un age
 3. **Lancer un premier passage à la main** : onglet Actions → Pipeline → Run workflow, sur `main`. Il doit finir en vert et ajouter un commit sur `data`.
    - S'il échoue à l'étape « Committer le résultat sur data » avec un refus d'écriture (403), autoriser le jeton : Settings → Actions → General → Workflow permissions → « Read and write permissions ».
 4. **Vérifier** que les fichiers se lisent : `https://raw.githubusercontent.com/YannVogel/quatrauro/data/forecast/toulon.json`.
-5. **Activer la planification** : dans `.github/workflows/pipeline.yml`, décommenter les deux lignes `schedule:` et `- cron:`, puis merger. Le test `__tests__/pipeline-workflow.test.ts` vérifie que le workflow est désactivé : adapter son premier cas dans la même PR.
+5. **Activer la planification** : dans `.github/workflows/pipeline.yml`, décommenter les deux lignes `schedule:` et `- cron:`, puis merger. Le test `__tests__/pipeline-workflow.test.ts` vérifie cette planification : toute modification l'adapte dans la même PR.
 
 ### Au quotidien
 

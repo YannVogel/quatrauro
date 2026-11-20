@@ -76,7 +76,7 @@ Le 17 novembre 2026, avec des fichiers produits en local par le pipeline et serv
 - serveur coupé, geste « tirer pour rafraîchir » : la prévision reste, avec « Dernière mise à jour impossible » ;
 - serveur revenu, même geste : les deux fichiers sont redemandés.
 
-L'adresse réelle n'a pas pu être essayée : la branche `data` n'existe pas encore.
+L'adresse réelle répond depuis le 20 novembre 2026, après le premier passage du pipeline dans GitHub Actions : les fichiers de prévision et de vérification des deux villes se lisent (réponse 200, cache de cinq minutes). L'app elle-même n'a pas encore été vérifiée à l'œil sur cette adresse.
 
 ## Tests
 
