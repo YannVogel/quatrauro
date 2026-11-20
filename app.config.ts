@@ -3,7 +3,7 @@ import 'tsx/cjs';
 
 import type { ConfigContext, ExpoConfig } from 'expo/config';
 
-import { FONT_FAMILY } from './src/ui/theme';
+import { FONT_FAMILY, colors } from './src/ui/theme';
 
 const APP_ID = 'com.parallaxworks.quatrauro';
 
@@ -48,7 +48,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     package: APP_ID,
     adaptiveIcon: {
       foregroundImage: './assets/android-icon-foreground.png',
-      backgroundImage: './assets/android-icon-background.png',
+      backgroundColor: colors.light.heroClear,
       monochromeImage: './assets/android-icon-monochrome.png',
     },
   },
