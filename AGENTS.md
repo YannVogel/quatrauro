@@ -2,7 +2,7 @@
 
 Quatrauro est une app météo personnelle (Expo / React Native, Android) pour Toulon et Nice. Elle croise plusieurs modèles de prévision, corrige leurs erreurs locales à partir des observations et affiche un indice de fiabilité. Il n'y a pas de serveur : un pipeline TypeScript tourne dans GitHub Actions et publie des JSON statiques que l'app lit. Le cadrage de référence est [docs/QUATRAURO_PROJECT_BRIEF.md](docs/QUATRAURO_PROJECT_BRIEF.md) ; les décisions prises depuis vivent dans les issues GitHub (sections « ⚠️ Point tranché ») et dans [docs/adr/](docs/adr/). En cas de conflit avec le brief, l'issue prime. L'architecture (couches, flux des données, mélange, hors ligne) est décrite dans [ARCHITECTURE.md](ARCHITECTURE.md).
 
-> **État du repo** (à tenir à jour à chaque milestone) : **socle, design system, pipeline et écrans en place.** L'app a ses cinq écrans (accueil, détail d'un jour, « Les modèles », « Fiabilité », « À propos des données ») ; le design system Riviera et son catalogue sont là ; la CI tourne sur chaque PR ; les deux spikes sont terminés (ADR 0002 et 0003) et le backtest a donné son feu vert ([rapport](docs/features/backtest.md)). Le pipeline sait faire un passage complet en local (`npm run pipeline`) et s'amorcer sur l'historique (`npm run pipeline:bootstrap`). Le workflow planifié existe mais il est **désactivé** : l'activer est un geste de Yann (README, « Exploitation du pipeline »). La finition (M4) est faite : états non nominaux ([fiche](docs/design/etats.md)), passe d'accessibilité ([fiche](docs/design/accessibilite.md)), captures de référence. Reste ce que seul Yann peut faire : comptes et build (M0-01, M0-04), choix de l'icône, mise en service du pipeline.
+> **État du repo** (à tenir à jour à chaque milestone) : **socle, design system, pipeline et écrans en place.** L'app a ses cinq écrans (accueil, détail d'un jour, « Les modèles », « Fiabilité », « À propos des données ») ; le design system Riviera et son catalogue sont là ; la CI tourne sur chaque PR ; les deux spikes sont terminés (ADR 0002 et 0003) et le backtest a donné son feu vert ([rapport](docs/features/backtest.md)). Le pipeline sait faire un passage complet en local (`npm run pipeline`) et s'amorcer sur l'historique (`npm run pipeline:bootstrap`). Le pipeline est **en service** depuis le 20 novembre 2026 : la branche `data` est amorcée et le workflow planifié y publie quatre fois par jour (README, « Exploitation du pipeline »). La finition (M4) est faite : états non nominaux ([fiche](docs/design/etats.md)), passe d'accessibilité ([fiche](docs/design/accessibilite.md)), captures de référence. Reste ce que seul Yann peut faire : comptes et build (M0-01, M0-04), choix de l'icône.
 
 ## Ordre de travail
 
@@ -108,7 +108,7 @@ scripts/brand/              # export en PNG de la variante d'icône choisie (npm
 docs/
   QUATRAURO_PROJECT_BRIEF.md  adr/  design/  features/
 .github/workflows/ci.yml    # intégration continue
-.github/workflows/pipeline.yml  # passage planifié du pipeline, livré désactivé (ADR 0004) : seul workflow qui écrit sur data
+.github/workflows/pipeline.yml  # passage planifié du pipeline, quatre fois par jour (ADR 0004) : seul workflow qui écrit sur data
 app.config.ts               # identité de l'app et configuration native
 eas.json                    # profils de build (development, preview, production) et canaux de mise à jour
 ```

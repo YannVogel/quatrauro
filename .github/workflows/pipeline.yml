@@ -1,9 +1,9 @@
 # Pipeline de prévision : un passage complet (collecte, archive, vérification, mélange,
 # publication), dont le résultat est committé sur la branche `data`.
 #
-# LIVRÉ DÉSACTIVÉ. La planification ci-dessous est en commentaire : tant qu'elle l'est, ce
-# workflow ne tourne que si quelqu'un le lance à la main (Actions → Pipeline → Run workflow).
-# L'activer est un geste de Yann, après l'amorçage : la marche à suivre est dans le README,
+# EN SERVICE depuis le 20 novembre 2026, à la demande de Yann. Il tourne seul, à la planification
+# ci-dessous, et peut aussi se lancer à la main (Actions → Pipeline → Run workflow). Modifier ou
+# retirer la planification reste un geste de Yann : l'exploitation est décrite dans le README,
 # section « Exploitation du pipeline ». Décisions et sources : docs/adr/0004-pipeline-github-actions.md.
 #
 # Seul ce workflow écrit sur `data`. Aucun workflow n'écrit sur `main`.
@@ -13,8 +13,8 @@ on:
   workflow_dispatch:
   # Quatre passages par jour, en UTC, à la minute 17 : GitHub retarde ou abandonne plus
   # volontiers les déclenchements du début de chaque heure.
-  # schedule:
-  #   - cron: '17 1,7,13,19 * * *'
+  schedule:
+    - cron: '17 1,7,13,19 * * *'
 
 # Un seul passage à la fois : un passage qui arrive pendant qu'un autre tourne attend son tour.
 concurrency:

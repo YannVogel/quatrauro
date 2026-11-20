@@ -1,6 +1,6 @@
 # ADR 0004 — Pipeline sans serveur dans GitHub Actions
 
-- **Statut** : acceptée (M1-12, le 17 novembre 2026 ; la fréquence, l'adresse de lecture et la rétention ont été tranchées en l'absence de Yann, qui peut y revenir : voir l'issue). Le workflow est livré **désactivé** : rien n'a encore tourné dans GitHub Actions
+- **Statut** : acceptée (M1-12, le 17 novembre 2026 ; la fréquence, l'adresse de lecture et la rétention ont été tranchées en l'absence de Yann, qui peut y revenir : voir l'issue). Le workflow, livré désactivé, est **en service depuis le 20 novembre 2026** : branche `data` amorcée, premier passage réussi, planification active
 - **Date** : 2026-11-17
 - **Issue** : [#29](https://github.com/YannVogel/quatrauro/issues/29) (M1-12)
 

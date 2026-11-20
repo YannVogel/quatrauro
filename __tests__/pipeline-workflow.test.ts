@@ -14,15 +14,14 @@ const active = (content: string): string =>
     .join('\n');
 
 describe('workflow du pipeline', () => {
-  const raw = read('pipeline.yml');
-  const workflow = active(raw);
+  const workflow = active(read('pipeline.yml'));
 
-  it('est livré désactivé : aucune planification active, lancement à la main seulement', () => {
-    expect(workflow).not.toMatch(/^\s*schedule:/m);
-    expect(workflow).not.toMatch(/cron:/);
-    expect(workflow).toMatch(/^on:\n {2}workflow_dispatch:\n/m);
-    // La planification proposée est là, en commentaire, prête à être activée.
-    expect(raw).toMatch(/^ {2}# schedule:\n {2}# {3}- cron: '17 1,7,13,19 \* \* \*'$/m);
+  it('tourne quatre fois par jour, à la planification de l’ADR 0004, et se lance aussi à la main', () => {
+    expect(workflow).toMatch(
+      /^on:\n {2}workflow_dispatch:\n {2}schedule:\n {4}- cron: '17 1,7,13,19 \* \* \*'\n/m,
+    );
+    // Une seule planification : en ajouter une se décide avec Yann (ADR 0004).
+    expect(workflow.match(/cron:/g)).toHaveLength(1);
   });
 
   it('ne fait tourner qu’un passage à la fois, sans interrompre celui qui tourne', () => {
