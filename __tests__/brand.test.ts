@@ -66,6 +66,30 @@ describe("export de l'icône", () => {
   });
 });
 
+describe('écran de démarrage', () => {
+  type SplashOptions = {
+    image: string;
+    backgroundColor: string;
+    dark: { image: string; backgroundColor: string };
+  };
+
+  const splash = config.plugins?.find(
+    (plugin): plugin is [string, SplashOptions] =>
+      Array.isArray(plugin) && plugin[0] === 'expo-splash-screen',
+  )?.[1];
+
+  it("montre une image que l'export produit, dans les deux thèmes", () => {
+    const targets = EXPORT_PLAN.map((step) => step.target);
+    expect(targets).toContain(path.normalize(splash?.image ?? ''));
+    expect(splash?.dark.image).toBe(splash?.image);
+  });
+
+  it("a pour fond le bleu du bloc d'état de chaque thème", () => {
+    expect(splash?.backgroundColor).toBe(colors.light.heroClear);
+    expect(splash?.dark.backgroundColor).toBe(colors.dark.heroClear);
+  });
+});
+
 describe('icône adaptative', () => {
   it("a pour fond le bleu du bloc d'état, sans image de fond", () => {
     const adaptiveIcon = config.android?.adaptiveIcon;
