@@ -1,4 +1,4 @@
-# Icône de l'app : quatre souffles autour du soleil
+# Icône et écran de démarrage : quatre souffles autour du soleil
 
 Issue [#14](https://github.com/YannVogel/quatrauro/issues/14) (M0-11). Yann a choisi l'icône le 20 novembre 2026 : quatre lignes de vent blanches, dont une s'enroule autour d'un soleil jaune, sur le bleu `heroClear`.
 
@@ -32,11 +32,18 @@ npm run brand:export
 
 Le script écrit `assets/icon.png`, `assets/android-icon-foreground.png`, `assets/android-icon-monochrome.png` et `assets/splash-icon.png`. Les PNG sont dans le repo : après une retouche d'un SVG, relancer l'export et committer les deux. Une icône ne passe pas par une mise à jour JavaScript : il faut reconstruire l'app.
 
+## Écran de démarrage
+
+L'écran de démarrage montre l'avant-plan de l'icône (`assets/splash-icon.png`) sur le bleu `heroClear` du thème en cours : `#1463FF` en clair, `#1A4FD6` en sombre. Il est configuré dans `app.config.ts` par le plugin `expo-splash-screen`, qui lit les deux couleurs dans `src/ui/theme.ts`.
+
+- **Taille** : Android pose l'image sur un canevas de 288 dp et n'en montre que le rond central, de 192 dp. L'image fait 288 dp de large : le dessin garde ainsi les proportions qu'il a dans le lanceur, et tient dans le rond.
+- **Durée** : l'app ne retient pas l'écran de démarrage ; il disparaît dès que le premier écran est prêt.
+- **À vérifier sur un build de distribution** : Expo Go montre l'icône à la place, et un build de développement ne reprend pas tous les réglages du plugin (documentation d'Expo).
+
 ## Ce qui reste de l'issue
 
-1. Configurer le splash clair et sombre (plugin `expo-splash-screen`, couleurs prises dans `src/ui/theme.ts`). `assets/splash-icon.png` est prêt, mais rien ne le lit encore.
-2. Dessiner le wordmark (le nom écrit).
-3. Voir l'icône dans un build Android : aucun build n'a été fait depuis le choix.
+1. Dessiner le wordmark (le nom écrit).
+2. Voir l'écran de démarrage dans un build Android : il n'a été contrôlé que sur les ressources générées par `npx expo prebuild`. L'icône, elle, est dans le build 0.1.1.
 
 ## Provenance
 

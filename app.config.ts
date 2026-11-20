@@ -31,6 +31,13 @@ const OUTFIT_FONTS = [
   { path: `${OUTFIT}/700Bold/Outfit_700Bold.ttf`, weight: 700 },
 ];
 
+const SPLASH_IMAGE = './assets/splash-icon.png';
+/**
+ * Largeur de l'image de démarrage, en dp. Android la pose sur un canevas de 288 dp dont il ne
+ * montre que le rond central : à 288, l'image garde les proportions de l'icône du lanceur.
+ */
+const SPLASH_IMAGE_WIDTH = 288;
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: 'Quatrauro',
@@ -58,6 +65,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       'expo-font',
       { android: { fonts: [{ fontFamily: FONT_FAMILY, fontDefinitions: OUTFIT_FONTS }] } },
+    ],
+    // Écran de démarrage : l'avant-plan de l'icône sur le bleu du bloc d'état, dans chaque thème.
+    [
+      'expo-splash-screen',
+      {
+        image: SPLASH_IMAGE,
+        imageWidth: SPLASH_IMAGE_WIDTH,
+        backgroundColor: colors.light.heroClear,
+        dark: { image: SPLASH_IMAGE, backgroundColor: colors.dark.heroClear },
+      },
     ],
   ],
   experiments: {
