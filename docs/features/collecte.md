@@ -52,6 +52,7 @@ Les instants sont rendus en UTC, à la seconde (`2026-11-17T15:00:00Z`). Une heu
 - Trois tentatives au plus, espacées de 5 puis 20 secondes, pour les pannes passagères : coupure réseau, délai dépassé, HTTP 429, HTTP 5xx.
 - Un refus (HTTP 4xx) n'est pas retenté.
 - Après la dernière tentative, l'erreur remonte avec le nom du serveur, le statut et le début de sa réponse.
+- Si le serveur n'a pas répondu du tout, l'erreur dit lequel et pourquoi : `Pas de réponse de <serveur> : fetch failed : <raison>`. La raison vient de la cause de l'erreur de Node (nom introuvable, connexion refusée ou coupée), que « fetch failed » seul ne dit pas.
 
 Le réseau, l'horloge, l'attente et le journal sont passés en paramètres (`CollectOptions`) : les tests ne font aucun appel et n'attendent pas.
 

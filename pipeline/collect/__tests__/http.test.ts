@@ -39,6 +39,36 @@ describe('appel HTTP', () => {
     assert.equal(http.urls.length, 3);
   });
 
+  it('après une panne réseau, dit quel serveur n’a pas répondu et pourquoi', async () => {
+    // Ce que lève le `fetch` de Node : un message vide de sens, la raison dans la cause.
+    const refused = Object.assign(new Error('connect ECONNREFUSED 203.0.113.7:443'), {
+      code: 'ECONNREFUSED',
+    });
+    const failure = new TypeError('fetch failed', { cause: refused });
+    const http = fakeHttp([failure, failure, failure]);
+    await assert.rejects(httpGet(URL_TESTED, http.options), (error: unknown) => {
+      assert.ok(error instanceof Error);
+      assert.equal(
+        error.message,
+        'Pas de réponse de api.example.test : fetch failed : connect ECONNREFUSED 203.0.113.7:443',
+      );
+      assert.equal(error.cause, failure);
+      return true;
+    });
+    assert.equal(http.urls.length, 3);
+  });
+
+  it('nomme le serveur même quand la panne ne dit rien d’elle-même', async () => {
+    // Plusieurs adresses essayées sans succès : Node lève une erreur sans message, avec un code.
+    const silent = Object.assign(new AggregateError([], ''), { code: 'ETIMEDOUT' });
+    const failure = new TypeError('fetch failed', { cause: silent });
+    const http = fakeHttp([failure, failure, failure]);
+    await assert.rejects(
+      httpGet(URL_TESTED, http.options),
+      /^Error: Pas de réponse de api\.example\.test : fetch failed : ETIMEDOUT$/,
+    );
+  });
+
   it('ne retente pas un refus', async () => {
     const http = fakeHttp([respond('{"error":true,"reason":"Invalid"}', 400)]);
     await assert.rejects(httpGet(URL_TESTED, http.options), HttpStatusError);
