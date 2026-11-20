@@ -43,18 +43,36 @@ export class HttpStatusError extends Error {
 const TOO_MANY_REQUESTS = 429;
 const isTransient = (status: number): boolean => status === TOO_MANY_REQUESTS || status >= 500;
 
+/** Le message d'une erreur, suivi de son code système (`ETIMEDOUT`…) s'il ne le dit pas déjà. */
+function reasonOf(error: Error): string {
+  const code = 'code' in error && typeof error.code === 'string' ? error.code : '';
+  return error.message.includes(code) ? error.message : `${error.message} ${code}`.trim();
+}
+
+/**
+ * Ce qu'une panne réseau dit d'elle-même, cause après cause. Le `fetch` de Node ne dit que
+ * « fetch failed » : la raison (nom introuvable, connexion refusée ou coupée) est dans sa cause.
+ */
+function describeFailure(error: unknown): string {
+  const reasons: string[] = [];
+  for (let current = error; current instanceof Error; current = current.cause) {
+    const reason = reasonOf(current);
+    if (reason !== '') reasons.push(reason);
+  }
+  return reasons.length > 0 ? reasons.join(' : ') : String(error);
+}
+
 async function attempt(url: string, options: HttpOptions): Promise<HttpResponse> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), options.timeoutMs);
+  const { host } = new URL(url);
   try {
     return await options.fetch(url, { signal: controller.signal });
   } catch (error) {
     if (controller.signal.aborted) {
-      throw new Error(`Délai de ${options.timeoutMs} ms dépassé pour ${new URL(url).host}`, {
-        cause: error,
-      });
+      throw new Error(`Délai de ${options.timeoutMs} ms dépassé pour ${host}`, { cause: error });
     }
-    throw error;
+    throw new Error(`Pas de réponse de ${host} : ${describeFailure(error)}`, { cause: error });
   } finally {
     clearTimeout(timer);
   }
