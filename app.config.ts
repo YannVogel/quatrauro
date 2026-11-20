@@ -35,7 +35,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: 'Quatrauro',
   slug: 'quatrauro',
-  version: '0.1.0',
+  version: '0.1.1',
   scheme: 'quatrauro',
   orientation: 'portrait',
   // Les deux thèmes sont livrés : l'app suit le réglage du système.
