@@ -2,7 +2,7 @@
 
 Quatrauro est une app météo personnelle (Expo / React Native, Android) pour Toulon et Nice. Elle croise plusieurs modèles de prévision, corrige leurs erreurs locales à partir des observations et affiche un indice de fiabilité. Il n'y a pas de serveur : un pipeline TypeScript tourne dans GitHub Actions et publie des JSON statiques que l'app lit. Le cadrage de référence est [docs/QUATRAURO_PROJECT_BRIEF.md](docs/QUATRAURO_PROJECT_BRIEF.md) ; les décisions prises depuis vivent dans les issues GitHub (sections « ⚠️ Point tranché ») et dans [docs/adr/](docs/adr/). En cas de conflit avec le brief, l'issue prime. L'architecture (couches, flux des données, mélange, hors ligne) est décrite dans [ARCHITECTURE.md](ARCHITECTURE.md).
 
-> **État du repo** (à tenir à jour à chaque milestone) : **socle, design system, pipeline et écrans en place.** L'app a ses cinq écrans (accueil, détail d'un jour, « Les modèles », « Fiabilité », « À propos des données ») ; le design system Riviera et son catalogue sont là ; la CI tourne sur chaque PR ; les deux spikes sont terminés (ADR 0002 et 0003) et le backtest a donné son feu vert ([rapport](docs/features/backtest.md)). Le pipeline sait faire un passage complet en local (`npm run pipeline`) et s'amorcer sur l'historique (`npm run pipeline:bootstrap`). Le pipeline est **en service** depuis le 20 novembre 2026 : la branche `data` est amorcée et le workflow planifié y publie quatre fois par jour (README, « Exploitation du pipeline »). La finition (M4) est faite : états non nominaux ([fiche](docs/design/etats.md)), passe d'accessibilité ([fiche](docs/design/accessibilite.md)), captures de référence. Reste ce que seul Yann peut faire : comptes et build (M0-01, M0-04), choix de l'icône.
+> **État du repo** (à tenir à jour à chaque milestone) : **socle, design system, pipeline et écrans en place.** L'app a ses cinq écrans (accueil, détail d'un jour, « Les modèles », « Fiabilité », « À propos des données ») ; le design system Riviera et son catalogue sont là ; la CI tourne sur chaque PR ; les deux spikes sont terminés (ADR 0002 et 0003) et le backtest a donné son feu vert ([rapport](docs/features/backtest.md)). Le pipeline sait faire un passage complet en local (`npm run pipeline`) et s'amorcer sur l'historique (`npm run pipeline:bootstrap`). Le pipeline est **en service** depuis le 20 novembre 2026 : la branche `data` est amorcée et le workflow planifié y publie quatre fois par jour (README, « Exploitation du pipeline »). La finition (M4) est faite : états non nominaux ([fiche](docs/design/etats.md)), passe d'accessibilité ([fiche](docs/design/accessibilite.md)), captures de référence. L'icône est choisie et branchée ([fiche](docs/design/icone.md)) ; le splash et le wordmark restent à faire. Reste ce que seul Yann peut faire : comptes et build (M0-01, M0-04).
 
 ## Ordre de travail
 
@@ -103,8 +103,8 @@ pipeline/
   meteoFranceHourly.ts      # fichiers horaires de Météo-France : adresse, champs, conversions
   instant.ts                # instants et heures rondes en UTC
   backtest/                 # backtest du mélange : rejoue shared/blend/ sur l'historique
-assets/                     # icônes provisoires du modèle Expo ; assets/icon/ : variantes proposées (docs/design/icone.md)
-scripts/brand/              # export en PNG de la variante d'icône choisie (npm run brand:export)
+assets/                     # icône de l'app en PNG, exportée ; assets/icon/ : ses sources SVG (docs/design/icone.md)
+scripts/brand/              # export en PNG des sources de l'icône (npm run brand:export)
 docs/
   QUATRAURO_PROJECT_BRIEF.md  adr/  design/  features/
 .github/workflows/ci.yml    # intégration continue
@@ -140,7 +140,7 @@ npm test                    # Jest : tests de l'app, de shared/ et de pipeline/
 npm run backtest            # rejoue le mélange sur l'historique et réécrit docs/features/backtest-resultats.md
 npm run pipeline            # un passage complet du pipeline dans .data/ (dossier local ignoré) ; -- --dry-run pour ne rien écrire
 npm run pipeline:bootstrap  # construit l'état de départ depuis l'historique (une fois, à la main ; refuse d'écraser un état sans --force)
-npm run brand:export -- <variante>   # exporte en PNG l'icône choisie ; pas avant le choix de Yann (docs/design/icone.md)
+npm run brand:export        # régénère les PNG de l'icône depuis assets/icon/ (docs/design/icone.md)
 npx expo install <paquet>   # toujours pour ajouter une dépendance de l'app (version compatible SDK)
 ```
 

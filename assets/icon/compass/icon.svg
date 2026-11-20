@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
-  <title>Quatrauro — Rose des vents</title>
-  <rect width="1024" height="1024" fill="#1463FF"/>
-  <g transform="translate(512 512) scale(0.86) translate(-512 -512)">
-    <path d="M512 172 L596 428 L852 512 L596 596 L512 852 L428 596 L172 512 L428 428 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="36" stroke-linejoin="round"/>
-    <circle cx="512" cy="512" r="70" fill="#FFC93C"/>
-  </g>
-</svg>

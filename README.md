@@ -23,7 +23,7 @@ Le nom vient du provençal « quatre auro », les quatre vents.
 | [docs/adr/](docs/adr/) | Décisions d'architecture : direction graphique, sources de données, méthode de mélange, pipeline, heure de Paris |
 | [docs/design/riviera.md](docs/design/riviera.md) | Direction graphique « Riviera » : tokens, composants, écrans |
 | [docs/design/claude-design/](docs/design/claude-design/) | Maquettes |
-| [docs/design/icone.md](docs/design/icone.md) | Les trois variantes d'icône à départager |
+| [docs/design/icone.md](docs/design/icone.md) | L'icône de l'app : dessin, sources, export des PNG |
 | [docs/design/etats.md](docs/design/etats.md) | États non nominaux : chargement, erreurs, données manquantes |
 | [docs/design/accessibilite.md](docs/design/accessibilite.md) | Ce qui a été vérifié en accessibilité, comment, et les écarts assumés |
 | [docs/design/captures/](docs/design/captures/) | Captures de référence de chaque écran, en clair et en sombre |

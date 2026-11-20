@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <title>Quatrauro — Quatre souffles autour du soleil, avant-plan</title>
+  <g transform="translate(512 512) scale(0.66) translate(-512 -512)">
+    <g transform="translate(0 28)">
+      <circle cx="640" cy="372" r="88" fill="#FFC93C"/>
+      <g fill="none" stroke="#FFFFFF" stroke-width="56" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M280 408H400"/>
+        <path d="M212 520H640a148 148 0 1 0 -148 -148"/>
+        <path d="M300 632H812"/>
+        <path d="M392 744H640"/>
+      </g>
+    </g>
+  </g>
+</svg>
